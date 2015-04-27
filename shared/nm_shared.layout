@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_layout_file>
+	<ActiveTarget name="Debug" />
+	<File name="adm/adm.c" open="1" top="0" tabpos="1">
+		<Cursor position="45926" topLine="1588" />
+	</File>
+	<File name="adm/adm.h" open="1" top="0" tabpos="6">
+		<Cursor position="7713" topLine="147" />
+	</File>
+	<File name="adm/adm_agent.c" open="0" top="0" tabpos="12">
+		<Cursor position="5177" topLine="108" />
+	</File>
+	<File name="adm/adm_agent.h" open="0" top="0" tabpos="0">
+		<Cursor position="1215" topLine="0" />
+	</File>
+	<File name="adm/adm_bp.c" open="0" top="0" tabpos="13">
+		<Cursor position="14528" topLine="380" />
+	</File>
+	<File name="adm/adm_bp.h" open="0" top="0" tabpos="0">
+		<Cursor position="0" topLine="75" />
+	</File>
+	<File name="adm/adm_cgr.c" open="0" top="0" tabpos="0">
+		<Cursor position="490" topLine="0" />
+	</File>
+	<File name="adm/adm_cgr.h" open="0" top="0" tabpos="0">
+		<Cursor position="2730" topLine="90" />
+	</File>
+	<File name="adm/adm_ion.c" open="0" top="0" tabpos="14">
+		<Cursor position="10975" topLine="247" />
+	</File>
+	<File name="adm/adm_ion.h" open="0" top="0" tabpos="0">
+		<Cursor position="128" topLine="0" />
+	</File>
+	<File name="adm/adm_ltp.c" open="0" top="0" tabpos="15">
+		<Cursor position="9188" topLine="171" />
+	</File>
+	<File name="adm/adm_ltp.h" open="0" top="0" tabpos="0">
+		<Cursor position="188" topLine="0" />
+	</File>
+	<File name="msg/msg_admin.c" open="0" top="0" tabpos="16">
+		<Cursor position="26008" topLine="918" />
+	</File>
+	<File name="msg/msg_ctrl.c" open="0" top="0" tabpos="17">
+		<Cursor position="8704" topLine="291" />
+	</File>
+	<File name="msg/msg_def.c" open="0" top="0" tabpos="18">
+		<Cursor position="4606" topLine="161" />
+	</File>
+	<File name="msg/msg_reports.c" open="0" top="0" tabpos="19">
+		<Cursor position="14110" topLine="554" />
+	</File>
+	<File name="msg/pdu.c" open="0" top="0" tabpos="6">
+		<Cursor position="23448" topLine="863" />
+	</File>
+	<File name="msg/pdu.h" open="0" top="0" tabpos="0">
+		<Cursor position="2651" topLine="92" />
+	</File>
+	<File name="primitives/admin.c" open="0" top="0" tabpos="7">
+		<Cursor position="4159" topLine="131" />
+	</File>
+	<File name="primitives/datalist.c" open="1" top="0" tabpos="2">
+		<Cursor position="15906" topLine="608" />
+	</File>
+	<File name="primitives/datalist.h" open="0" top="0" tabpos="0">
+		<Cursor position="2145" topLine="29" />
+	</File>
+	<File name="primitives/def.c" open="0" top="0" tabpos="20">
+		<Cursor position="2117" topLine="44" />
+	</File>
+	<File name="primitives/instr.c" open="0" top="0" tabpos="8">
+		<Cursor position="0" topLine="0" />
+	</File>
+	<File name="primitives/mid.c" open="0" top="0" tabpos="21">
+		<Cursor position="10233" topLine="327" />
+	</File>
+	<File name="primitives/mid.h" open="0" top="0" tabpos="0">
+		<Cursor position="5209" topLine="94" />
+	</File>
+	<File name="primitives/oid.c" open="0" top="0" tabpos="22">
+		<Cursor position="40103" topLine="1310" />
+	</File>
+	<File name="primitives/oid.h" open="0" top="0" tabpos="0">
+		<Cursor position="2911" topLine="87" />
+	</File>
+	<File name="primitives/report.c" open="0" top="0" tabpos="23">
+		<Cursor position="5564" topLine="195" />
+	</File>
+	<File name="primitives/report.h" open="0" top="0" tabpos="0">
+		<Cursor position="3633" topLine="112" />
+	</File>
+	<File name="primitives/rules.c" open="0" top="0" tabpos="24">
+		<Cursor position="3250" topLine="86" />
+	</File>
+	<File name="primitives/rules.h" open="0" top="0" tabpos="0">
+		<Cursor position="1356" topLine="0" />
+	</File>
+	<File name="primitives/variables.c" open="0" top="0" tabpos="0">
+		<Cursor position="857" topLine="0" />
+	</File>
+	<File name="primitives/variables.h" open="0" top="0" tabpos="0">
+		<Cursor position="779" topLine="0" />
+	</File>
+	<File name="utils/db.c" open="0" top="0" tabpos="0">
+		<Cursor position="1071" topLine="27" />
+	</File>
+	<File name="utils/debug.h" open="0" top="0" tabpos="4">
+		<Cursor position="863" topLine="6" />
+	</File>
+	<File name="utils/expr.c" open="0" top="0" tabpos="7">
+		<Cursor position="0" topLine="15" />
+	</File>
+	<File name="utils/expr.h" open="0" top="0" tabpos="0">
+		<Cursor position="2064" topLine="28" />
+	</File>
+	<File name="utils/ion_if.c" open="0" top="0" tabpos="25">
+		<Cursor position="6954" topLine="237" />
+	</File>
+	<File name="utils/ion_if.h" open="0" top="0" tabpos="0">
+		<Cursor position="2059" topLine="38" />
+	</File>
+	<File name="utils/nm_types.h" open="0" top="0" tabpos="8">
+		<Cursor position="388" topLine="0" />
+	</File>
+	<File name="utils/utils.c" open="0" top="0" tabpos="10">
+		<Cursor position="26628" topLine="201" />
+	</File>
+	<File name="utils/utils.h" open="0" top="0" tabpos="9">
+		<Cursor position="2870" topLine="64" />
+	</File>
+</CodeBlocks_layout_file>

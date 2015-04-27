@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="nm_shared" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Debug">
+				<Option output="bin/Debug/nm_shared" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Debug/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-g" />
+				</Compiler>
+			</Target>
+			<Target title="Release">
+				<Option output="bin/Release/nm_shared" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Release/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-O2" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+				</Linker>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-Wall" />
+		</Compiler>
+		<Unit filename="adm/adm.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="adm/adm.h" />
+		<Unit filename="adm/adm_agent.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="adm/adm_agent.h" />
+		<Unit filename="adm/adm_bp.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="adm/adm_bp.h" />
+		<Unit filename="adm/adm_cgr.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="adm/adm_cgr.h" />
+		<Unit filename="adm/adm_ion.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="adm/adm_ion.h" />
+		<Unit filename="adm/adm_ltp.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="adm/adm_ltp.h" />
+		<Unit filename="msg/msg_admin.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="msg/msg_admin.h" />
+		<Unit filename="msg/msg_ctrl.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="msg/msg_ctrl.h" />
+		<Unit filename="msg/msg_def.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="msg/msg_def.h" />
+		<Unit filename="msg/msg_reports.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="msg/msg_reports.h" />
+		<Unit filename="msg/pdu.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="msg/pdu.h" />
+		<Unit filename="primitives/admin.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="primitives/admin.h" />
+		<Unit filename="primitives/datalist.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="primitives/datalist.h" />
+		<Unit filename="primitives/def.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="primitives/def.h" />
+		<Unit filename="primitives/instr.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="primitives/instr.h" />
+		<Unit filename="primitives/mid.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="primitives/mid.h" />
+		<Unit filename="primitives/oid.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="primitives/oid.h" />
+		<Unit filename="primitives/report.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="primitives/report.h" />
+		<Unit filename="primitives/rules.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="primitives/rules.h" />
+		<Unit filename="primitives/variables.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="primitives/variables.h" />
+		<Unit filename="utils/db.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="utils/db.h" />
+		<Unit filename="utils/debug.h" />
+		<Unit filename="utils/expr.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="utils/expr.h" />
+		<Unit filename="utils/ion_if.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="utils/ion_if.h" />
+		<Unit filename="utils/nm_types.h" />
+		<Unit filename="utils/rangeEval.h" />
+		<Unit filename="utils/utils.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="utils/utils.h" />
+		<Extensions>
+			<code_completion />
+			<debugger />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>

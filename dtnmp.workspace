@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_workspace_file>
+	<Workspace title="Default workspace">
+		<Project filename="mgr/nm_mgr.cbp" active="1" />
+		<Project filename="shared/nm_shared.cbp" />
+		<Project filename="agent/nm_agent.cbp" />
+		<Project filename="../../dtnmpTest/dtnmpTest.cbp" />
+	</Workspace>
+</CodeBlocks_workspace_file>
