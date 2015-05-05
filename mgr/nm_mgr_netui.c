@@ -2164,7 +2164,7 @@ size_t netui_print_datalist(void* inBuffer,size_t size,char* outBuffer)
 	//This line also adds the appending comma between datalists.
 	for(LystElt dlElt = lyst_first(datalists) ; dlElt ; dlElt = lyst_next(dlElt),(cursor++)[0]=',')
 	{
-		DTNMP_DEBUG_INFO("adm_datalists_to_queue","Getting datalist...",NULL);
+		DTNMP_DEBUG_INFO("netui_print_datalist","Getting datalist...",NULL);
 		datacol_entry_t* dataCol = (datacol_entry_t*)lyst_data(dlElt);
 		datalist_t curDl = datalist_deserialize_from_buffer(dataCol->value,dataCol->length,&bytesUsedPerDL);
 
@@ -2222,7 +2222,7 @@ size_t netui_print_datalist(void* inBuffer,size_t size,char* outBuffer)
 		}
 		(cursor++)[0]=']';
 	}
-	(cursor--)[0]='}';
+	(cursor++)[0]='}';
 	(cursor++)[0]='\0';
 
 	return cursor-outBuffer;

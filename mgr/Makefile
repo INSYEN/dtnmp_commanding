@@ -1,5 +1,5 @@
 SOURCES = ../shared/adm/*.c ../shared/msg/*.c ../shared/utils/*.c ../shared/primitives/*.c ./*.c 
-IONDIR = ./ion-open-source/
+IONDIR = ../ion-open-source/
 OPTS = -Wno-write-strings -g 
 
 Debug:all
