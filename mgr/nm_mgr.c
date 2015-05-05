@@ -376,7 +376,7 @@ agent_t* mgr_agent_create(eid_t *in_eid)
 	{
 		DTNMP_DEBUG_ERR("mgr_agent_create","Unable to create custom definition lyst for agent %s",
 				in_eid->name);
-		MRELEASE(agent);
+		SRELEASE(agent);
 
 		DTNMP_DEBUG_EXIT("mgr_agent_create","->NULL", NULL);
 		return NULL;
@@ -387,7 +387,7 @@ agent_t* mgr_agent_create(eid_t *in_eid)
 		DTNMP_DEBUG_ERR("mgr_agent_create","Unable to create report lyst for agent %s",
 				in_eid->name);
 		lyst_destroy(agent->custom_defs);
-		MRELEASE(agent);
+		SRELEASE(agent);
 
 		DTNMP_DEBUG_EXIT("mgr_agent_create","->NULL", NULL);
 		return NULL;
@@ -399,7 +399,7 @@ agent_t* mgr_agent_create(eid_t *in_eid)
 				in_eid->name);
 		lyst_destroy(agent->custom_defs);
 		lyst_destroy(agent->reports);
-		MRELEASE(agent);
+		SRELEASE(agent);
 
 		DTNMP_DEBUG_EXIT("mgr_agent_create","->NULL", NULL);
 		return NULL;
@@ -483,7 +483,7 @@ int mgr_agent_remove(eid_t* in_eid)
 	def_lyst_clear(&(agent->custom_defs), &(agent->mutex), 1);
 
 	killResourceLock(&(agent->mutex));
-	MRELEASE(agent);
+	SRELEASE(agent);
 
 	DTNMP_DEBUG_EXIT("remove_agent", "->1", NULL);
 	return 1;
@@ -536,7 +536,7 @@ void mgr_agent_remove_cb(LystElt elt, void *nil)
 		def_lyst_clear(&(agent->custom_defs), &(agent->mutex), 1);
 
 		killResourceLock(&(agent->mutex));
-		MRELEASE(agent);
+		SRELEASE(agent);
 	}
 
 	unlockResource(&agents_mutex);
@@ -624,7 +624,7 @@ int mgr_init(char *argv[])
     if((known_agents = lyst_create()) == NULL)
         {
             DTNMP_DEBUG_ERR("mgr_init","Failed to create known agents list.",NULL);
-            //MRELEASE(ion_ptr);
+            //SRELEASE(ion_ptr);
             DTNMP_DEBUG_EXIT("mgr_init","->-1.",NULL);
             return -1;
         }
@@ -633,7 +633,7 @@ int mgr_init(char *argv[])
     {
     	DTNMP_DEBUG_ERR("mgr_init","Can't initialize rcv rpt list. . errno = %s",
     			        strerror(errno));
-        //MRELEASE(ion_ptr);
+        //SRELEASE(ion_ptr);
         DTNMP_DEBUG_EXIT("mgr_init","->-1.",NULL);
     	return -1;
     }
@@ -641,7 +641,7 @@ int mgr_init(char *argv[])
     if((macro_defs = lyst_create()) == NULL)
     {
         DTNMP_DEBUG_ERR("mgr_init","Failed to create macro def list.%s",NULL);
-        //MRELEASE(ion_ptr);
+        //SRELEASE(ion_ptr);
         DTNMP_DEBUG_EXIT("mgr_init","->-1.",NULL);
         return -1;
     }
@@ -650,7 +650,7 @@ int mgr_init(char *argv[])
     {
     	DTNMP_DEBUG_ERR("mgr_init","Cant init macro def list mutex. errno = %s",
     			        strerror(errno));
-        //MRELEASE(ion_ptr);
+        //SRELEASE(ion_ptr);
         DTNMP_DEBUG_EXIT("mgr_init","->-1.",NULL);
     	return -1;
     }
@@ -658,7 +658,7 @@ int mgr_init(char *argv[])
 	if((variable_queue = lyst_create()) == NULL)
     {
         DTNMP_DEBUG_ERR("mgr_init","Failed to create variable queue list.%s",NULL);
-        //MRELEASE(ion_ptr);
+        //SRELEASE(ion_ptr);
         DTNMP_DEBUG_EXIT("mgr_init","->-1.",NULL);
         return -1;
     }
@@ -667,7 +667,7 @@ int mgr_init(char *argv[])
     {
     	DTNMP_DEBUG_ERR("mgr_init","Cant init varqueue list mutex. errno = %s",
     			        strerror(errno));
-        //MRELEASE(ion_ptr);
+        //SRELEASE(ion_ptr);
         DTNMP_DEBUG_EXIT("mgr_init","->-1.",NULL);
     	return -1;
     }

@@ -134,7 +134,7 @@ int oid_add_param(oid_t *oid, uint8_t *value, uint32_t len)
 	{
 		DTNMP_DEBUG_ERR("oid_add_param","Can't alloc %d bytes.",
 				        entry->length);
-		MRELEASE(entry);
+		SRELEASE(entry);
 		DTNMP_DEBUG_EXIT("oid_add_param","->0.",NULL);
 		return 0;
 	}
@@ -745,7 +745,7 @@ oid_t *oid_deserialize_full(unsigned char *buffer,
 	if((new_oid->params = lyst_create()) == NULL)
 	{
 		DTNMP_DEBUG_ERR("oid_deserialize_full","Cannot allocate param lyst.", NULL);
-		MRELEASE(new_oid);
+		SRELEASE(new_oid);
 		*bytes_used = 0;
 		DTNMP_DEBUG_EXIT("oid_deserialize_full","-> NULL", NULL);
 		return NULL;
@@ -962,7 +962,7 @@ char *oid_pretty_print(oid_t *oid)
 		entry = (datacol_entry_t*)lyst_data(elt);
 		str = utils_hex_to_string(entry->value, entry->length);
 		cursor += sprintf(cursor, "Parm %d:%s\n",i,str);
-		MRELEASE(str);
+		SRELEASE(str);
 		i++;
 	}
 
@@ -971,14 +971,14 @@ char *oid_pretty_print(oid_t *oid)
 
 	str = oid_to_string(oid);
 	cursor += sprintf(cursor, "value: %s\n---------------------\n\n", str);
-	MRELEASE(str);
+	SRELEASE(str);
 
 	/* Step 4: Sanity check. */
 	if((cursor - result) > size)
 	{
 		DTNMP_DEBUG_ERR("oid_pretty_print", "OVERWROTE! Alloc %d, wrote %llu.",
 				        size, (cursor-result));
-		MRELEASE(result);
+		SRELEASE(result);
 		DTNMP_DEBUG_EXIT("oid_pretty_print","->NULL",NULL);
 		return NULL;
 	}
@@ -1022,7 +1022,7 @@ void oid_release(oid_t *oid)
     if(oid != NULL)
     {
         oid_clear(oid);
-        MRELEASE(oid);
+        SRELEASE(oid);
         oid = NULL;
     }
 
@@ -1205,14 +1205,14 @@ uint8_t *oid_serialize(oid_t *oid, uint32_t *size)
 		{
 			DTNMP_DEBUG_ERR("oid_serialize","Can't serialize parameters.",NULL);
 			*size = 0;
-			MRELEASE(result);
+			SRELEASE(result);
 			DTNMP_DEBUG_EXIT("oid_serialize","->NULL",NULL);
 			return NULL;
 		}
 
 		memcpy(cursor, parms, parm_size);
 		cursor += parm_size;
-		MRELEASE(parms);
+		SRELEASE(parms);
 	}
 
 	/* Step 7: Final sanity check */
@@ -1221,7 +1221,7 @@ uint8_t *oid_serialize(oid_t *oid, uint32_t *size)
 		DTNMP_DEBUG_ERR("oid_serialize","Serialized %d bytes but counted %d!",
 				        (cursor-result), *size);
 		*size = 0;
-		MRELEASE(result);
+		SRELEASE(result);
 		DTNMP_DEBUG_EXIT("oid_serialize","->NULL",NULL);
 		return NULL;
 	}
@@ -1402,7 +1402,7 @@ void oid_nn_cleanup()
     	entry = (oid_nn_t*) lyst_data(elt);
     	if (entry != NULL)
     	{
-    		MRELEASE(entry);
+    		SRELEASE(entry);
     	}
     	else
     	{
@@ -1453,7 +1453,7 @@ int oid_nn_delete(uvast nn_id)
 	{
     	cur_nn = (oid_nn_t*) lyst_data(tmp_elt);
 		lyst_delete(tmp_elt);
-		MRELEASE(cur_nn);
+		SRELEASE(cur_nn);
 		result = 1;
 	}
 

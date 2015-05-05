@@ -95,7 +95,7 @@ uint8_t *def_serialize_gen(def_gen_t *def, uint32_t *len)
 	*len = id_len + contents_len;
 
 	/* STEP 6: Allocate the serialized message. */
-	if((result = (uint8_t*)MTAKE(*len)) == NULL)
+	if((result = (uint8_t*)(*len)) == NULL)
 	{
 		DTNMP_DEBUG_ERR("def_serialize_gen","Can't alloc %d bytes", *len);
 		*len = 0;
@@ -171,7 +171,7 @@ def_gen_t *def_deserialize_gen(uint8_t *cursor,
 	}
 
 	/* Step 1: Allocate the new message structure. */
-	if((result = (def_gen_t*)MTAKE(sizeof(def_gen_t))) == NULL)
+	if((result = (def_gen_t*)(sizeof(def_gen_t))) == NULL)
 	{
 		DTNMP_DEBUG_ERR("def_deserialize_gen","Can't Alloc %d Bytes.",
 				        sizeof(def_gen_t));

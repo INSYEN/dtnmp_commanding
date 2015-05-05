@@ -642,7 +642,7 @@ int rda_send_reports(Lyst built_reports)
         		                 raw_report, raw_report_len, NULL)) == NULL)
         {
         	DTNMP_DEBUG_ERR("rda_send_reports","Can't serialize report.",NULL);
-        	MRELEASE(raw_report);
+        	SRELEASE(raw_report);
             DTNMP_DEBUG_EXIT("rda_send_reports","->-1.", NULL);
             return -1;
         }

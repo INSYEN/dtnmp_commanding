@@ -161,8 +161,8 @@ char *ion_node_print_all(uint8_t* buffer, uint64_t buffer_len, uint64_t data_len
 	cursor = result;
 
 	sprintf(cursor, "inducts: %s\noutducts: %s\n",inducts, outducts);
-	MRELEASE(inducts);
-	MRELEASE(outducts);
+	SRELEASE(inducts);
+	SRELEASE(outducts);
 
 	return result;
 }

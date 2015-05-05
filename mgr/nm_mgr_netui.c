@@ -109,7 +109,7 @@ int gContext;
 //    /* Step 2: Build an ADU from the buffer. */
 // //   memcpy(adu.mid, tmp, len);
 // //   adu.mid_len = len;
-////    MRELEASE(tmp);
+////    SRELEASE(tmp);
 //
 //    /* Step 3: Build a mid by "deserializing" the ADU into a MID. */
 ////	result = mid_deserialize((unsigned char*)&(adu.mid),ADM_MID_ALLOC,&bytes);
@@ -397,7 +397,7 @@ void netui_construct_time_rule_by_idx(agent_t* agent,cmdFormat* curCmd)
 //
 //	char *str = mid_to_string(midp);
 //	printf("MID IS %s\n", str);
-//	MRELEASE(str);
+//	SRELEASE(str);
 //
 //	lyst_insert_last(mids,midp);
 //
@@ -604,8 +604,8 @@ void ui_eventLoop()
 
 
 				//Free memory
-				MRELEASE(curEntry->value);
-				MRELEASE(curEntry);
+				SRELEASE(curEntry->value);
+				SRELEASE(curEntry);
 
 				lastElt = lyst_prev(elt);
 				lyst_delete(elt);
@@ -614,8 +614,8 @@ void ui_eventLoop()
 				//Transmit
 				send(dataSock,varBuffer,varStrSize,0);
 
-				MRELEASE(varValue);
-				MRELEASE(varBuffer);
+				SRELEASE(varValue);
+				SRELEASE(varBuffer);
 			}
 		}
 		unlockResource(&variable_queue_mutex);
@@ -662,15 +662,15 @@ void ui_eventLoop()
 			DTNMP_DEBUG_WARN("ui_eventLoop","Invalid command received data: %s",&commandReentry[0]);
 			continue;
 		}
-		else
-			DTNMP_DEBUG_INFO("ui_eventloop","Received command %s",commandReentry);
+
 
 		short cmdIdx = 0;
 		char* curChunk = (curCmd->cmdChunks[cmdIdx]);
 
-		if(curChunk==NULL)
+		if(&curChunk==NULL)
 		{
 			netui_free_cmdformat(curCmd);
+			continue;
 		}
 		//DTNMP_DEBUG_INFO("ui_eventLoop","command has %d tokens, first is \"%s\" %d",curCmd->numChunks,(char*)(curCmd->cmdChunks[cmdIdx]),&(curCmd->cmdChunks[cmdIdx]));
 
@@ -810,7 +810,7 @@ void ui_eventLoop()
 //		ui_get_user_input("Issuer (up to 18 hex): 0x", (char**)&line, 256);
 //		data = utils_string_to_hex((unsigned char*)line, &size);
 //		memcpy(&(result->issuer), data, 4);
-//		MRELEASE(data);
+//		SRELEASE(data);
 //
 //		if(size > 4)
 //		{
@@ -846,7 +846,7 @@ void ui_eventLoop()
 //						    MID_GET_FLAG_OID(result->flags));
 //			break;
 //	}
-//	MRELEASE(data);
+//	SRELEASE(data);
 //
 //	if((result->oid == NULL) || (bytes != size))
 //	{
@@ -864,7 +864,7 @@ void ui_eventLoop()
 //		ui_get_user_input("Tag (up to 18 hex): 0x", (char**)&line, 256);
 //		data = utils_string_to_hex((unsigned char*)line, &size);
 //		memcpy(&(result->tag), data, 4);
-//		MRELEASE(data);
+//		SRELEASE(data);
 //
 //		if(size > 4)
 //		{
@@ -888,7 +888,7 @@ void ui_eventLoop()
 //
 //	char *mid_str = mid_to_string(result);
 //	DTNMP_DEBUG_ALWAYS("ui_input_mid", "Defined MID: %s", mid_str);
-//	MRELEASE(mid_str);
+//	SRELEASE(mid_str);
 //
 //	DTNMP_DEBUG_EXIT("ui_input_mid", "->0x%x", (unsigned long) result);
 //	return result;
@@ -1093,7 +1093,7 @@ void netui_print_custom_rpt(rpt_data_entry_t *rpt_entry, def_gen_t *rpt_def)
 			DTNMP_DEBUG_ERR("ui_print_custom_rpt","Unable to find MID %s", mid_str);
 		}
 
-		MRELEASE(mid_str);
+		SRELEASE(mid_str);
 	}
 }
 
@@ -1184,7 +1184,7 @@ void netui_print_predefined_rpt(mid_t *mid, uint8_t *data, uint64_t data_size, u
 	{
 		DTNMP_DEBUG_ERR("ui_print_predefined_rpt","Can't copy varentry",NULL);
 
-		MRELEASE(mid_str);
+		SRELEASE(mid_str);
 		return;
 	}
 	else
@@ -1225,7 +1225,7 @@ void netui_print_predefined_rpt(mid_t *mid, uint8_t *data, uint64_t data_size, u
 void netui_print_reports(agent_t* agent)
 {
 	 LystElt report_elt;
-	 LystElt previousReportElt;
+	 //LystElt previousReportElt;
 	 LystElt entry_elt;
 	 rpt_data_t *cur_report = NULL;
 	 rpt_data_entry_t *cur_entry = NULL;
@@ -1299,7 +1299,7 @@ void netui_print_reports(agent_t* agent)
 	    		 {
 	    			 char *mid_str = mid_to_string(cur_entry->id);
 	    			 DTNMP_DEBUG_ERR("ui_print_reports","Could not print MID %s", mid_str);
-	    			 MRELEASE(mid_str);
+	    			 SRELEASE(mid_str);
 	    		 }
 	    	 }
 	    	 printf("=================\n");
@@ -1309,9 +1309,9 @@ void netui_print_reports(agent_t* agent)
 	    	 printf("Efficiency: %.2f%%\n", (double)(((double)data_sizes)/((double)cur_report->size)) * (double)100.0);
 	    	 printf("-----------------\n\n\n");
 
-	    	 previousReportElt=lyst_prev(report_elt);
-	    	 lyst_delete(report_elt);
-	    	 report_elt=previousReportElt;
+	    	 //previousReportElt=lyst_prev(report_elt);
+	    	 //lyst_delete(report_elt);
+	    	 //report_elt=previousReportElt;
 	     }
 	 }
 }
@@ -1353,12 +1353,12 @@ void ui_run_tests()
 	fprintf(stderr,"Deserialized %d bytes into:\n", bytes);
 	str = oid_pretty_print(oid);
 	fprintf(stderr,"%s",str);
-	MRELEASE(str);
+	SRELEASE(str);
 
 	msg = oid_serialize(oid,&bytes);
 	fprintf(stderr,"Serialized %d bytes into ", bytes);
 	utils_print_hex(msg,bytes);
-	MRELEASE(msg);
+	SRELEASE(msg);
 	fprintf(stderr,"\n----------------------------------------\n");
 
 
@@ -1369,7 +1369,7 @@ void ui_run_tests()
 	mid_t *mid = mid_construct(0,0, NULL, NULL, oid);
 	msg = (unsigned char*)mid_to_string(mid);
 	fprintf(stderr,"Constructed mid: %s\n", msg);
-	MRELEASE(msg);
+	SRELEASE(msg);
 
 	msg = mid_serialize(mid, &bytes);
 	fprintf(stderr,"Serialized %d bytes into ", bytes);
@@ -1377,11 +1377,11 @@ void ui_run_tests()
 
 	uint32_t b2;
 	mid_t *mid2 = mid_deserialize(msg, bytes, &b2);
-	MRELEASE(msg);
+	SRELEASE(msg);
 	msg = (unsigned char *)mid_to_string(mid2);
 
 	fprintf(stderr,"Deserialized %d bytes into MID %s\n", b2, msg);
-	MRELEASE(msg);
+	SRELEASE(msg);
 	mid_release(mid2);
 	mid_release(mid);
 }
@@ -1430,39 +1430,42 @@ short netui_build_command(char** inBuffer,cmdFormat* cmdOutput,size_t bufSize)
 	char* tok_r;
 	unsigned char cmdIdx = 0;
 	char* retPtr = NULL;
-	char* inputBuffer=(char*)STAKE(1024);
-	cmdOutput->cmdChunks=(char**)STAKE(128*sizeof(char*));
-	memset(cmdOutput->cmdChunks,0,128*(sizeof(char*)));
+	char* inputBuffer=(char*)STAKE(D_INPUTBUFFERSIZE);
+	char* curTokEnd;
+	size_t tokSize;
+
+	cmdOutput->cmdChunks=(char**)STAKE(D_INPUTMAXCHUNKS*sizeof(char*));
+	memset(cmdOutput->cmdChunks,0,D_INPUTMAXCHUNKS*(sizeof(char*)));
 	//Copy string to internal storage
 	//strncpy(inputBuffer,buffer,bufSize);
-	char* curTokEnd = strpbrk(buffer,";");
+	curTokEnd = strpbrk(buffer,";");
+
 	if(curTokEnd!=NULL)
 	{
 		curTokEnd[0]='\0';
-
 		*inBuffer = curTokEnd+1;
-		DTNMP_DEBUG_INFO("build","%s",&curTokEnd[1]);
+
 	}
 	else
 	{
 		DTNMP_DEBUG_ERR("Netui_build_command","Invalid command",NULL);
 		return 0;
 	}
-	char* argPtr=strrchr(buffer,'=');
+	DTNMP_DEBUG_INFO("build","%s",buffer);
+	char* argPtr=strchr(buffer,'=');
 	if(argPtr!=NULL)
 	{
 		cmdOutput->arguments=(char*)STAKE(strlen(argPtr));
-
 		strcpy(cmdOutput->arguments,argPtr+1);
-		DTNMP_DEBUG_INFO("Netui_build_command","Copied arguments %s from %s ",cmdOutput->arguments,buffer);
+		DTNMP_DEBUG_INFO("Netui_build_command","Copied arguments: %s",cmdOutput->arguments);
 	}
 	//Find acting UID
 	cmdOutput->eid=strtok(buffer,"\\");
 
-	DTNMP_DEBUG_INFO("netui_build_command, found EID","%s",cmdOutput->eid)
+	//DTNMP_DEBUG_INFO("netui_build_command, found EID","%s",cmdOutput->eid)
 	if(cmdOutput->eid==NULL)
 	{
-		MRELEASE(inputBuffer);
+		SRELEASE(inputBuffer);
 		return 0;
 	}
 	inputBuffer=strtok(NULL,"\\=");
@@ -1470,21 +1473,21 @@ short netui_build_command(char** inBuffer,cmdFormat* cmdOutput,size_t bufSize)
 	for(;;inputBuffer=NULL)
 	{
 		curTok=strtok_r(inputBuffer,".",&tok_r);
-		DTNMP_DEBUG_INFO("netui_build_command","tokens: %s %s",inputBuffer,tok_r);
+
 		if(curTok==NULL)
 		{
 			if(cmdIdx>0)
 				break;
 			else
 			{
-				MRELEASE(inputBuffer);
+				SRELEASE(inputBuffer);
 				return 0;
 			}
 
 		}
 	//Now, do the parsing
 
-		size_t tokSize = strlen(curTok);
+		tokSize = strlen(curTok);
 		if(tokSize==0)
 		{
 			DTNMP_DEBUG_ERR("netui_build_command","Undefined string, continuing",NULL);
@@ -1500,7 +1503,7 @@ short netui_build_command(char** inBuffer,cmdFormat* cmdOutput,size_t bufSize)
 
 	}
 	cmdOutput->numChunks=cmdIdx-1;
-	MRELEASE(inputBuffer);
+	SRELEASE(inputBuffer);
 	return 1;
 }
 /******************************************************************************
@@ -1552,11 +1555,11 @@ void netui_free_cmdformat(cmdFormat* toFree)
 	for(x=0;x<=toFree->numChunks;x++)
 	{
 		if(toFree->cmdChunks[x]!=NULL)
-			MRELEASE(toFree->cmdChunks[x]);
+			SRELEASE(toFree->cmdChunks[x]);
 	}
 	if(toFree->arguments!=NULL)
-		MRELEASE(toFree->arguments);
-	MRELEASE(toFree);
+		SRELEASE(toFree->arguments);
+	SRELEASE(toFree);
 }
 /******************************************************************************
  *
@@ -1980,7 +1983,7 @@ char** netui_parse_arguments(char* argString,uint8_t* numArgsOut)
 	char* curArg;
 	char* arg_r;
 	char* cursor;
-	char** allArgs=(char**)STAKE(500*sizeof(char*));
+	char** allArgs=(char**)STAKE(D_INPUTMAXCHUNKS*sizeof(char*));
 	unsigned int numArgs=0;
 
 	cursor=argString;
@@ -2133,16 +2136,16 @@ datalist_t netui_parse_datalist(char* dlText)
 		if(datalist_insert_with_type(&outDl,type,value,valueSize)==DLIST_INVALID)
 		{
 			DTNMP_DEBUG_ERR("netui_parse_argument","Failed to insert, exiting",NULL);
-			MRELEASE(value);
+			SRELEASE(value);
 
 			break;
 		}
 		//Free stuff
-		MRELEASE(value);
+		SRELEASE(value);
 
 	}
-	MRELEASE(valueTxt);
-	MRELEASE(typeTxt);
+	SRELEASE(valueTxt);
+	SRELEASE(typeTxt);
 
 	return outDl;
 }

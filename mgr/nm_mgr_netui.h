@@ -48,6 +48,8 @@
 #define NETUI_DEF_ACTION(name,func) {if(strcasecmp(curChunk,name)==0) {func;}};
 #define NETUI_END_SECTION() }
 
+#define D_INPUTMAXCHUNKS 128
+#define D_INPUTBUFFERSIZE 1024
 extern int gContext;
 
 typedef enum

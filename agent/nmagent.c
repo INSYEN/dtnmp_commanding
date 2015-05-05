@@ -144,7 +144,7 @@ int  agent_db_ctrl_persist(ctrl_exec_t* item)
 				            &(item->desc), sizeof(ctrl_exec_desc_t), &(item->desc.descObj),
 				            gAgentDB.ctrls);
 
-		MRELEASE(data);
+		SRELEASE(data);
 		if(result != 1)
 		{
 			DTNMP_DEBUG_ERR("agent_db_ctrl_persist","Unable to persist def.",NULL);
@@ -318,7 +318,7 @@ int  agent_db_report_persist(def_gen_t* item)
 				            &(item->desc), sizeof(def_gen_desc_t), &(item->desc.descObj),
 				            gAgentDB.reports);
 
-		MRELEASE(data);
+		SRELEASE(data);
 		if(result != 1)
 		{
 			DTNMP_DEBUG_ERR("agent_db_report_persist","Unable to persist def.",NULL);
@@ -400,7 +400,7 @@ int  agent_db_rule_persist(rule_time_prod_t *item)
 				            &(item->desc), sizeof(rule_time_prod_desc_t), &(item->desc.descObj),
 				            gAgentDB.rules);
 
-		MRELEASE(data);
+		SRELEASE(data);
 		if(result != 1)
 		{
 			DTNMP_DEBUG_ERR("agent_db_rule_persist","Unable to persist def.",NULL);
@@ -535,7 +535,7 @@ void agent_vdb_ctrls_init(Sdr sdr)
 			}
 
 			/* Step 1.8: Release the serialized item. */
-			MRELEASE(data);
+			SRELEASE(data);
 
 			/* Step 1.9: Note that we have another control. */
 			num++;
@@ -592,7 +592,7 @@ void agent_register()
     {
     	DTNMP_DEBUG_ERR("agent_register","Unable to create PDU message.", NULL);
     	msg_release_reg_agent(reg);
-    	MRELEASE(data);
+    	SRELEASE(data);
     	return;
     }
 
@@ -601,7 +601,7 @@ void agent_register()
     {
     	DTNMP_DEBUG_ERR("agent_register","Unable to create PDU message.", NULL);
     	msg_release_reg_agent(reg);
-    	MRELEASE(data);
+    	SRELEASE(data);
     	pdu_release_msg(pdu_msg);
     	return;
     }
@@ -803,7 +803,7 @@ void agent_vdb_reports_init(Sdr sdr)
 			}
 
 			/* Step 1.8: Release serialized rpt, we don't need it. */
-			MRELEASE(data);
+			SRELEASE(data);
 		}
 	}
 	sdr_end_xn(sdr);
@@ -884,7 +884,7 @@ void agent_vdb_rules_init(Sdr sdr)
 			}
 
 			/* Step 1.8: Release serialized rule, we don't need it. */
-			MRELEASE(data);
+			SRELEASE(data);
 		}
 	}
 
@@ -980,7 +980,7 @@ int main(int argc, char *argv[])
 
         DTNMP_DEBUG_ERR("agent_main","Unable to initialize VDB, errno = %s",
         		        strerror(errno));
-       // MRELEASE(ion_ptr);
+       // SRELEASE(ion_ptr);
     	DTNMP_DEBUG_EXIT("agent_main","->-1",NULL);
     	return -1;
     }

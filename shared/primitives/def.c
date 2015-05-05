@@ -166,7 +166,7 @@ void def_release_gen(def_gen_t *def)
 			midcol_destroy(&(def->contents));
 		}
 
-		MRELEASE(def);
+		SRELEASE(def);
 	}
 
 	DTNMP_DEBUG_EXIT("def_release_gen","->.",NULL);
@@ -309,8 +309,8 @@ void def_print_gen(def_gen_t *def)
 	fprintf(stderr,"Definition:\n----------ID:\n%s\n\nMC:\n%s\n\n----------",
 			id_str, mc_str);
 
-	MRELEASE(id_str);
-	MRELEASE(mc_str);
+	SRELEASE(id_str);
+	SRELEASE(mc_str);
 }
 
 

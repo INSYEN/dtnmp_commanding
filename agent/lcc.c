@@ -134,7 +134,7 @@ int lcc_run_ctrl_mid(mid_t *id)
     	result = -1;
     }
 
-    MRELEASE(msg);
+    SRELEASE(msg);
 
     nesting--;
     DTNMP_DEBUG_EXIT("lcc_run_ctrl_mid","-> %d", result);

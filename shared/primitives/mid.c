@@ -127,7 +127,7 @@ void mid_clear(mid_t *mid)
 
     if(mid->raw != NULL)
     {
-        MRELEASE(mid->raw);
+        SRELEASE(mid->raw);
         mid->raw = NULL;
     }
 
@@ -280,7 +280,7 @@ mid_t *mid_construct(uint8_t type, uint8_t cat,
 	{
 		DTNMP_DEBUG_ERR("mid_construct","Failed to copy OID.",NULL);
 
-		MRELEASE(mid);
+		SRELEASE(mid);
 		DTNMP_DEBUG_EXIT("mid_construct","->NULL",NULL);
 		return NULL;
 	}
@@ -357,8 +357,8 @@ mid_t *mid_copy(mid_t *src_mid)
         DTNMP_DEBUG_ERR("mid_copy","Can't allocate %d bytes",
         		        src_mid->raw_size);
 
-        MRELEASE(result->oid);
-        MRELEASE(result);
+        SRELEASE(result->oid);
+        SRELEASE(result);
 
         DTNMP_DEBUG_EXIT("mid_copy","->NULL",NULL);
         return NULL;
@@ -632,7 +632,7 @@ int mid_internal_serialize(mid_t *mid)
 	/* Step 2: If there is a serialized version of the MID already, wipe it.*/
 	if(mid->raw != NULL)
 	{
-		MRELEASE(mid->raw);
+		SRELEASE(mid->raw);
 		mid->raw = NULL;
 	}
 	mid->raw_size = 0;
@@ -664,7 +664,7 @@ int mid_internal_serialize(mid_t *mid)
 		DTNMP_DEBUG_ERR("mid_internal_serialize","Can't alloc %d bytes.",
 				        mid->raw_size);
 		mid->raw_size = 0;
-		MRELEASE(oid_val);
+		SRELEASE(oid_val);
 
 		DTNMP_DEBUG_EXIT("mid_internal_serialize","->0",NULL);
 		return 0;
@@ -700,9 +700,9 @@ int mid_internal_serialize(mid_t *mid)
 		DTNMP_DEBUG_ERR("mid_internal_serialize","Copied %d bytes, expected %d bytes.",
 				        (cursor - mid->raw), mid->raw_size);
 		mid->raw_size = 0;
-		MRELEASE(mid->raw);
+		SRELEASE(mid->raw);
 		mid->raw = NULL;
-		MRELEASE(oid_val);
+		SRELEASE(oid_val);
 
 		DTNMP_DEBUG_EXIT("mid_internal_serialize","->0",NULL);
 		return 0;
@@ -800,7 +800,7 @@ char *mid_pretty_print(mid_t *mid)
 		{
 			DTNMP_DEBUG_ERR("mid_pretty_print","Can't alloc %d bytes for RAW.",
 						    raw_size);
-			MRELEASE(oid_str);
+			SRELEASE(oid_str);
 
 			DTNMP_DEBUG_EXIT("mid_pretty_print","->NULL.",NULL);
 			return NULL;
@@ -833,8 +833,8 @@ char *mid_pretty_print(mid_t *mid)
 	{
 		DTNMP_DEBUG_ERR("mid_pretty_print", "Can't alloc %d bytes.", size);
 
-		MRELEASE(oid_str);
-		MRELEASE(raw_str);
+		SRELEASE(oid_str);
+		SRELEASE(raw_str);
 
 		DTNMP_DEBUG_EXIT("mid_pretty_print","->NULL",NULL);
 		return NULL;
@@ -877,7 +877,7 @@ char *mid_pretty_print(mid_t *mid)
 	}
 
 	cursor += sprintf(cursor,"OID : %s", oid_str);
-	MRELEASE(oid_str);
+	SRELEASE(oid_str);
 
 	if(MID_GET_FLAG_TAG(mid->flags))
 	{
@@ -889,14 +889,14 @@ char *mid_pretty_print(mid_t *mid)
 	}
 
 	cursor += sprintf(cursor,"RAW : %s", raw_str);
-	MRELEASE(raw_str);
+	SRELEASE(raw_str);
 
 	/* Step 6: Sanity check. */
 	if((cursor - result) > size)
 	{
 		DTNMP_DEBUG_ERR("mid_pretty_print", "OVERWROTE! Alloc %d, wrote %llu.",
 				        size, (cursor-result));
-		MRELEASE(result);
+		SRELEASE(result);
 		DTNMP_DEBUG_EXIT("mid_pretty_print","->NULL",NULL);
 		return NULL;
 	}
@@ -934,7 +934,7 @@ void mid_release(mid_t *mid)
     if(mid != NULL)
     {
         mid_clear(mid);
-        MRELEASE(mid);
+        SRELEASE(mid);
         mid = NULL;
     }
 
@@ -1441,9 +1441,9 @@ char *midcol_pretty_print(Lyst mc)
 				        tot_size);
 		for(i = 0; i < num_items; i++)
 		{
-			MRELEASE(mid_strs[i]);
+			SRELEASE(mid_strs[i]);
 		}
-		MRELEASE(mid_strs);
+		SRELEASE(mid_strs);
 
 		DTNMP_DEBUG_EXIT("midcol_pretty_print","->NULL",NULL);
 		return NULL;
@@ -1458,17 +1458,17 @@ char *midcol_pretty_print(Lyst mc)
 	for(i = 0; i < num_items; i++)
 	{
 		cursor += sprintf(cursor,"%s\n",mid_strs[i]);
-		MRELEASE(mid_strs[i]);
+		SRELEASE(mid_strs[i]);
 	}
 	cursor += sprintf(cursor,"--------------\n");
-	MRELEASE(mid_strs);
+	SRELEASE(mid_strs);
 
 	/* Step 5: Sanity check. */
 	if((cursor - result) > tot_size)
 	{
 		DTNMP_DEBUG_ERR("midcol_pretty_print", "OVERWROTE! Alloc %d, wrote %llu.",
 				tot_size, (cursor-result));
-		MRELEASE(result);
+		SRELEASE(result);
 		DTNMP_DEBUG_EXIT("mid_pretty_print","->NULL",NULL);
 		return NULL;
 	}
@@ -1561,9 +1561,9 @@ char *midcol_to_string(Lyst mc)
 				        tot_size);
 		for(i = 0; i < num_items; i++)
 		{
-			MRELEASE(mid_strs[i]);
+			SRELEASE(mid_strs[i]);
 		}
-		MRELEASE(mid_strs);
+		SRELEASE(mid_strs);
 
 		DTNMP_DEBUG_EXIT("midcol_to_string","->NULL",NULL);
 		return NULL;
@@ -1578,17 +1578,17 @@ char *midcol_to_string(Lyst mc)
 	for(i = 0; i < num_items; i++)
 	{
 		cursor += sprintf(cursor,"%s ",mid_strs[i]);
-		MRELEASE(mid_strs[i]);
+		SRELEASE(mid_strs[i]);
 	}
 	cursor += sprintf(cursor,".\n");
-	MRELEASE(mid_strs);
+	SRELEASE(mid_strs);
 
 	/* Step 5: Sanity check. */
 	if((cursor - result) > tot_size)
 	{
 		DTNMP_DEBUG_ERR("midcol_to_string", "OVERWROTE! Alloc %d, wrote %llu.",
 				tot_size, (cursor-result));
-		MRELEASE(result);
+		SRELEASE(result);
 		DTNMP_DEBUG_EXIT("mid_to_string","->NULL",NULL);
 		return NULL;
 	}
@@ -1717,7 +1717,7 @@ uint8_t *midcol_serialize(Lyst mids, uint32_t *size)
 		DTNMP_DEBUG_ERR("midcol_serialize","Wrote %d bytes not %d bytes",
 				        (cursor - result), *size);
 		*size = 0;
-		MRELEASE(result);
+		SRELEASE(result);
 		DTNMP_DEBUG_EXIT("midcol_serialize","->NULL",NULL);
 		return NULL;
     }

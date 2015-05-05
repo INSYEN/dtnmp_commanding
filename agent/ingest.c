@@ -110,7 +110,7 @@ int rx_validate_mid_mc(Lyst mids, int passEmpty)
         if(mid_sanity_check(cur_mid) == 0)
         {
             DTNMP_DEBUG_ERR("rx_validate_mid_mc","Malformed MID: %s.", mid_str);
-            MRELEASE(mid_str);
+            SRELEASE(mid_str);
             DTNMP_DEBUG_EXIT("rx_validate_mid_mc","-> 0", NULL);
             return 0;
         }
@@ -120,14 +120,14 @@ int rx_validate_mid_mc(Lyst mids, int passEmpty)
            (def_find_by_id(gAgentVDB.reports, &(gAgentVDB.reports_mutex), cur_mid) == NULL))
         {
             DTNMP_DEBUG_ERR("rx_validate_mid_mc","Unknown MID %s.", mid_str);
-            MRELEASE(mid_str);
+            SRELEASE(mid_str);
             DTNMP_DEBUG_EXIT("rx_validate_mid_mc","-> 0", NULL);
             return 0;
         }
 
         DTNMP_DEBUG_INFO("rx_validate_mid_mc","MID %s is recognized.", mid_str);
 
-        MRELEASE(mid_str);
+        SRELEASE(mid_str);
     }
 
 
@@ -164,7 +164,7 @@ int rx_validate_mid_mc(Lyst mids, int passEmpty)
 int rx_validate_rule(rule_time_prod_t *rule)
 {
     int result = 1;
-    
+
     DTNMP_DEBUG_ENTRY("rx_validate_rule","(0x%x)", (unsigned long) rule);
 
     /* Step 0: Sanity Check. */
@@ -224,11 +224,11 @@ int rx_validate_rule(rule_time_prod_t *rule)
  *****************************************************************************/
 
 void *rx_thread(void *threadId) {
-   
+
     DTNMP_DEBUG_ENTRY("rx_thread","(0x%x)",(unsigned long) threadId);
-    
+
     DTNMP_DEBUG_INFO("rx_thread","Receiver thread running...", NULL);
-    
+
     uint32_t num_msgs = 0;
     uint8_t *buf = NULL;
     uint8_t *cursor = NULL;
@@ -241,12 +241,12 @@ void *rx_thread(void *threadId) {
     uvast val = 0;
     time_t group_timestamp = 0;
 
-    /* 
+    /*
      * g_running controls the overall execution of threads in the
      * NM Agent.
      */
     while(g_running) {
-        
+
         /* Step 1: Receive a message from the Bundle Protocol Agent. */
         buf = iif_receive(&ion_ptr, &size, &meta, NM_RECEIVE_TIMEOUT_SEC);
 
@@ -286,7 +286,7 @@ void *rx_thread(void *threadId) {
                 		rx_handle_time_prod(&meta, cursor,size,&bytes);
                 	}
                 	break;
-                
+
                 	case MSG_TYPE_DEF_CUST_RPT:
                 	{
                 		DTNMP_DEBUG_ALWAYS("NM Agent :","Received Custom Report Definition.\n", NULL);
@@ -323,7 +323,7 @@ void *rx_thread(void *threadId) {
             }
         }
     }
-   
+
     DTNMP_DEBUG_ALWAYS("rx_thread","Shutting Down Agent Receive Thread.",NULL);
     DTNMP_DEBUG_EXIT("rx_thread","->.", NULL);
     pthread_exit(NULL);

@@ -522,7 +522,7 @@ datacol_entry_t *db_fetch_data_col_entry_from_row(MYSQL_ROW row)
 		DTNMP_DEBUG_ERR("db_fetch_data_col_entry_from_row",
 				        "value : %lu",result->value);
 
-		MRELEASE(result);
+		SRELEASE(result);
 
 		DTNMP_DEBUG_EXIT("db_fetch_data_col_entry_from_row", "-->NULL", NULL);
 		return NULL;
@@ -712,7 +712,7 @@ mid_t *db_fetch_mid(int id)
 	{
 		char *data = mid_pretty_print(result);
 		DTNMP_DEBUG_ERR("db_fetch_mid", "Failed MID sanity check. %s", data);
-		MRELEASE(data);
+		SRELEASE(data);
 		mid_release(result);
 		result = NULL;
 	}
@@ -973,7 +973,7 @@ oid_t *db_fetch_oid_full(int mid_id, char *oid_root)
 		DTNMP_DEBUG_ERR("db_fetch_oid_full","Cannot deserialize oid",NULL);
 	}
 
-	MRELEASE(data);
+	SRELEASE(data);
 
 	DTNMP_DEBUG_EXIT("db_fetch_oid_full","-->%llu",(unsigned long) result);
 	return result;
@@ -1029,7 +1029,7 @@ oid_t *db_fetch_oid_parms(int mid_id, char* oid_root)
 	if ((data = (uint8_t *) STAKE(size)) == NULL)
 	{
 		DTNMP_DEBUG_ERR("db_fetch_oid_parms", "Can't allocate data of size %d", size);
-		MRELEASE(parms);
+		SRELEASE(parms);
 		return NULL;
 	}
 
@@ -1043,14 +1043,14 @@ oid_t *db_fetch_oid_parms(int mid_id, char* oid_root)
 	if(root_data == NULL)
 	{
 		DTNMP_DEBUG_ERR("db_fetch_oid_parms","Can't convert %s to hex.", oid_root);
-		MRELEASE(data);
-		MRELEASE(parms);
+		SRELEASE(data);
+		SRELEASE(parms);
 		return NULL;
 	}
 
 	memcpy(cursor, root_data, root_size);
 	cursor += root_size;
-	MRELEASE(root_data);
+	SRELEASE(root_data);
 
 	memcpy(cursor, parms, parms_size);
 	cursor += parms_size;
@@ -1062,8 +1062,8 @@ oid_t *db_fetch_oid_parms(int mid_id, char* oid_root)
 	}
 
 	/* Step 5: Release stuff. */
-	MRELEASE(data);
-	MRELEASE(parms);
+	SRELEASE(data);
+	SRELEASE(parms);
 
 	DTNMP_DEBUG_EXIT("db_fetch_oid_parms","-->%llu",(unsigned long) result);
 	return result;
@@ -1649,7 +1649,7 @@ int db_incoming_process_message(int id, uint8_t *cursor, uint32_t size)
 	{
 		DTNMP_DEBUG_ERR("db_incoming_process_message","Can't alloc %d bytes.",
 				        result_size + 256);
-		MRELEASE(result_data);
+		SRELEASE(result_data);
 
 		DTNMP_DEBUG_EXIT("db_incoming_process_message", "-->0", NULL);
 		return 0;
@@ -1661,19 +1661,19 @@ int db_incoming_process_message(int id, uint8_t *cursor, uint32_t size)
 	 */
 	sprintf(query,"INSERT INTO dbtIncomingMessages(IncomingID,Content)"
 			       "VALUES(%d,'%s')",id, result_data+2);
-	MRELEASE(result_data);
+	SRELEASE(result_data);
 
 	if (mysql_query(gConn, query))
 	{
 		DTNMP_DEBUG_ERR("db_incoming_process_message", "Database Error: %s",
 				mysql_error(gConn));
-		MRELEASE(query);
+		SRELEASE(query);
 
 		DTNMP_DEBUG_EXIT("db_incoming_process_message", "-->0", NULL);
 		return 0;
 	}
 
-	MRELEASE(query);
+	SRELEASE(query);
 	DTNMP_DEBUG_EXIT("db_incoming_process_message", "-->1", NULL);
 	return 1;
 }
@@ -1903,12 +1903,12 @@ void db_mgt_verify_mids()
 		if(oid_str != NULL)
 		{
 			uint32_t idx = db_add_mid(attr,flags,issuer,&(oid_str[2]),tag,0,0,admData->name,0);
-			MRELEASE(oid_str);
+			SRELEASE(oid_str);
 		}
 		else
 		{
 			DTNMP_DEBUG_ERR("db_mgt_verify_mids", "%s", oid_str);
-			MRELEASE(oid_str);
+			SRELEASE(oid_str);
 		}
 	}
 

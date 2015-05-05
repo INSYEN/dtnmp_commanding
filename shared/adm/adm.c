@@ -178,7 +178,7 @@ void adm_add_datadef_collect(uint8_t *mid_str, adm_data_collect_fn collect)
 	{
 		char *tmp = utils_hex_to_string(mid_str, ADM_MID_ALLOC);
 		DTNMP_DEBUG_ERR("adm_add_datadef_collect","Can't deserialize MID str %s.",tmp);
-		MRELEASE(tmp);
+		SRELEASE(tmp);
 
 		DTNMP_DEBUG_EXIT("adm_add_datadef_collect","->.", NULL);
 		return;
@@ -188,7 +188,7 @@ void adm_add_datadef_collect(uint8_t *mid_str, adm_data_collect_fn collect)
 	{
 		char *tmp = mid_to_string(mid);
 		DTNMP_DEBUG_ERR("adm_add_datadef_collect","Can't find data for MID %s.", tmp);
-		MRELEASE(tmp);
+		SRELEASE(tmp);
 	}
 	else
 	{
@@ -319,7 +319,7 @@ void adm_add_ctrl_run(uint8_t *mid_str, adm_ctrl_fn run)
 	{
 		char *tmp = utils_hex_to_string(mid_str, ADM_MID_ALLOC);
 		DTNMP_DEBUG_ERR("adm_add_ctrl_run","Can't deserialized MID %s", tmp);
-		MRELEASE(tmp);
+		SRELEASE(tmp);
 		DTNMP_DEBUG_EXIT("adm_add_ctrl_run","->.",NULL);
 		return;
 	}
@@ -328,7 +328,7 @@ void adm_add_ctrl_run(uint8_t *mid_str, adm_ctrl_fn run)
 	{
 		char *tmp = mid_to_string(mid);
 		DTNMP_DEBUG_ERR("adm_add_ctrl_run","Can't find control for MID %s", tmp);
-		MRELEASE(tmp);
+		SRELEASE(tmp);
 	}
 	else
 	{
@@ -388,7 +388,7 @@ void adm_build_mid_str(uint8_t flag, char *nn, int nn_len, int offset, uint8_t *
 						size,
 						ADM_MID_ALLOC);
 		DTNMP_DEBUG_EXIT("adm_build_mid_str","->.", NULL);
-		MRELEASE(tmp);
+		SRELEASE(tmp);
 		return;
 	}
 
@@ -409,7 +409,7 @@ void adm_build_mid_str(uint8_t flag, char *nn, int nn_len, int offset, uint8_t *
 	memset(cursor, 0, 1); // NULL terminator.
 
 	DTNMP_DEBUG_EXIT("adm_build_mid_str","->%s", mid_str);
-	MRELEASE(tmp);
+	SRELEASE(tmp);
 	return;
 }
 
@@ -513,7 +513,7 @@ void adm_destroy()
    {
 	   adm_datadef_t *cur = (adm_datadef_t *) lyst_data(elt);
 	   mid_release(cur->mid);
-	   MRELEASE(cur);
+	   SRELEASE(cur);
    }
    lyst_destroy(gAdmData);
    gAdmData = NULL;
@@ -522,7 +522,7 @@ void adm_destroy()
    {
 	   adm_ctrl_t *cur = (adm_ctrl_t *) lyst_data(elt);
 	   mid_release(cur->mid);
-	   MRELEASE(cur);
+	   SRELEASE(cur);
    }
    lyst_destroy(gAdmCtrls);
    gAdmCtrls = NULL;
@@ -762,8 +762,8 @@ adm_ctrl_t*  adm_find_ctrl(mid_t *mid)
 
 		char *tmp1 = mid_to_string(mid);
 		char *tmp2 = mid_to_string(cur->mid);
-		MRELEASE(tmp1);
-		MRELEASE(tmp2);
+		SRELEASE(tmp1);
+		SRELEASE(tmp2);
 
 		if (mid_compare(mid, cur->mid, 0) == 0)
 		{

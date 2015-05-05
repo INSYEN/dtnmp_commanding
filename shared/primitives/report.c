@@ -245,7 +245,7 @@ void rpt_release_lst(rpt_items_t *msg)
 		{
 			midcol_destroy(&(msg->contents));
 		}
-		MRELEASE(msg);
+		SRELEASE(msg);
 	}
 
 	DTNMP_DEBUG_EXIT("rpt_release_lst","->.",NULL);
@@ -263,7 +263,7 @@ void rpt_release_defs(rpt_defs_t *msg)
 			midcol_destroy(&(msg->defs));
 		}
 
-		MRELEASE(msg);
+		SRELEASE(msg);
 	}
 
 	DTNMP_DEBUG_EXIT("rpt_release_defs","->.",NULL);
@@ -273,9 +273,9 @@ void rpt_release_data_entry(rpt_data_entry_t *entry)
 {
 	if(entry != NULL)
 	{
-		MRELEASE(entry->contents);
+		SRELEASE(entry->contents);
 		mid_release(entry->id);
-		MRELEASE(entry);
+		SRELEASE(entry);
 	}
 
 }
@@ -302,7 +302,7 @@ void rpt_release_data(rpt_data_t *msg)
 
 		lyst_destroy(msg->reports);
 
-		MRELEASE(msg);
+		SRELEASE(msg);
 	}
 
 	DTNMP_DEBUG_EXIT("rpt_release_data","->.",NULL);
@@ -332,7 +332,7 @@ void rpt_release_prod(rpt_prod_t *msg)
 
 		lyst_destroy(msg->defs);
 
-		MRELEASE(msg);
+		SRELEASE(msg);
 	}
 
 	DTNMP_DEBUG_EXIT("rpt_release_prod","->.",NULL);
@@ -350,7 +350,7 @@ void rpt_print_data_entry(rpt_data_entry_t *entry)
 
 	id_str = mid_pretty_print(entry->id);
 	fprintf(stderr,"DATA ENTRY:\n%s\n", id_str);
-	MRELEASE(id_str);
+	SRELEASE(id_str);
 
 	fprintf(stderr,"SIZE: %d\n", (uint32_t)entry->size);
 	utils_print_hex(entry->contents, entry->size);

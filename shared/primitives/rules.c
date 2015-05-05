@@ -134,7 +134,7 @@ void rule_release_time_prod_entry(rule_time_prod_t *msg)
 	if(msg != NULL)
 	{
 		midcol_destroy(&(msg->mids));
-		MRELEASE(msg);
+		SRELEASE(msg);
 	}
 }
 
@@ -149,7 +149,7 @@ void ctrl_release_exec(ctrl_exec_t *msg)
 	if(msg != NULL)
 	{
 		midcol_destroy(&(msg->contents));
-		MRELEASE(msg);
+		SRELEASE(msg);
 	}
 }
 

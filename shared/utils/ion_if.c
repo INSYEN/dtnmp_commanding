@@ -252,7 +252,7 @@ uint8_t *iif_receive(iif_t *iif, uint32_t *size, pdu_metadata_t *meta, int timeo
     if(sdr_end_xn(sdr) < 0 || dataLength < 0)
     {
         DTNMP_DEBUG_ERR("iif_receive", "Unable to process received bundle.", NULL);
-        MRELEASE(buffer);
+        SRELEASE(buffer);
 
         DTNMP_DEBUG_EXIT("iif_receive","-> NULL", NULL);
         return NULL;
@@ -377,7 +377,7 @@ uint8_t iif_send(iif_t *iif, pdu_group_t *group, char *recipient)
 
     if(len == 0)
     {
-    	MRELEASE(data);
+    	SRELEASE(data);
     	DTNMP_DEBUG_ERR("iif_send","Bad message of length 0.", NULL);
     	DTNMP_DEBUG_EXIT("iif_send", "->0.", NULL);
     	return 0;
@@ -436,13 +436,13 @@ uint8_t iif_send(iif_t *iif, pdu_group_t *group, char *recipient)
 				)) != 1)
     {
         DTNMP_DEBUG_ERR("iif_send","Send failed (%d).", res);
-        MRELEASE(data);
+        SRELEASE(data);
         DTNMP_DEBUG_EXIT("iif_send", "->0.", NULL);
     	return 0;
 
     }
 
-    MRELEASE(data);
+    SRELEASE(data);
     DTNMP_DEBUG_EXIT("iif_send", "->1.", NULL);
     return 1;
 }

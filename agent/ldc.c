@@ -110,7 +110,7 @@ int ldc_fill_report_data(mid_t *id, rpt_data_entry_t *entry)
     	result = -1;
     }
 
-    MRELEASE(msg);
+    SRELEASE(msg);
     DTNMP_DEBUG_EXIT("ldc_fill_report_data","-> %d", result);
     return result;
 }
@@ -340,8 +340,8 @@ int ldc_fill_atomic(adm_datadef_t *adm_def, mid_t *id, rpt_data_entry_t *rpt)
     if((rpt->size == 0) || (rpt->contents == NULL))
     {
         DTNMP_DEBUG_ERR("ldc_fill_atomic","Unable to collect data.", NULL);
-        MRELEASE(rpt->id);
-        MRELEASE(rpt->contents);
+        SRELEASE(rpt->id);
+        SRELEASE(rpt->contents);
         DTNMP_DEBUG_EXIT("ldc_fill_atomic","-> -1.", NULL);
         return -1;
     }

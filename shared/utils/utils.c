@@ -274,7 +274,7 @@ Lyst utils_datacol_copy(Lyst col)
 		{
 			DTNMP_DEBUG_ERR("utils_datacol_copy","Failed to alloc %d bytes.",
 					        new_entry->length);
-			MRELEASE(new_entry);
+			SRELEASE(new_entry);
 			utils_datacol_destroy(&result);
 
 			DTNMP_DEBUG_EXIT("utils_datacol_copy","->NULL.",NULL);
@@ -383,7 +383,7 @@ Lyst utils_datacol_deserialize(uint8_t* buffer, uint32_t buffer_size, uint32_t *
 		if((bytes = utils_grab_sdnv(cursor, buffer_size, &len)) == 0)
 		{
 			DTNMP_DEBUG_ERR("utils_datacol_deserialize","Can't parse SDNV.", NULL);
-			MRELEASE(entry);
+			SRELEASE(entry);
 			utils_datacol_destroy(&result);
 
 			DTNMP_DEBUG_EXIT("utils_datacol_deserialize","->NULL",NULL);
@@ -399,7 +399,7 @@ Lyst utils_datacol_deserialize(uint8_t* buffer, uint32_t buffer_size, uint32_t *
 		if((entry->value = (uint8_t*)STAKE(entry->length)) == NULL)
 		{
 			DTNMP_DEBUG_ERR("utils_datacol_deserialize","Can't parse SDNV.", NULL);
-			MRELEASE(entry);
+			SRELEASE(entry);
 			utils_datacol_destroy(&result);
 
 			DTNMP_DEBUG_EXIT("utils_datacol_deserialize","->NULL",NULL);
@@ -465,8 +465,9 @@ void utils_datacol_destroy(Lyst *datacol)
 
     	if(entry != NULL)
     	{
-    		MRELEASE(entry->value);
-    		MRELEASE(entry);
+    		if (entry->value!=NULL)
+				SRELEASE(entry->value);
+    		SRELEASE(entry);
     	}
     }
 
@@ -590,7 +591,7 @@ uint8_t *utils_datacol_serialize(Lyst datacol, uint32_t *size)
 		DTNMP_DEBUG_ERR("utils_datacol_serialize","Wrote %d bytes not %d bytes",
 				        (cursor - result), *size);
 		*size = 0;
-		MRELEASE(result);
+		SRELEASE(result);
 		DTNMP_DEBUG_EXIT("utils_datacol_serialize","->NULL",NULL);
 		return NULL;
     }
@@ -894,7 +895,7 @@ uint8_t *utils_string_to_hex(unsigned char *value, uint32_t *size)
 		if(success == 0)
 		{
 			DTNMP_DEBUG_ERR("utils_string_to_hex","Can't AtoX %s.", tmp_s);
-			MRELEASE(result);
+			SRELEASE(result);
 			*size = 0;
 
 			DTNMP_DEBUG_EXIT("utils_string_to_hex", "->NULL.", NULL);
