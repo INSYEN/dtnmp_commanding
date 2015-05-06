@@ -31,7 +31,7 @@
 #include "shared/primitives/mid.h"
 #include "shared/primitives/rules.h"
 #include "shared/primitives/instr.h"
-
+#include "shared/utils/utils.h"
 #include "nmagent.h"
 #include "lcc.h"
 

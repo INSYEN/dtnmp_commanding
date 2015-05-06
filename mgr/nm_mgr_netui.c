@@ -341,6 +341,8 @@ void netui_construct_time_rule_by_idx(agent_t* agent,cmdFormat* curCmd)
 	pdu_release_group(pdu_group);
 	rule_release_time_prod_entry(entry);
 
+	SRELEASE(args);
+
 	DTNMP_DEBUG_EXIT("ui_construct_time_rule_by_idx","->.", NULL);
 }
 
@@ -542,7 +544,7 @@ void ui_eventLoop()
 	}
 	//Fix sigpipe behavior
 	signal(SIGPIPE,SIG_IGN); //Danke.
-
+	reUseAddress(conSock);
 
 	while(g_running)
 	{
@@ -561,6 +563,7 @@ void ui_eventLoop()
 				DTNMP_DEBUG_INFO("ui_eventloop","connected",NULL);
 				struct timeval tv={0.2,0};
 				setsockopt(dataSock,SOL_SOCKET,SO_RCVTIMEO,(char *)&tv,sizeof(struct timeval));
+				reUseAddress(dataSock);
 			}
 		}
 
@@ -605,6 +608,7 @@ void ui_eventLoop()
 
 				//Free memory
 				SRELEASE(curEntry->value);
+				SRELEASE(curEntry->name);
 				SRELEASE(curEntry);
 
 				lastElt = lyst_prev(elt);
@@ -1740,8 +1744,8 @@ void netui_define_raw_mid_params(char *name, char* arguments,int num_parms, mid_
 		//If the string is opened with a {, then its an array... We don't really care (we pass it as a single string), except in the cases where it is an array of datalists
 		if(strspn(allArgs[i],"{[")==2)
 		{
-			DTNMP_DEBUG_INFO("netui_define_mid_params","In datalist processor",NULL);
-			char* arrayReentry;
+			DTNMP_DEBUG_INFO("netui_define_raw_mid_params","In datalist processor",NULL);
+			//char* arrayReentry;
 			Lyst dlDatacol = lyst_create();
 			datacol_entry_t* datacolEntry;
 			uint8_t numDatalists;
@@ -1749,7 +1753,7 @@ void netui_define_raw_mid_params(char *name, char* arguments,int num_parms, mid_
 
 			if(arrayStart==NULL)
 			{
-				DTNMP_DEBUG_ERR("BLAH","Couldn't find array start",NULL);
+				DTNMP_DEBUG_ERR("netui_define_raw_mid_params","Couldn't find array start",NULL);
 				lyst_destroy(dlDatacol);
 				break; //Keep going with what we have
 			}
@@ -1757,7 +1761,7 @@ void netui_define_raw_mid_params(char *name, char* arguments,int num_parms, mid_
 			char* arrayEnd = strchr(arrayStart,'}');
 			if(arrayEnd==NULL)
 			{
-				DTNMP_DEBUG_ERR("BLAH","Couldn't find array end %s",arrayStart);
+				DTNMP_DEBUG_ERR("netui_define_raw_mid_params","Couldn't find array end %s",arrayStart);
 				lyst_destroy(dlDatacol);
 				break; //Keep going with what we have
 			}

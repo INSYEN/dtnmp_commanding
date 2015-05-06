@@ -85,7 +85,7 @@ typedef struct {
  * +--------------------------------------------------------------------------+
  */
 extern sem_t* memSema;
- #define STAKE(size) malloc(size)
+ #define STAKE(size) acquireSystemMemory(size)
  #define SRELEASE(ptr) free(ptr)
 void* safe_psm_ion_alloc(char* file, int line, size_t size,sem_t* sema);
 void safe_psm_ion_free(char* file, int line, void* ptr,sem_t* sema);

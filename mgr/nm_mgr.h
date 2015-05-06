@@ -164,6 +164,6 @@ void     mgr_agent_remove_cb(LystElt elt, void *nil);
 int      mgr_cleanup();
 int      mgr_init(char *argv[]);
 void*    mgr_rx_thread(void* threadId);
-
+void variable_queue_clear(Lyst variableQueue,ResourceLock* mutex);
 
 #endif // NM_MGR_H

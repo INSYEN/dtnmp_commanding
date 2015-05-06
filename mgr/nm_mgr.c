@@ -573,6 +573,9 @@ int mgr_cleanup()
 	def_lyst_clear(&(macro_defs), &(macro_defs_mutex), 1);
 	killResourceLock(&macro_defs_mutex);
 
+	variable_queue_clear(variable_queue,&variable_queue_mutex);
+	killResourceLock(&variable_queue_mutex);
+
 	return 0;
 }
 
@@ -732,4 +735,22 @@ void AddVariableToQueue(char* name,variableType type, void* value,eid_t* sourceE
 	*entry = AddVariable(name,type,value,sourceEid,size,timestamp);
 	AddVariableToQueue(entry);
 	DTNMP_DEBUG_INFO("AddVariableToQueue","Done2",NULL);
+}
+
+void variable_queue_clear(Lyst variableQueue,ResourceLock* mutex)
+{
+	lockResource(mutex);
+	LystElt elt;
+	variableQueueEntry* curEntry;
+	for (elt=lyst_first(variableQueue);elt;elt=lyst_next(elt))
+	{
+		curEntry=(variableQueueEntry*)lyst_data(elt);
+
+		SRELEASE(curEntry->value);
+		SRELEASE(curEntry->name);
+		SRELEASE(curEntry);
+	}
+
+	lyst_destroy(variableQueue);
+	unlockResource(mutex);
 }
