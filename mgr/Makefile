@@ -1,5 +1,6 @@
 SOURCES = ../shared/adm/*.c ../shared/msg/*.c ../shared/utils/*.c ../shared/primitives/*.c ./*.c 
 IONDIR = ../ion-open-source/
+LIBPATH = /usr/local/lib
 OPTS = -Wno-write-strings -g 
 
 Debug:all
@@ -17,14 +18,14 @@ without-db:
 	-I${IONDIR}/ici/library \
 	-I/usr/local/include \
 	-L${IONDIR}/ \
-	-L/usr/local/lib \
+	-L${LIBPATH}/ \
 	-lbp -lici -lltp \
 	-DMAXPATHLEN=2048 \
 	-DHAVE_NETUI \
 	-DDTNMP_DEBUGGING \
 	-c ${SOURCES} 
 
-	g++ -o nm_mgr_netui *.o -lltp -lbp -lici
+	g++ -L${LIBPATH}/ -o nm_mgr_netui *.o -lltp -lbp -lici
 
 with-db:
 	g++ ${OPTS} \

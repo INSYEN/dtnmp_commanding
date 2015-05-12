@@ -1,5 +1,6 @@
 SOURCES = ../shared/adm/*.c ../shared/msg/*.c ../shared/utils/*.c ../shared/primitives/*.c ./*.c 
 IONDIR = ./ion-open-source
+LIBPATH = /usr/local/lib
 OPTS = -Wno-write-strings -g 
 Debug: all
 
@@ -15,10 +16,11 @@ all:
 	-I/usr/local/include \
 	-L${IONDIR}/ \
 	-L/usr/local/lib \
+	-L${LIBPATH}/ \
 	-lbp -lici -lltp \
 	-lipnfw \
 	-DMAXPATHLEN=2048 \
 	-c ${SOURCES} 
 
-	g++ -o nm_agent *.o -lltp -lbp -lici -lipnfw
+	g++ -L${LIBPATH}/ -o nm_agent *.o -lltp -lbp -lici -lipnfw
 
