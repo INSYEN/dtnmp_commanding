@@ -150,6 +150,13 @@ void agent_adm_init_ion()
 */
 
 
+
+	adm_build_mid_str(0x00, ION_ADM_NODE_NN, ION_ADM_NODE_NN_LEN, 3, mid_str);
+	adm_add_datadef_collect(mid_str,  ion_node_get_plans);
+
+	adm_build_mid_str(0x00, ION_ADM_NODE_NN, ION_ADM_NODE_NN_LEN, 4, mid_str);
+	adm_add_datadef_collect(mid_str,  ion_node_get_groups);
+
 	/* Controls */
 	adm_build_mid_str(0x01, ION_ADM_CTRL_NN, ION_ADM_CTRL_NN_LEN, 0, mid_str);
 	adm_add_ctrl_run(mid_str,  ion_ctrl_induct_reset);
@@ -569,6 +576,113 @@ expr_result_t ion_node_get_inducts(Lyst params)
 
 	return result;
 }
+
+
+expr_result_t ion_node_get_plans(Lyst params)
+{
+
+	Sdr             sdr = getIonsdr();
+
+	Object elt;
+	Object ductObj;
+	OBJ_POINTER(IpnPlan,curPlan);
+	OBJ_POINTER(Outduct,curDuct);
+	OBJ_POINTER(ClProtocol,curCLA);
+	uint32_t resultLen;
+	char* destDuctName=(char*)STAKE(SDRSTRING_BUFSZ);
+	Lyst outdatacol = lyst_create();
+	expr_result_t result;
+
+	if (bpAttach() < 0)
+	{
+		DTNMP_DEBUG_ERR("ion_ctrl_plan_add","can't attach to BP", NULL);
+		SRELEASE(destDuctName);
+		return result;
+	}
+
+	if (ipnInit() < 0)
+	{
+		DTNMP_DEBUG_ERR("ion_ctrl_plan_add","can't initialize routing database", NULL);
+		SRELEASE(destDuctName);
+		return result;
+	}
+
+	result.type=EXPR_TYPE_BLOB;
+
+	sdr_begin_xn(sdr);
+	for (elt = sdr_list_first(sdr,(getIpnConstants())->plans); elt; elt = sdr_list_next(sdr, elt))
+	{
+		GET_OBJ_POINTER(sdr,IpnPlan,curPlan,sdr_list_data(sdr,elt));
+		ductObj = sdr_list_data(sdr,curPlan->defaultDirective.outductElt);
+		GET_OBJ_POINTER(sdr,Outduct,curDuct,ductObj);
+		GET_OBJ_POINTER(sdr,ClProtocol,curCLA,curDuct->protocol);
+
+        datalist_t planDL=datalist_create(NULL);
+
+		datalist_insert_with_type(&planDL,DLIST_TYPE_UVAST,&curPlan->nodeNbr);
+		datalist_insert_with_type(&planDL,DLIST_TYPE_STRING,&curCLA->name,strlen(curCLA->name));
+		datalist_insert_with_type(&planDL,DLIST_TYPE_STRING,&curDuct->name,strlen(curDuct->name));
+
+
+		sdr_string_read(sdr,destDuctName,curPlan->defaultDirective.destDuctName);
+		datalist_insert_with_type(&planDL,DLIST_TYPE_STRING,destDuctName,strlen(destDuctName));
+
+		datacol_entry_t* dlSerialized = datalist_serialize_to_datacol(&planDL);
+
+		lyst_insert_last(outdatacol,dlSerialized);
+	}
+	sdr_exit_xn(sdr);
+
+	result.value=utils_datacol_serialize(outdatacol,&resultLen);
+	result.length=(uint32_t)resultLen;
+
+	return result;
+
+}
+
+expr_result_t ion_node_get_groups(Lyst params)
+{
+	Sdr             sdr = getIonsdr();
+	PsmPartition    ionwm = getIonwm();
+	IonVdb          *vdb = getIonVdb();
+	PsmAddress      elt;
+	PsmAddress      addr;
+	sdr_begin_xn(sdr);
+	Lyst outdatacol = lyst_create();
+	expr_result_t result;
+	uint32_t resultLen; //Hacky hack hack.
+	result.type=EXPR_TYPE_BLOB;
+
+	for (elt = sm_rbt_first(ionwm, vdb->rangeIndex); elt; elt = sm_rbt_next(ionwm, elt))
+	{
+		addr = sm_rbt_data(ionwm, elt);
+		IonRXref        *range;
+        addr; //Put error handling here
+        range = (IonRXref *) psp(getIonwm(), addr);
+
+        //Ok, now fill the datalist
+        datalist_t rangeDL=datalist_create(NULL);
+
+		datalist_insert_with_type(&rangeDL,DLIST_TYPE_UVAST,&range->fromNode);
+		datalist_insert_with_type(&rangeDL,DLIST_TYPE_UVAST,&range->toNode);
+		datalist_insert_with_type(&rangeDL,DLIST_TYPE_UVAST,&range->fromTime);
+		datalist_insert_with_type(&rangeDL,DLIST_TYPE_UVAST,&range->toTime);
+		datalist_insert_with_type(&rangeDL,DLIST_TYPE_UINT32,&range->owlt);
+
+		datacol_entry_t* dlSerialized = datalist_serialize_to_datacol(&rangeDL);
+
+		lyst_insert_last(outdatacol,dlSerialized);
+	}
+	sdr_exit_xn(sdr);
+
+	result.value=utils_datacol_serialize(outdatacol,&resultLen);
+	result.length=(uint32_t)resultLen;
+
+	return result;
+
+}
+
+
 /*	Control functions	*/
 
 uint32_t ion_ctrl_induct_reset(Lyst params)
@@ -662,13 +776,13 @@ uint32_t ion_ctrl_plan_remove(Lyst params)
 	uint32_t datacolSize;
 	if (bpAttach() < 0)
 	{
-		DTNMP_DEBUG_ERR("ion_ctrl_plan_add","ipnadmin can't attach to BP", NULL);
+		DTNMP_DEBUG_ERR("ion_ctrl_plan_add","can't attach to BP", NULL);
 		return -1;
 	}
 
 	if (ipnInit() < 0)
 	{
-		DTNMP_DEBUG_ERR("ion_ctrl_plan_add","ipnadmin can't initialize routing database", NULL);
+		DTNMP_DEBUG_ERR("ion_ctrl_plan_add","can't initialize routing database", NULL);
 		return -1;
 	}
 	uint32_t bytesUsed;

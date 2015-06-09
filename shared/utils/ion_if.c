@@ -235,7 +235,7 @@ uint8_t *iif_receive(iif_t *iif, uint32_t *size, pdu_metadata_t *meta, int timeo
 
     /* Step 2: Allocate result space. */
     *size = content_len;
-    if((buffer = (uint8_t*) STAKE(content_len)) == NULL)
+    if((buffer = (uint8_t*) MTAKE(content_len)) == NULL)
     {
     	DTNMP_DEBUG_ERR("iif_receive","Can't alloc %d of msg.", content_len);
     	DTNMP_DEBUG_ERR("iif_receive","Timeout is %d.", timeout);
@@ -252,7 +252,7 @@ uint8_t *iif_receive(iif_t *iif, uint32_t *size, pdu_metadata_t *meta, int timeo
     if(sdr_end_xn(sdr) < 0 || dataLength < 0)
     {
         DTNMP_DEBUG_ERR("iif_receive", "Unable to process received bundle.", NULL);
-        SRELEASE(buffer);
+        MRELEASE(buffer);
 
         DTNMP_DEBUG_EXIT("iif_receive","-> NULL", NULL);
         return NULL;
@@ -357,7 +357,6 @@ uint8_t iif_send(iif_t *iif, pdu_group_t *group, char *recipient)
 
     Object newBundle;
     int sdrDataLength; // Space allocated in SDR
-    int ctrlZco = 0;
 
     uint8_t *data = NULL;
     uint32_t len;
@@ -377,7 +376,7 @@ uint8_t iif_send(iif_t *iif, pdu_group_t *group, char *recipient)
 
     if(len == 0)
     {
-    	SRELEASE(data);
+    	MRELEASE(data);
     	DTNMP_DEBUG_ERR("iif_send","Bad message of length 0.", NULL);
     	DTNMP_DEBUG_EXIT("iif_send", "->0.", NULL);
     	return 0;
@@ -409,7 +408,7 @@ uint8_t iif_send(iif_t *iif, pdu_group_t *group, char *recipient)
     }
 
     /* Step 3 - Great ZCO in an SDR transaction.*/
-    Object content = ionCreateZco(ZcoSdrSource, extent, 0, len, &ctrlZco);
+    Object content = ionCreateZco(ZcoSdrSource, extent, 0, len, 0, 0, (ZcoAcct)0, NULL);
 
     //Object content = zco_create(sdr, ZcoSdrSource, sdrObj, 0, len);
     if(!content)
@@ -436,13 +435,13 @@ uint8_t iif_send(iif_t *iif, pdu_group_t *group, char *recipient)
 				)) != 1)
     {
         DTNMP_DEBUG_ERR("iif_send","Send failed (%d).", res);
-        SRELEASE(data);
+        MRELEASE(data);
         DTNMP_DEBUG_EXIT("iif_send", "->0.", NULL);
     	return 0;
 
     }
 
-    SRELEASE(data);
+    MRELEASE(data);
     DTNMP_DEBUG_EXIT("iif_send", "->1.", NULL);
     return 1;
 }

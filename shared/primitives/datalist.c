@@ -399,6 +399,8 @@ datalist_type_t datalist_insert_with_type(datalist_t* datalist,datalist_type_t t
 		//Step 1: Insert value
 		datacol_entry_t* entry=(datacol_entry_t*)STAKE(sizeof(datacol_entry_t));
 		size = size != 0 ? size : datalist_get_size_for_type(type);
+
+
 		DTNMP_DEBUG_INFO("datalist_insert_with_type","Inserting chunk of size %d",size);
 		entry->length=size;
 		entry->value=(uint8_t*)STAKE(size);

@@ -15,7 +15,7 @@
 #include "shared/utils/nm_types.h"
 #include "shared/adm/adm.h"
 
-
+#define D_ASCIIUVASTLEN 32
 /*
  * We will invent an OID space for ION ADM information, to live at:
  *

@@ -84,6 +84,8 @@ expr_result_t ion_node_get_all(Lyst params);
 expr_result_t ion_node_get_inducts(Lyst params);
 expr_result_t ion_node_get_outducts(Lyst params);
 
+expr_result_t ion_node_get_groups(Lyst params);
+expr_result_t ion_node_get_plans(Lyst params);
 /* ION Controls */
 uint32_t ion_ctrl_induct_reset(Lyst params);
 uint32_t ion_ctrl_outduct_reset(Lyst params);

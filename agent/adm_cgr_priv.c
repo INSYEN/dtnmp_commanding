@@ -70,7 +70,7 @@ void agent_adm_init_cgr()
 	* toNode (uvast)
 	* startTime (uint64)
 	* endTime (uint64)
-	* probablility (real32) - Currently unused in this implementation
+	* probablility (real32)
 	* xmitRate (uint32)
 	*/
 
@@ -132,7 +132,7 @@ uint32_t cgr_ctrl_contact_add(Lyst params)
 
 		DTNMP_DEBUG_INFO("cgr_ctrl_contact_add","Trying to add f:%d t:%d %ud %ud %ud",fromNode,toNode,startTime,endTime,xmitRate);
 		//Fuck it, lets give it a shot
-		if(rfx_insert_contact(startTime, endTime,fromNode,toNode, xmitRate)==0)
+		if(rfx_insert_contact(startTime, endTime,fromNode,toNode, xmitRate,probability)==0)
 		{
 			DTNMP_DEBUG_ERR("cgr_ctrl_contact_add","Couldn't add contact",NULL);
 		}
@@ -341,7 +341,6 @@ expr_result_t cgr_node_get_contacts(Lyst params)
 	expr_result_t result;
 	uint32_t resultLen; //Hacky hack hack.
 	result.type=EXPR_TYPE_BLOB;
-	float tempProb = 1.00;
 	for (elt = sm_rbt_first(ionwm, vdb->contactIndex); elt; elt = sm_rbt_next(ionwm, elt))
 	{
 		addr = sm_rbt_data(ionwm, elt);
@@ -356,7 +355,7 @@ expr_result_t cgr_node_get_contacts(Lyst params)
 		datalist_insert_with_type(&contactDL,DLIST_TYPE_UVAST,&contact->toNode);
 		datalist_insert_with_type(&contactDL,DLIST_TYPE_UINT64,&contact->fromTime);
 		datalist_insert_with_type(&contactDL,DLIST_TYPE_UINT64,&contact->toTime);
-		datalist_insert_with_type(&contactDL,DLIST_TYPE_REAL32,&tempProb);
+		datalist_insert_with_type(&contactDL,DLIST_TYPE_REAL32,&contact->prob);
 		datalist_insert_with_type(&contactDL,DLIST_TYPE_UINT32,&contact->xmitRate);
 
 		DTNMP_DEBUG_INFO("adm_get_contacts","%d %d %u",contact->fromTime,contact->toTime,contact->xmitRate);

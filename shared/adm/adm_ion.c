@@ -10,7 +10,6 @@ void adm_ion_init()
 {
 	/* Register Nicknames */
 	uint8_t mid_str[ADM_MID_ALLOC];
-	DTNMP_DEBUG_ALWAYS("adm_ion","Starting!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!",NULL);
 	/* ICI */
 //	adm_build_mid_str(0x00, ION_ADM_ICI_NN, ION_ADM_ICI_NN_LEN, 0, mid_str);
 //	adm_add_datadef("ICI_SDR_STATE_ALL",   mid_str, 0, ion_print_sdr_state_all,     ion_size_sdr_state_all);
@@ -116,6 +115,11 @@ void adm_ion_init()
 	adm_build_mid_str(0x00, ION_ADM_NODE_NN, ION_ADM_NODE_NN_LEN, 2, mid_str);
 	adm_add_datadef("ION_NODE_OUTDUCTS",mid_str, 0, adm_print_string_list, adm_size_string_list);
 */
+	adm_build_mid_str(0x00,ION_ADM_NODE_NN,ION_ADM_NODE_NN_LEN,3,mid_str);
+	adm_add_datadef("ION_NODE_GET_PLANS",mid_str,0,adm_datalists_to_queue,adm_size_datalists);
+
+	adm_build_mid_str(0x00,ION_ADM_NODE_NN,ION_ADM_NODE_NN_LEN,4,mid_str);
+	adm_add_datadef("ION_NODE_GET_GROUPS",mid_str,0,adm_datalists_to_queue,adm_size_datalists);
 
 	/* Controls */
 	adm_build_mid_str(0x01, ION_ADM_CTRL_NN, ION_ADM_CTRL_NN_LEN, 0, mid_str);
@@ -190,7 +194,7 @@ char *ion_print_sdr_state_all(uint8_t* buffer, uint64_t buffer_len, uint64_t dat
 		return NULL;
 	}
 
-	memset(result, '\0', *str_len);
+	memset(result, 	'\0', *str_len);
 
 	sprintf(result,
 			"\nsmallPoolSize = %ld\nsmallPoolFree = %ld\nsmallPoolAllocated = %ld\n \
