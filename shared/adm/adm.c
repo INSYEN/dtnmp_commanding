@@ -925,6 +925,7 @@ void adm_init()
 #endif /* _HAVE_ION_ADM_ */
 
 	adm_agent_init();
+
 #ifdef _HAVE_CGR_ADM_
 	adm_cgr_init();
 #endif

@@ -590,6 +590,7 @@ expr_result_t ion_node_get_plans(Lyst params)
 	OBJ_POINTER(ClProtocol,curCLA);
 	uint32_t resultLen;
 	char* destDuctName=(char*)STAKE(SDRSTRING_BUFSZ);
+	int ductLen;
 	Lyst outdatacol = lyst_create();
 	expr_result_t result;
 
@@ -623,9 +624,12 @@ expr_result_t ion_node_get_plans(Lyst params)
 		datalist_insert_with_type(&planDL,DLIST_TYPE_STRING,&curCLA->name,strlen(curCLA->name));
 		datalist_insert_with_type(&planDL,DLIST_TYPE_STRING,&curDuct->name,strlen(curDuct->name));
 
+		//Read ductname from string
+		ductLen=sdr_string_read(sdr,destDuctName,curPlan->defaultDirective.destDuctName);
+		if(ductLen==-1)
+			continue;
 
-		sdr_string_read(sdr,destDuctName,curPlan->defaultDirective.destDuctName);
-		datalist_insert_with_type(&planDL,DLIST_TYPE_STRING,destDuctName,strlen(destDuctName));
+		datalist_insert_with_type(&planDL,DLIST_TYPE_STRING,destDuctName,ductLen);
 
 		datacol_entry_t* dlSerialized = datalist_serialize_to_datacol(&planDL);
 

@@ -37,8 +37,6 @@
 //#include "bpnm.h"
 
 #include "shared/utils/nm_types.h"
-
-
 #include "shared/adm/adm.h"
 
 

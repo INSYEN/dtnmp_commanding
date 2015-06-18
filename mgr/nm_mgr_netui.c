@@ -2112,7 +2112,7 @@ datalist_t netui_parse_datalist(char* dlText)
 	{
 		//Parse the textual form
 
-		sscanf(curItem,"(%[^)]) %s",typeTxt,valueTxt);
+		sscanf(curItem,"(%[^)]) %64c",typeTxt,valueTxt);
 
 		//Determine type
 		datalist_type_t type=datalist_get_type_from_string(typeTxt);
@@ -2121,6 +2121,8 @@ datalist_t netui_parse_datalist(char* dlText)
 		if(type==DLIST_TYPE_STRING)
 		{
 			valueSize=strlen(valueTxt);
+			//We need to seek to the end of the entry, if it's quoted
+
 		}
 		else
 			valueSize=datalist_get_size_for_type(type);

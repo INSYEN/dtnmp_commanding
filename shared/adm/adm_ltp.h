@@ -7,12 +7,12 @@
 #ifndef ADM_LTP_H_
 #define ADM_LTP_H_
 
+#define _HAVE_LTP_ADM_
+
 #ifdef _HAVE_LTP_ADM_
 
 #include "lyst.h"
 #include "ltpnm.h"
-
-
 
 #include "shared/utils/nm_types.h"
 
