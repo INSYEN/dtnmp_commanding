@@ -710,7 +710,7 @@ expr_result_t ion_node_get_outducts(Lyst params)
 
 	if (bpAttach() < 0)
 	{
-		DTNMP_DEBUG_ERR("ion_ctrl_plan_add","can't attach to BP", NULL);
+		DTNMP_DEBUG_ERR("ion_node_get_outducts","can't attach to BP", NULL);
 		SRELEASE(cloCmd);
 		return result;
 	}
@@ -808,7 +808,8 @@ uint32_t ion_ctrl_plan_add(Lyst params)
             if(strcmp(protocolName,"ltp")==0) //Be sure that this is an LTP span
             {
                 DTNMP_DEBUG_INFO("ion_ctrl_plan_add","Using LTP Span",NULL);
-                sprintf(ductExp.destDuctName,"%s",ipName);
+                //sprintf(ductExp.destDuctName,"%s",ipName);
+                ductExp.destDuctName='\0';
                 sprintf(outductName,"%s",ipName);
             }
         }
@@ -817,8 +818,9 @@ uint32_t ion_ctrl_plan_add(Lyst params)
             if(strcmp(protocolName,"tcp")==0) //Be sure that this is an TCP span
             {
                 sprintf(outductName,"%s:%d",ipName,port);
-                sprintf(ductExp.destDuctName,"%s:%d",ipName,port);
+
             }
+            sprintf(ductExp.destDuctName,"%s:%d",ipName,port);
         }
 
 		findOutduct(protocolName, outductName, &vduct, &vductElt);
@@ -833,7 +835,7 @@ uint32_t ion_ctrl_plan_add(Lyst params)
 		DTNMP_DEBUG_WARN("ion_ctrl_plan_add","Adding %d \"%s\" \"%s\" %d %s",nodeName,protocolName,ipName,port,vduct->protocolName);
 
 		ductExp.outductElt=vduct->outductElt;
-		sprintf(ductExp.destDuctName,"%s:%d",ipName,port);
+
 		DTNMP_DEBUG_INFO("ion_ctrl_plan_add","Adding ductname \"%s\"",ductExp.destDuctName);
 		//Add the plan
 		if(ipn_addPlan(nodeName,&ductExp)<=0)
