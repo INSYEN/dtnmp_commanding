@@ -33,16 +33,16 @@
 		<Compiler>
 			<Add option="-Wall" />
 		</Compiler>
-		<Unit filename="nm_agent/main.c">
+		<Unit filename="../shared/primitives/variables.c">
 			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../shared/primitives/variables.h">
+			<Option target="&lt;{~None~}&gt;" />
 		</Unit>
 		<Unit filename="nm_mgr.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="nm_mgr.h" />
-		<Unit filename="nm_mgr/main.c">
-			<Option compilerVar="CC" />
-		</Unit>
 		<Unit filename="nm_mgr_db.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -54,15 +54,10 @@
 		<Unit filename="nm_mgr_rx.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="../shared/primitives/variables.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="../shared/primitives/variables.h">
-			<Option target="&lt;{~None~}&gt;" />
-		</Unit>
 		<Extensions>
 			<code_completion />
 			<debugger />
+			<envvars />
 		</Extensions>
 	</Project>
 </CodeBlocks_project_file>

@@ -7963,3 +7963,998 @@
 [2015/03/21-08:10:03] [i] : ./nm_agent() [0x40f4c0]
 [2015/03/21-08:10:03] [i] : /lib/x86_64-linux-gnu/libpthread.so.0(+0x6b50) [0x7f3e25b19b50]
 [2015/03/21-08:10:03] [i] : /lib/x86_64-linux-gnu/libc.so.6(clone+0x6d) [0x7f3e25e0b20d]
+[2015/06/23-21:07:58] [i] rfxclock is running.
+[2015/06/23-21:07:58] [i] No congestion collapse predicted.
+[2015/06/23-21:07:58] [i] ionwarn finished.
+[2015/06/23-21:07:59] [i] No congestion collapse predicted.
+[2015/06/23-21:07:59] [i] ionwarn finished.
+[2015/06/23-21:07:59] [i] Span to engine 1 (max BER 0.000001, max xmit segment size 1024, max recv segment size 1): xmit segment loss rate 0.008266, recv segment loss rate 0.000008, max timeouts 3.
+[2015/06/23-21:07:59] [i] Total max export sessions does not exceed estimate.
+[2015/06/23-21:07:59] [i] ltpmeter is running.
+[2015/06/23-21:07:59] [i] udplsi is running, spec=[0.0.0.0:1113].
+[2015/06/23-21:07:59] [i] udplso is running, spec=[127.0.0.1:1113], txbps=0 (0=unlimited), rengine=1.
+[2015/06/23-21:07:59] [i] ltpclock is running.
+[2015/06/23-21:08:00] [?] Can't find ION security database.
+[2015/06/23-21:08:00] [?] Warning: running without bundle security.
+[2015/06/23-21:08:00] [?] Can't find ION security database.
+[2015/06/23-21:08:00] [?] Can't find ION security database.
+[2015/06/23-21:08:00] [?] Can't find ION security database.
+[2015/06/23-21:08:00] [?] Can't find ION security database.
+[2015/06/23-21:08:00] [i] ipnadminep is running.
+[2015/06/23-21:08:00] [i] ltpcli is running.
+[2015/06/23-21:08:00] [?] Can't find ION security database.
+[2015/06/23-21:08:00] [i] bptransit is running.
+[2015/06/23-21:08:00] [i] ltpclo is running.
+[2015/06/23-21:08:00] [i] ipnfw is running.
+[2015/06/23-21:08:00] [?] Can't find ION security database.
+[2015/06/23-21:08:00] [i] bpclock is running.
+[2015/06/23-21:08:01] [?] Can't find ION security database.
+[2015/06/23-21:08:05] [?] Can't find ION security database.
+[2015/06/23-21:08:14] [?] Can't find ION security database.
+[2015/06/23-21:08:15] [i] Span to engine 1 (max BER 0.000001, max xmit segment size 1024, max recv segment size 54): xmit segment loss rate 0.008266, recv segment loss rate 0.000438, max timeouts 3.
+[2015/06/23-21:08:39] [i] Span to engine 1 (max BER 0.000001, max xmit segment size 1024, max recv segment size 82): xmit segment loss rate 0.008266, recv segment loss rate 0.000664, max timeouts 3.
+[2015/06/23-21:10:43] [?] Can't find ION security database.
+[2015/06/23-21:10:43] at line 431 of ici/library/lyst.c, Assertion failed. (elt)
+[2015/06/23-21:10:43] [i] Current stack trace:
+[2015/06/23-21:10:43] [i] : /usr/local/lib/libici.so.0(printStackTrace+0x18) [0x7ffff774b8d8
+[2015/06/23-21:10:43] [i] : /usr/local/lib/libici.so.0(_iEnd+0x21) [0x7ffff774be41]
+[2015/06/23-21:10:43] [i] : /usr/local/lib/libici.so.0(lyst_next+0x28) [0x7ffff774fec8]
+[2015/06/23-21:10:43] [i] : /home/jeremy/Development/dtn/NetworkManagement/dtnmp_commanding/
+[2015/06/23-21:10:43] [i] : /home/jeremy/Development/dtn/NetworkManagement/dtnmp_commanding/
+[2015/06/23-21:10:43] [i] : /lib/x86_64-linux-gnu/libpthread.so.0(+0x80a4) [0x7ffff73260a4]
+[2015/06/23-21:10:43] [i] : /lib/x86_64-linux-gnu/libc.so.6(clone+0x6d) [0x7ffff683904d]
+[2015/06/23-21:11:05] [?] Can't find ION security database.
+[2015/06/23-21:11:42] [?] Can't find ION security database.
+[2015/06/23-21:12:49] [?] Can't find ION security database.
+[2015/06/23-22:07:58] [i] No congestion collapse predicted.
+[2015/06/23-22:07:58] [i] ionwarn finished.
+[2015/06/23-22:08:41] [?] Can't find ION security database.
+[2015/06/23-22:16:14] [?] Can't find ION security database.
+[2015/06/23-22:16:36] [?] Can't find ION security database.
+[2015/06/23-22:17:54] [?] Can't find ION security database.
+[2015/06/23-22:18:01] [?] Can't find ION security database.
+[2015/06/23-22:18:03] [?] Can't find ION security database.
+[2015/06/23-22:18:18] [?] Can't find ION security database.
+[2015/06/23-22:18:18] [i] ipnfw forwarder has ended.
+[2015/06/23-22:18:18] [i] Outduct has been stopped.
+[2015/06/23-22:18:18] [i] ltpclo duct has ended.
+[2015/06/23-22:18:18] [i] ltpcli receiver thread has ended.
+[2015/06/23-22:18:18] [i] ltpcli duct has ended.
+[2015/06/23-22:18:18] [i] bpclock has ended.
+[2015/06/23-22:18:18] [i] Endpoint has been stopped.
+[2015/06/23-22:18:18] [i] Administrative endpoint terminated.
+[2015/06/23-22:18:18] [i] ipnadminep has ended.
+[2015/06/23-22:18:18] [i] bptransit has ended.
+[2015/06/23-22:18:20] at line 838 of cfdp/library/libcfdpP.c, Can't find CFDP database.
+[2015/06/23-22:18:21] [i] udplsi receiver thread has ended.
+[2015/06/23-22:18:21] [i] udplsi has ended.
+[2015/06/23-22:18:21] [i] ltpclock has ended.
+[2015/06/23-22:18:21] [i] LTP meter to engine 1 is stopped.
+[2015/06/23-22:18:21] [i] ltpmeter has ended.
+[2015/06/23-22:18:21] [i] LSO to engine 1 is stopped.
+[2015/06/23-22:18:21] [i] udplso receiver thread has ended.
+[2015/06/23-22:18:21] [i] udplso has ended.
+[2015/06/23-22:18:22] [i] rfxclock has ended.
+[2015/06/23-22:19:00] [i] rfxclock is running.
+[2015/06/23-22:19:00] [i] No congestion collapse predicted.
+[2015/06/23-22:19:00] [i] ionwarn finished.
+[2015/06/23-22:19:01] [i] No congestion collapse predicted.
+[2015/06/23-22:19:01] [i] ionwarn finished.
+[2015/06/23-22:19:01] [i] Span to engine 1 (max BER 0.000001, max xmit segment size 1024, max recv segment size 1): xmit segment loss rate 0.008266, recv segment loss rate 0.000008, max timeouts 3.
+[2015/06/23-22:19:01] [i] Total max export sessions does not exceed estimate.
+[2015/06/23-22:19:01] [i] udplsi is running, spec=[0.0.0.0:1113].
+[2015/06/23-22:19:01] [i] ltpclock is running.
+[2015/06/23-22:19:01] [i] udplso is running, spec=[127.0.0.1:1113], txbps=0 (0=unlimited), rengine=1.
+[2015/06/23-22:19:01] [i] ltpmeter is running.
+[2015/06/23-22:19:03] [?] Can't find ION security database.
+[2015/06/23-22:19:03] [?] Warning: running without bundle security.
+[2015/06/23-22:19:03] [?] Can't find ION security database.
+[2015/06/23-22:19:03] [i] ltpclo is running.
+[2015/06/23-22:19:03] [?] Can't find ION security database.
+[2015/06/23-22:19:03] [?] Can't find ION security database.
+[2015/06/23-22:19:03] [i] bptransit is running.
+[2015/06/23-22:19:03] [?] Can't find ION security database.
+[2015/06/23-22:19:03] [?] Can't find ION security database.
+[2015/06/23-22:19:03] [i] ltpcli is running.
+[2015/06/23-22:19:03] [i] ipnadminep is running.
+[2015/06/23-22:19:03] [i] ipnfw is running.
+[2015/06/23-22:19:03] [?] Can't find ION security database.
+[2015/06/23-22:19:03] [i] bpclock is running.
+[2015/06/23-22:19:04] [?] Can't find ION security database.
+[2015/06/23-22:19:11] [?] Can't find ION security database.
+[2015/06/23-22:19:14] [?] Can't find ION security database.
+[2015/06/23-22:19:14] [i] Span to engine 1 (max BER 0.000001, max xmit segment size 1024, max recv segment size 54): xmit segment loss rate 0.008266, recv segment loss rate 0.000438, max timeouts 3.
+[2015/06/23-22:19:24] [i] Span to engine 1 (max BER 0.000001, max xmit segment size 1024, max recv segment size 85): xmit segment loss rate 0.008266, recv segment loss rate 0.000689, max timeouts 3.
+[2015/06/23-22:19:24] at line 431 of ici/library/lyst.c, Assertion failed. (elt)
+[2015/06/23-22:19:24] [i] Current stack trace:
+[2015/06/23-22:19:24] [i] : /usr/local/lib/libici.so.0(printStackTrace+0x18) [0x7f38914ee8d8
+[2015/06/23-22:19:24] [i] : /usr/local/lib/libici.so.0(_iEnd+0x21) [0x7f38914eee41]
+[2015/06/23-22:19:24] [i] : /usr/local/lib/libici.so.0(lyst_next+0x28) [0x7f38914f2ec8]
+[2015/06/23-22:19:24] [i] : ./nm_agent() [0x426e73]
+[2015/06/23-22:19:24] [i] : ./nm_agent() [0x427a81]
+[2015/06/23-22:19:24] [i] : /lib/x86_64-linux-gnu/libpthread.so.0(+0x80a4) [0x7f38910c90a4]
+[2015/06/23-22:19:24] [i] : /lib/x86_64-linux-gnu/libc.so.6(clone+0x6d) [0x7f38905dc04d]
+[2015/06/23-22:20:32] [?] Can't find ION security database.
+[2015/06/23-22:20:40] at line 431 of ici/library/lyst.c, Assertion failed. (elt)
+[2015/06/23-22:20:40] [i] Current stack trace:
+[2015/06/23-22:20:40] [i] : /usr/local/lib/libici.so.0(printStackTrace+0x18) [0x7fa69d2f28d8
+[2015/06/23-22:20:40] [i] : /usr/local/lib/libici.so.0(_iEnd+0x21) [0x7fa69d2f2e41]
+[2015/06/23-22:20:40] [i] : /usr/local/lib/libici.so.0(lyst_next+0x28) [0x7fa69d2f6ec8]
+[2015/06/23-22:20:40] [i] : ./nm_agent() [0x426e73]
+[2015/06/23-22:20:40] [i] : ./nm_agent() [0x427a81]
+[2015/06/23-22:20:40] [i] : /lib/x86_64-linux-gnu/libpthread.so.0(+0x80a4) [0x7fa69cecd0a4]
+[2015/06/23-22:20:40] [i] : /lib/x86_64-linux-gnu/libc.so.6(clone+0x6d) [0x7fa69c3e004d]
+[2015/06/23-22:22:22] [?] Can't find ION security database.
+[2015/06/23-22:22:28] at line 431 of ici/library/lyst.c, Assertion failed. (elt)
+[2015/06/23-22:22:28] [i] Current stack trace:
+[2015/06/23-22:22:28] [i] : /usr/local/lib/libici.so.0(printStackTrace+0x18) [0x7f822f07c8d8
+[2015/06/23-22:22:28] [i] : /usr/local/lib/libici.so.0(_iEnd+0x21) [0x7f822f07ce41]
+[2015/06/23-22:22:28] [i] : /usr/local/lib/libici.so.0(lyst_next+0x28) [0x7f822f080ec8]
+[2015/06/23-22:22:28] [i] : ./nm_agent() [0x426edf]
+[2015/06/23-22:22:28] [i] : ./nm_agent() [0x427aed]
+[2015/06/23-22:22:28] [i] : /lib/x86_64-linux-gnu/libpthread.so.0(+0x80a4) [0x7f822ec570a4]
+[2015/06/23-22:22:28] [i] : /lib/x86_64-linux-gnu/libc.so.6(clone+0x6d) [0x7f822e16a04d]
+[2015/06/23-22:22:36] [?] Can't find ION security database.
+[2015/06/23-22:23:15] [i] Span to engine 1 (max BER 0.000001, max xmit segment size 1024, max recv segment size 99): xmit segment loss rate 0.008266, recv segment loss rate 0.000802, max timeouts 3.
+[2015/06/23-22:23:59] [?] Can't find ION security database.
+[2015/06/24-08:28:34] [i] No congestion collapse predicted.
+[2015/06/24-08:28:34] [i] ionwarn finished.
+[2015/06/24-08:32:36] [?] Can't find ION security database.
+[2015/06/24-08:32:36] [?] Protocol is unknown: tcp
+[2015/06/24-08:32:36] at line 431 of ici/library/lyst.c, Assertion failed. (elt)
+[2015/06/24-08:32:36] [i] Current stack trace:
+[2015/06/24-08:32:36] [i] : /usr/local/lib/libici.so.0(printStackTrace+0x18) [0x7fc14db998d8
+[2015/06/24-08:32:36] [i] : /usr/local/lib/libici.so.0(_iEnd+0x21) [0x7fc14db99e41]
+[2015/06/24-08:32:36] [i] : /usr/local/lib/libici.so.0(lyst_next+0x28) [0x7fc14db9dec8]
+[2015/06/24-08:32:36] [i] : ./nm_agent() [0x426f15]
+[2015/06/24-08:32:36] [i] : ./nm_agent() [0x427b23]
+[2015/06/24-08:32:36] [i] : /lib/x86_64-linux-gnu/libpthread.so.0(+0x80a4) [0x7fc14d7740a4]
+[2015/06/24-08:32:36] [i] : /lib/x86_64-linux-gnu/libc.so.6(clone+0x6d) [0x7fc14cc8704d]
+[2015/06/24-08:33:12] [?] Can't find ION security database.
+[2015/06/24-08:33:43] [?] Can't find ION security database.
+[2015/06/24-08:35:42] [?] Can't find ION security database.
+[2015/06/24-08:35:45] [?] Can't find ION security database.
+[2015/06/24-08:36:18] [?] Can't find ION security database.
+[2015/06/24-08:36:18] [i] ipnfw forwarder has ended.
+[2015/06/24-08:36:18] [i] Endpoint has been stopped.
+[2015/06/24-08:36:18] [i] Outduct has been stopped.
+[2015/06/24-08:36:18] [i] Endpoint has been stopped.
+[2015/06/24-08:36:18] [i] Administrative endpoint terminated.
+[2015/06/24-08:36:18] [i] ipnadminep has ended.
+[2015/06/24-08:36:18] [i] ltpclo duct has ended.
+[2015/06/24-08:36:18] [i] bpclock has ended.
+[2015/06/24-08:36:18] [i] bptransit has ended.
+[2015/06/24-08:36:18] [i] ltpcli receiver thread has ended.
+[2015/06/24-08:36:18] [i] ltpcli duct has ended.
+[2015/06/24-08:36:19] at line 838 of cfdp/library/libcfdpP.c, Can't find CFDP database.
+[2015/06/24-08:36:20] [i] udplsi receiver thread has ended.
+[2015/06/24-08:36:20] [i] udplsi has ended.
+[2015/06/24-08:36:20] [i] LTP meter to engine 1 is stopped.
+[2015/06/24-08:36:20] [i] ltpmeter has ended.
+[2015/06/24-08:36:20] [i] LSO to engine 1 is stopped.
+[2015/06/24-08:36:20] [i] udplso receiver thread has ended.
+[2015/06/24-08:36:20] [i] udplso has ended.
+[2015/06/24-08:36:20] [i] ltpclock has ended.
+[2015/06/24-08:36:21] [i] rfxclock has ended.
+[2015/06/24-08:36:54] [i] rfxclock is running.
+[2015/06/24-08:36:54] [i] No congestion collapse predicted.
+[2015/06/24-08:36:54] [i] ionwarn finished.
+[2015/06/24-08:36:55] [i] No congestion collapse predicted.
+[2015/06/24-08:36:55] [i] ionwarn finished.
+[2015/06/24-08:36:55] [i] Span to engine 1 (max BER 0.000001, max xmit segment size 1024, max recv segment size 1): xmit segment loss rate 0.008266, recv segment loss rate 0.000008, max timeouts 3.
+[2015/06/24-08:36:55] [i] Total max export sessions does not exceed estimate.
+[2015/06/24-08:36:55] [i] udplso is running, spec=[127.0.0.1:1113], txbps=0 (0=unlimited), rengine=1.
+[2015/06/24-08:36:55] [i] ltpmeter is running.
+[2015/06/24-08:36:55] [i] udplsi is running, spec=[0.0.0.0:1113].
+[2015/06/24-08:36:55] [i] ltpclock is running.
+[2015/06/24-08:36:56] [?] Can't find ION security database.
+[2015/06/24-08:36:56] [?] Warning: running without bundle security.
+[2015/06/24-08:36:56] [?] Can't find ION security database.
+[2015/06/24-08:36:56] [i] ltpclo is running.
+[2015/06/24-08:36:56] [?] Can't find ION security database.
+[2015/06/24-08:36:56] [i] bpclock is running.
+[2015/06/24-08:36:56] [?] Can't find ION security database.
+[2015/06/24-08:36:56] [i] ipnadminep is running.
+[2015/06/24-08:36:56] [?] Can't find ION security database.
+[2015/06/24-08:36:56] [?] Can't find ION security database.
+[2015/06/24-08:36:56] [?] Can't find ION security database.
+[2015/06/24-08:36:56] [i] bptransit is running.
+[2015/06/24-08:36:56] [i] ltpcli is running.
+[2015/06/24-08:36:56] [i] ipnfw is running.
+[2015/06/24-08:36:57] [?] Can't find ION security database.
+[2015/06/24-08:37:08] [?] Can't find ION security database.
+[2015/06/24-08:38:17] [?] Can't find ION security database.
+[2015/06/24-08:38:20] [?] Can't find ION security database.
+[2015/06/24-08:38:20] [i] Span to engine 1 (max BER 0.000001, max xmit segment size 1024, max recv segment size 54): xmit segment loss rate 0.008266, recv segment loss rate 0.000438, max timeouts 3.
+[2015/06/24-08:38:28] [i] Span to engine 1 (max BER 0.000001, max xmit segment size 1024, max recv segment size 99): xmit segment loss rate 0.008266, recv segment loss rate 0.000802, max timeouts 3.
+[2015/06/24-08:38:29] [?] Protocol is unknown: tcp
+[2015/06/24-08:38:29] at line 431 of ici/library/lyst.c, Assertion failed. (elt)
+[2015/06/24-08:38:29] [i] Current stack trace:
+[2015/06/24-08:38:29] [i] : /usr/local/lib/libici.so.0(printStackTrace+0x18) [0x7fbef03858d8
+[2015/06/24-08:38:29] [i] : /usr/local/lib/libici.so.0(_iEnd+0x21) [0x7fbef0385e41]
+[2015/06/24-08:38:29] [i] : /usr/local/lib/libici.so.0(lyst_next+0x28) [0x7fbef0389ec8]
+[2015/06/24-08:38:29] [i] : ./nm_agent() [0x426f15]
+[2015/06/24-08:38:29] [i] : ./nm_agent() [0x427b23]
+[2015/06/24-08:38:29] [i] : /lib/x86_64-linux-gnu/libpthread.so.0(+0x80a4) [0x7fbeeff600a4]
+[2015/06/24-08:38:29] [i] : /lib/x86_64-linux-gnu/libc.so.6(clone+0x6d) [0x7fbeef47304d]
+[2015/06/24-08:39:31] at line 431 of ici/library/lyst.c, Assertion failed. (elt)
+[2015/06/24-08:39:31] [i] Current stack trace:
+[2015/06/24-08:39:31] [i] : /usr/local/lib/libici.so.0(printStackTrace+0x18) [0x7fbef03858d8
+[2015/06/24-08:39:31] [i] : /usr/local/lib/libici.so.0(_iEnd+0x21) [0x7fbef0385e41]
+[2015/06/24-08:39:31] [i] : /usr/local/lib/libici.so.0(lyst_next+0x28) [0x7fbef0389ec8]
+[2015/06/24-08:39:31] [i] : ./nm_agent() [0x426f15]
+[2015/06/24-08:39:31] [i] : ./nm_agent() [0x427b23]
+[2015/06/24-08:39:31] [i] : /lib/x86_64-linux-gnu/libpthread.so.0(+0x80a4) [0x7fbeeff600a4]
+[2015/06/24-08:39:31] [i] : /lib/x86_64-linux-gnu/libc.so.6(clone+0x6d) [0x7fbeef47304d]
+[2015/06/24-08:39:50] [?] Can't find ION security database.
+[2015/06/24-08:40:29] at line 431 of ici/library/lyst.c, Assertion failed. (elt)
+[2015/06/24-08:40:29] [i] Current stack trace:
+[2015/06/24-08:40:29] [i] : /usr/local/lib/libici.so.0(printStackTrace+0x18) [0x7fbef03858d8
+[2015/06/24-08:40:29] [i] : /usr/local/lib/libici.so.0(_iEnd+0x21) [0x7fbef0385e41]
+[2015/06/24-08:40:29] [i] : /usr/local/lib/libici.so.0(lyst_next+0x28) [0x7fbef0389ec8]
+[2015/06/24-08:40:29] [i] : ./nm_agent() [0x426f15]
+[2015/06/24-08:40:29] [i] : ./nm_agent() [0x427b23]
+[2015/06/24-08:40:29] [i] : /lib/x86_64-linux-gnu/libpthread.so.0(+0x80a4) [0x7fbeeff600a4]
+[2015/06/24-08:40:29] [i] : /lib/x86_64-linux-gnu/libc.so.6(clone+0x6d) [0x7fbeef47304d]
+[2015/06/24-09:23:15] [?] Can't find ION security database.
+[2015/06/24-09:24:26] [?] Can't find ION security database.
+[2015/06/24-09:25:16] [?] Can't find ION security database.
+[2015/06/24-09:26:20] [i] bptransit has ended.
+[2015/06/24-09:26:20] [i] Endpoint has been stopped.
+[2015/06/24-09:26:20] [i] Administrative endpoint terminated.
+[2015/06/24-09:26:20] [i] ipnadminep has ended.
+[2015/06/24-09:26:20] [i] ipnfw forwarder has ended.
+[2015/06/24-09:26:21] [i] Outduct has been stopped.
+[2015/06/24-09:26:21] [i] ltpclo duct has ended.
+[2015/06/24-09:26:21] [i] udplsi receiver thread has ended.
+[2015/06/24-09:26:21] [i] udplsi has ended.
+[2015/06/24-09:26:21] [i] LSO to engine 1 is stopped.
+[2015/06/24-09:26:21] [i] udplso receiver thread has ended.
+[2015/06/24-09:26:21] [i] udplso has ended.
+[2015/06/24-09:26:28] at line 1922 of ici/library/platform_sm.c, Can't take semaphore: Identifier removed (39)
+[2015/06/24-09:26:28] at line 688 of bp/library/libbp.c, Can't take endpoint semaphore.
+[2015/06/24-09:26:54] [i] rfxclock is running.
+[2015/06/24-09:26:54] [i] No congestion collapse predicted.
+[2015/06/24-09:26:54] [i] ionwarn finished.
+[2015/06/24-09:26:55] [i] No congestion collapse predicted.
+[2015/06/24-09:26:55] [i] ionwarn finished.
+[2015/06/24-09:26:55] [i] Span to engine 1 (max BER 0.000001, max xmit segment size 1024, max recv segment size 1): xmit segment loss rate 0.008266, recv segment loss rate 0.000008, max timeouts 3.
+[2015/06/24-09:26:55] [i] Total max export sessions does not exceed estimate.
+[2015/06/24-09:26:55] [i] udplsi is running, spec=[0.0.0.0:1113].
+[2015/06/24-09:26:55] [i] udplso is running, spec=[127.0.0.1:1113], txbps=0 (0=unlimited), rengine=1.
+[2015/06/24-09:26:55] [i] ltpmeter is running.
+[2015/06/24-09:26:55] [i] ltpclock is running.
+[2015/06/24-09:26:56] [?] Can't find ION security database.
+[2015/06/24-09:26:56] [?] Warning: running without bundle security.
+[2015/06/24-09:26:56] [?] Can't find ION security database.
+[2015/06/24-09:26:56] [i] bptransit is running.
+[2015/06/24-09:26:56] [?] Can't find ION security database.
+[2015/06/24-09:26:56] [?] Can't find ION security database.
+[2015/06/24-09:26:56] [?] Can't find ION security database.
+[2015/06/24-09:26:56] [?] Can't find ION security database.
+[2015/06/24-09:26:56] [i] ipnadminep is running.
+[2015/06/24-09:26:56] [i] ltpcli is running.
+[2015/06/24-09:26:56] [i] ltpclo is running.
+[2015/06/24-09:26:56] [i] ipnfw is running.
+[2015/06/24-09:26:56] [?] Can't find ION security database.
+[2015/06/24-09:26:56] [i] bpclock is running.
+[2015/06/24-09:26:57] [?] Can't find ION security database.
+[2015/06/24-09:27:19] [?] Can't find ION security database.
+[2015/06/24-09:28:38] [?] Can't find ION security database.
+[2015/06/24-09:28:49] [?] Can't find ION security database.
+[2015/06/24-09:28:50] [i] Span to engine 1 (max BER 0.000001, max xmit segment size 1024, max recv segment size 54): xmit segment loss rate 0.008266, recv segment loss rate 0.000438, max timeouts 3.
+[2015/06/24-09:28:57] [i] Span to engine 1 (max BER 0.000001, max xmit segment size 1024, max recv segment size 60): xmit segment loss rate 0.008266, recv segment loss rate 0.000486, max timeouts 3.
+[2015/06/24-09:28:59] at line 2117 of ici/sdr/sdrxn.c, Assertion failed. (from >= 0)
+[2015/06/24-09:28:59] [i] Current stack trace:
+[2015/06/24-09:28:59] [i] : /usr/local/lib/libici.so.0(printStackTrace+0x18) [0x7ffff774b8d8
+[2015/06/24-09:28:59] [i] : /usr/local/lib/libici.so.0(_iEnd+0x21) [0x7ffff774be41]
+[2015/06/24-09:28:59] [i] : /usr/local/lib/libici.so.0(_sdrfetch+0x98) [0x7ffff776cdc8]
+[2015/06/24-09:28:59] [i] : /usr/local/lib/libici.so.0(sdr_list_data+0x40) [0x7ffff7770870]
+[2015/06/24-09:28:59] [i] : /home/jeremy/Development/dtn/NetworkManagement/dtnmp_commanding/
+[2015/06/24-09:28:59] [i] : /home/jeremy/Development/dtn/NetworkManagement/dtnmp_commanding/
+[2015/06/24-09:28:59] [i] : /home/jeremy/Development/dtn/NetworkManagement/dtnmp_commanding/
+[2015/06/24-09:28:59] [i] : /home/jeremy/Development/dtn/NetworkManagement/dtnmp_commanding/
+[2015/06/24-09:28:59] [i] : /home/jeremy/Development/dtn/NetworkManagement/dtnmp_commanding/
+[2015/06/24-09:28:59] [i] : /home/jeremy/Development/dtn/NetworkManagement/dtnmp_commanding/
+[2015/06/24-09:28:59] [i] : /home/jeremy/Development/dtn/NetworkManagement/dtnmp_commanding/
+[2015/06/24-09:28:59] [i] : /lib/x86_64-linux-gnu/libpthread.so.0(+0x80a4) [0x7ffff73260a4]
+[2015/06/24-09:28:59] [i] : /lib/x86_64-linux-gnu/libc.so.6(clone+0x6d) [0x7ffff683904d]
+[2015/06/24-09:28:59] at line 124 of ici/sdr/sdrstring.c, Assertion failed. (string)
+[2015/06/24-09:28:59] [i] Current stack trace:
+[2015/06/24-09:28:59] [i] : /usr/local/lib/libici.so.0(printStackTrace+0x18) [0x7ffff774b8d8
+[2015/06/24-09:28:59] [i] : /usr/local/lib/libici.so.0(_iEnd+0x21) [0x7ffff774be41]
+[2015/06/24-09:28:59] [i] : /usr/local/lib/libici.so.0(sdr_string_read+0x88) [0x7ffff776f218
+[2015/06/24-09:28:59] [i] : /home/jeremy/Development/dtn/NetworkManagement/dtnmp_commanding/
+[2015/06/24-09:28:59] [i] : /home/jeremy/Development/dtn/NetworkManagement/dtnmp_commanding/
+[2015/06/24-09:28:59] [i] : /home/jeremy/Development/dtn/NetworkManagement/dtnmp_commanding/
+[2015/06/24-09:28:59] [i] : /home/jeremy/Development/dtn/NetworkManagement/dtnmp_commanding/
+[2015/06/24-09:28:59] [i] : /home/jeremy/Development/dtn/NetworkManagement/dtnmp_commanding/
+[2015/06/24-09:28:59] [i] : /home/jeremy/Development/dtn/NetworkManagement/dtnmp_commanding/
+[2015/06/24-09:28:59] [i] : /home/jeremy/Development/dtn/NetworkManagement/dtnmp_commanding/
+[2015/06/24-09:28:59] [i] : /lib/x86_64-linux-gnu/libpthread.so.0(+0x80a4) [0x7ffff73260a4]
+[2015/06/24-09:28:59] [i] : /lib/x86_64-linux-gnu/libc.so.6(clone+0x6d) [0x7ffff683904d]
+[2015/06/24-09:28:59] at line 2117 of ici/sdr/sdrxn.c, Assertion failed. (from >= 0)
+[2015/06/24-09:28:59] [i] Current stack trace:
+[2015/06/24-09:28:59] [i] : /usr/local/lib/libici.so.0(printStackTrace+0x18) [0x7ffff774b8d8
+[2015/06/24-09:28:59] [i] : /usr/local/lib/libici.so.0(_iEnd+0x21) [0x7ffff774be41]
+[2015/06/24-09:28:59] [i] : /usr/local/lib/libici.so.0(_sdrfetch+0x98) [0x7ffff776cdc8]
+[2015/06/24-09:28:59] [i] : /usr/local/lib/libici.so.0(sdr_list_next+0x2d) [0x7ffff77704fd]
+[2015/06/24-09:28:59] [i] : /home/jeremy/Development/dtn/NetworkManagement/dtnmp_commanding/
+[2015/06/24-09:28:59] [i] : /home/jeremy/Development/dtn/NetworkManagement/dtnmp_commanding/
+[2015/06/24-09:28:59] [i] : /home/jeremy/Development/dtn/NetworkManagement/dtnmp_commanding/
+[2015/06/24-09:28:59] [i] : /home/jeremy/Development/dtn/NetworkManagement/dtnmp_commanding/
+[2015/06/24-09:28:59] [i] : /home/jeremy/Development/dtn/NetworkManagement/dtnmp_commanding/
+[2015/06/24-09:28:59] [i] : /home/jeremy/Development/dtn/NetworkManagement/dtnmp_commanding/
+[2015/06/24-09:28:59] [i] : /home/jeremy/Development/dtn/NetworkManagement/dtnmp_commanding/
+[2015/06/24-09:28:59] [i] : /lib/x86_64-linux-gnu/libpthread.so.0(+0x80a4) [0x7ffff73260a4]
+[2015/06/24-09:28:59] [i] : /lib/x86_64-linux-gnu/libc.so.6(clone+0x6d) [0x7ffff683904d]
+[2015/06/24-09:28:59] at line 2124 of ici/sdr/sdrxn.c, SDR boundaries or integrity violation. (read)
+[2015/06/24-09:28:59] at line 835 of ici/sdr/sdrxn.c, Transaction aborted.
+[2015/06/24-09:29:00] at line 360 of ici/daemon/rfxclock.c, rfxclock failed to begin new transaction.
+[2015/06/24-09:29:00] [i] rfxclock has ended.
+[2015/06/24-09:29:01] at line 122 of ici/sdr/sdrstring.c, Assertion failed. (sdrFetchSafe(sdrv))
+[2015/06/24-09:29:01] [i] Current stack trace:
+[2015/06/24-09:29:01] [i] : /usr/local/lib/libici.so.0(printStackTrace+0x18) [0x7ffff774b8d8
+[2015/06/24-09:29:01] [i] : /usr/local/lib/libici.so.0(_iEnd+0x21) [0x7ffff774be41]
+[2015/06/24-09:29:01] [i] : /usr/local/lib/libici.so.0(sdr_string_read+0xb0) [0x7ffff776f240
+[2015/06/24-09:29:01] [i] : /home/jeremy/Development/dtn/NetworkManagement/dtnmp_commanding/
+[2015/06/24-09:29:01] [i] : /home/jeremy/Development/dtn/NetworkManagement/dtnmp_commanding/
+[2015/06/24-09:29:01] [i] : /home/jeremy/Development/dtn/NetworkManagement/dtnmp_commanding/
+[2015/06/24-09:29:01] [i] : /home/jeremy/Development/dtn/NetworkManagement/dtnmp_commanding/
+[2015/06/24-09:29:01] [i] : /home/jeremy/Development/dtn/NetworkManagement/dtnmp_commanding/
+[2015/06/24-09:29:01] [i] : /home/jeremy/Development/dtn/NetworkManagement/dtnmp_commanding/
+[2015/06/24-09:29:01] [i] : /home/jeremy/Development/dtn/NetworkManagement/dtnmp_commanding/
+[2015/06/24-09:29:01] [i] : /lib/x86_64-linux-gnu/libpthread.so.0(+0x80a4) [0x7ffff73260a4]
+[2015/06/24-09:29:01] [i] : /lib/x86_64-linux-gnu/libc.so.6(clone+0x6d) [0x7ffff683904d]
+[2015/06/24-09:29:01] at line 551 of ici/sdr/sdrlist.c, Assertion failed. (sdrFetchSafe(sdrv))
+[2015/06/24-09:29:01] [i] Current stack trace:
+[2015/06/24-09:29:01] [i] : /usr/local/lib/libici.so.0(printStackTrace+0x18) [0x7ffff774b8d8
+[2015/06/24-09:29:01] [i] : /usr/local/lib/libici.so.0(_iEnd+0x21) [0x7ffff774be41]
+[2015/06/24-09:29:01] [i] : /usr/local/lib/libici.so.0(sdr_list_next+0x80) [0x7ffff7770550]
+[2015/06/24-09:29:01] [i] : /home/jeremy/Development/dtn/NetworkManagement/dtnmp_commanding/
+[2015/06/24-09:29:01] [i] : /home/jeremy/Development/dtn/NetworkManagement/dtnmp_commanding/
+[2015/06/24-09:29:01] [i] : /home/jeremy/Development/dtn/NetworkManagement/dtnmp_commanding/
+[2015/06/24-09:29:01] [i] : /home/jeremy/Development/dtn/NetworkManagement/dtnmp_commanding/
+[2015/06/24-09:29:01] [i] : /home/jeremy/Development/dtn/NetworkManagement/dtnmp_commanding/
+[2015/06/24-09:29:01] [i] : /home/jeremy/Development/dtn/NetworkManagement/dtnmp_commanding/
+[2015/06/24-09:29:01] [i] : /home/jeremy/Development/dtn/NetworkManagement/dtnmp_commanding/
+[2015/06/24-09:29:01] [i] : /lib/x86_64-linux-gnu/libpthread.so.0(+0x80a4) [0x7ffff73260a4]
+[2015/06/24-09:29:01] [i] : /lib/x86_64-linux-gnu/libc.so.6(clone+0x6d) [0x7ffff683904d]
+[2015/06/24-09:29:01] at line 393 of ../shared/utils/ion_if.c, Assertion failed. (sdr_begin_xn(sdr))
+[2015/06/24-09:29:01] [i] Current stack trace:
+[2015/06/24-09:29:01] [i] : /usr/local/lib/libici.so.0(printStackTrace+0x18) [0x7ffff774b8d8
+[2015/06/24-09:29:01] [i] : /usr/local/lib/libici.so.0(_iEnd+0x21) [0x7ffff774be41]
+[2015/06/24-09:29:01] [i] : /home/jeremy/Development/dtn/NetworkManagement/dtnmp_commanding/
+[2015/06/24-09:29:01] [i] : /home/jeremy/Development/dtn/NetworkManagement/dtnmp_commanding/
+[2015/06/24-09:29:01] [i] : /home/jeremy/Development/dtn/NetworkManagement/dtnmp_commanding/
+[2015/06/24-09:29:01] [i] : /lib/x86_64-linux-gnu/libpthread.so.0(+0x80a4) [0x7ffff73260a4]
+[2015/06/24-09:29:01] [i] : /lib/x86_64-linux-gnu/libc.so.6(clone+0x6d) [0x7ffff683904d]
+[2015/06/24-09:29:01] at line 431 of ici/library/lyst.c, Assertion failed. (elt)
+[2015/06/24-09:29:01] [i] Current stack trace:
+[2015/06/24-09:29:01] [i] : /usr/local/lib/libici.so.0(printStackTrace+0x18) [0x7ffff774b8d8
+[2015/06/24-09:29:01] [i] : /usr/local/lib/libici.so.0(_iEnd+0x21) [0x7ffff774be41]
+[2015/06/24-09:29:01] [i] : /usr/local/lib/libici.so.0(lyst_next+0x28) [0x7ffff774fec8]
+[2015/06/24-09:29:01] [i] : /home/jeremy/Development/dtn/NetworkManagement/dtnmp_commanding/
+[2015/06/24-09:29:01] [i] : /home/jeremy/Development/dtn/NetworkManagement/dtnmp_commanding/
+[2015/06/24-09:29:01] [i] : /lib/x86_64-linux-gnu/libpthread.so.0(+0x80a4) [0x7ffff73260a4]
+[2015/06/24-09:29:01] [i] : /lib/x86_64-linux-gnu/libc.so.6(clone+0x6d) [0x7ffff683904d]
+[2015/06/24-09:29:01] at line 50 of ../shared/utils/db.c, Assertion failed. (sdr_in_xn(sdrv))
+[2015/06/24-09:29:01] [i] Current stack trace:
+[2015/06/24-09:29:01] [i] : /usr/local/lib/libici.so.0(printStackTrace+0x18) [0x7ffff774b8d8
+[2015/06/24-09:29:01] [i] : /usr/local/lib/libici.so.0(_iEnd+0x21) [0x7ffff774be41]
+[2015/06/24-09:29:01] [i] : /home/jeremy/Development/dtn/NetworkManagement/dtnmp_commanding/
+[2015/06/24-09:29:01] [i] : /home/jeremy/Development/dtn/NetworkManagement/dtnmp_commanding/
+[2015/06/24-09:29:01] [i] : /home/jeremy/Development/dtn/NetworkManagement/dtnmp_commanding/
+[2015/06/24-09:29:01] [i] : /lib/x86_64-linux-gnu/libpthread.so.0(+0x80a4) [0x7ffff73260a4]
+[2015/06/24-09:29:01] [i] : /lib/x86_64-linux-gnu/libc.so.6(clone+0x6d) [0x7ffff683904d]
+[2015/06/24-09:29:01] at line 531 of ici/sdr/sdrlist.c, Assertion failed. (sdrFetchSafe(sdrv))
+[2015/06/24-09:29:01] [i] Current stack trace:
+[2015/06/24-09:29:01] [i] : /usr/local/lib/libici.so.0(printStackTrace+0x18) [0x7ffff774b8d8
+[2015/06/24-09:29:01] [i] : /usr/local/lib/libici.so.0(_iEnd+0x21) [0x7ffff774be41]
+[2015/06/24-09:29:01] [i] : /usr/local/lib/libici.so.0(sdr_list_first+0x80) [0x7ffff7770430]
+[2015/06/24-09:29:01] [i] : /home/jeremy/Development/dtn/NetworkManagement/dtnmp_commanding/
+[2015/06/24-09:29:01] [i] : /home/jeremy/Development/dtn/NetworkManagement/dtnmp_commanding/
+[2015/06/24-09:29:01] [i] : /home/jeremy/Development/dtn/NetworkManagement/dtnmp_commanding/
+[2015/06/24-09:29:01] [i] : /lib/x86_64-linux-gnu/libpthread.so.0(+0x80a4) [0x7ffff73260a4]
+[2015/06/24-09:29:01] [i] : /lib/x86_64-linux-gnu/libc.so.6(clone+0x6d) [0x7ffff683904d]
+[2015/06/24-09:29:02] at line 838 of cfdp/library/libcfdpP.c, Can't find CFDP database.
+[2015/06/24-09:29:02] [!] ionrestart can't attach to CFDP.
+[2015/06/24-09:29:02] [?] Can't find ION security database.
+[2015/06/24-09:29:02] [i] ipnfw forwarder has ended.
+[2015/06/24-09:29:02] [i] Endpoint has been stopped.
+[2015/06/24-09:29:02] [i] Endpoint has been stopped.
+[2015/06/24-09:29:02] [i] Administrative endpoint terminated.
+[2015/06/24-09:29:02] [i] ipnadminep has ended.
+[2015/06/24-09:29:02] [i] Outduct has been stopped.
+[2015/06/24-09:29:02] [i] ltpclo duct has ended.
+[2015/06/24-09:29:02] [i] bptransit has ended.
+[2015/06/24-09:29:02] [i] bpclock has ended.
+[2015/06/24-09:29:02] [i] ltpcli receiver thread has ended.
+[2015/06/24-09:29:02] [i] ltpcli duct has ended.
+[2015/06/24-09:29:02] [i] Endpoint has been stopped.
+[2015/06/24-09:29:03] [i] ionrestart: BP stopped.
+[2015/06/24-09:29:03] [i] LTP meter to engine 1 is stopped.
+[2015/06/24-09:29:03] [i] ltpmeter has ended.
+[2015/06/24-09:29:03] [i] LSO to engine 1 is stopped.
+[2015/06/24-09:29:03] [i] udplsi receiver thread has ended.
+[2015/06/24-09:29:03] [i] udplso receiver thread has ended.
+[2015/06/24-09:29:03] [i] udplsi has ended.
+[2015/06/24-09:29:03] [i] udplso has ended.
+[2015/06/24-09:29:03] [i] ltpclock has ended.
+[2015/06/24-09:29:03] [i] ionrestart: LTP stopped.
+[2015/06/24-09:29:03] [i] ionrestart: rfxclock stopped.
+[2015/06/24-09:29:03] [i] ionrestart: BP volatile database dropped.
+[2015/06/24-09:29:03] at line 1905 of ici/library/platform_sm.c, Assertion failed. (i < sembase->idsAllocated)
+[2015/06/24-09:29:03] [i] Current stack trace:
+[2015/06/24-09:29:03] [i] : /usr/local/lib/libici.so.0(printStackTrace+0x18) [0x7ffff79838d8
+[2015/06/24-09:29:03] [i] : /usr/local/lib/libici.so.0(_iEnd+0x21) [0x7ffff7983e41]
+[2015/06/24-09:29:03] [i] : /usr/local/lib/libici.so.0(sm_SemTake+0x120) [0x7ffff79865d0]
+[2015/06/24-09:29:03] [i] : /usr/local/lib/libici.so.0(Sm_rbt_destroy+0x4a) [0x7ffff79a018a]
+[2015/06/24-09:29:03] [i] : /usr/local/lib/libici.so.0(+0x12307) [0x7ffff798a307]
+[2015/06/24-09:29:03] [i] : /usr/local/lib/libici.so.0(Sm_list_destroy+0x2f) [0x7ffff798a8af
+[2015/06/24-09:29:03] [i] : /usr/local/lib/libltp.so.0(+0x73b6) [0x7ffff73233b6]
+[2015/06/24-09:29:03] [i] : /usr/local/lib/libltp.so.0(ltpDropVdb+0xc1) [0x7ffff7325db1]
+[2015/06/24-09:29:03] [i] : ionrestart() [0x401395]
+[2015/06/24-09:29:03] [i] : /lib/x86_64-linux-gnu/libc.so.6(__libc_start_main+0xf5) [0x7ffff
+[2015/06/24-09:29:03] [i] : ionrestart() [0x4015ef]
+[2015/06/24-09:29:03] at line 82 of ici/library/smrbt.c, Can't lock red-black table.
+[2015/06/24-09:29:03] at line 1882 of ici/library/platform_sm.c, Assertion failed. (i < sembase->idsAllocated)
+[2015/06/24-09:29:03] [i] Current stack trace:
+[2015/06/24-09:29:03] [i] : /usr/local/lib/libici.so.0(printStackTrace+0x18) [0x7ffff79838d8
+[2015/06/24-09:29:03] [i] : /usr/local/lib/libici.so.0(_iEnd+0x21) [0x7ffff7983e41]
+[2015/06/24-09:29:03] [i] : /usr/local/lib/libici.so.0(sm_SemDelete+0x3e) [0x7ffff798635e]
+[2015/06/24-09:29:03] [i] : /usr/local/lib/libici.so.0(Sm_rbt_destroy+0x74) [0x7ffff79a01b4]
+[2015/06/24-09:29:03] [i] : /usr/local/lib/libici.so.0(+0x12307) [0x7ffff798a307]
+[2015/06/24-09:29:03] [i] : /usr/local/lib/libici.so.0(Sm_list_destroy+0x2f) [0x7ffff798a8af
+[2015/06/24-09:29:03] [i] : /usr/local/lib/libltp.so.0(+0x73b6) [0x7ffff73233b6]
+[2015/06/24-09:29:03] [i] : /usr/local/lib/libltp.so.0(ltpDropVdb+0xc1) [0x7ffff7325db1]
+[2015/06/24-09:29:03] [i] : ionrestart() [0x401395]
+[2015/06/24-09:29:03] [i] : /lib/x86_64-linux-gnu/libc.so.6(__libc_start_main+0xf5) [0x7ffff
+[2015/06/24-09:29:03] [i] : ionrestart() [0x4015ef]
+[2015/06/24-09:29:03] [i] ionrestart: LTP volatile database dropped.
+[2015/06/24-09:29:03] [i] ionrestart: ION volatile database dropped.
+[2015/06/24-09:29:03] [i] ionrestart: ION volatile database raised.
+[2015/06/24-09:29:03] [i] Span to engine 1 (max BER 0.000001, max xmit segment size 1024, max recv segment size 1): xmit segment loss rate 0.008266, recv segment loss rate 0.000008, max timeouts 3.
+[2015/06/24-09:29:03] [i] ionrestart: LTP volatile database raised.
+[2015/06/24-09:29:03] [i] ionrestart: BP volatile database raised.
+[2015/06/24-09:29:03] [i] ionrestart: rfxclock restarted.
+[2015/06/24-09:29:03] at line 750 of ltp/library/libltpP.c, LTP can't start: no LSI command.
+[2015/06/24-09:29:03] [i] rfxclock is running.
+[2015/06/24-09:29:04] [i] No congestion collapse predicted.
+[2015/06/24-09:29:04] [i] ionwarn finished.
+[2015/06/24-09:29:08] [!] ionrestart: LTP not restarted.
+[2015/06/24-09:29:08] [i] ionrestart: BP restarted.
+[2015/06/24-09:29:08] [i] ionrestart: finished restarting ION.
+[2015/06/24-09:29:08] [?] Can't find ION security database.
+[2015/06/24-09:29:08] [?] Can't find ION security database.
+[2015/06/24-09:29:08] [?] Can't find ION security database.
+[2015/06/24-09:29:08] [?] Can't find ION security database.
+[2015/06/24-09:29:08] [i] ipnadminep is running.
+[2015/06/24-09:29:08] [i] ipnfw is running.
+[2015/06/24-09:29:08] [i] ltpclo is running.
+[2015/06/24-09:29:08] [?] Can't find ION security database.
+[2015/06/24-09:29:08] [i] ltpcli is running.
+[2015/06/24-09:29:08] [i] bptransit is running.
+[2015/06/24-09:29:08] [?] Can't find ION security database.
+[2015/06/24-09:29:08] [i] bpclock is running.
+[2015/06/24-09:30:18] [?] Can't find ION security database.
+[2015/06/24-09:30:18] at line 2117 of ici/sdr/sdrxn.c, Assertion failed. (from >= 0)
+[2015/06/24-09:30:18] [i] Current stack trace:
+[2015/06/24-09:30:18] [i] : /usr/local/lib/libici.so.0(printStackTrace+0x18) [0x7ffff774b8d8
+[2015/06/24-09:30:18] [i] : /usr/local/lib/libici.so.0(_iEnd+0x21) [0x7ffff774be41]
+[2015/06/24-09:30:18] [i] : /usr/local/lib/libici.so.0(_sdrfetch+0x98) [0x7ffff776cdc8]
+[2015/06/24-09:30:18] [i] : /usr/local/lib/libici.so.0(sdr_list_data+0x40) [0x7ffff7770870]
+[2015/06/24-09:30:18] [i] : /home/jeremy/Development/dtn/NetworkManagement/dtnmp_commanding/
+[2015/06/24-09:30:18] [i] : /home/jeremy/Development/dtn/NetworkManagement/dtnmp_commanding/
+[2015/06/24-09:30:18] [i] : /home/jeremy/Development/dtn/NetworkManagement/dtnmp_commanding/
+[2015/06/24-09:30:18] [i] : /home/jeremy/Development/dtn/NetworkManagement/dtnmp_commanding/
+[2015/06/24-09:30:18] [i] : /home/jeremy/Development/dtn/NetworkManagement/dtnmp_commanding/
+[2015/06/24-09:30:18] [i] : /home/jeremy/Development/dtn/NetworkManagement/dtnmp_commanding/
+[2015/06/24-09:30:18] [i] : /home/jeremy/Development/dtn/NetworkManagement/dtnmp_commanding/
+[2015/06/24-09:30:18] [i] : /lib/x86_64-linux-gnu/libpthread.so.0(+0x80a4) [0x7ffff73260a4]
+[2015/06/24-09:30:18] [i] : /lib/x86_64-linux-gnu/libc.so.6(clone+0x6d) [0x7ffff683904d]
+[2015/06/24-09:30:18] at line 124 of ici/sdr/sdrstring.c, Assertion failed. (string)
+[2015/06/24-09:30:18] [i] Current stack trace:
+[2015/06/24-09:30:18] [i] : /usr/local/lib/libici.so.0(printStackTrace+0x18) [0x7ffff774b8d8
+[2015/06/24-09:30:18] [i] : /usr/local/lib/libici.so.0(_iEnd+0x21) [0x7ffff774be41]
+[2015/06/24-09:30:18] [i] : /usr/local/lib/libici.so.0(sdr_string_read+0x88) [0x7ffff776f218
+[2015/06/24-09:30:18] [i] : /home/jeremy/Development/dtn/NetworkManagement/dtnmp_commanding/
+[2015/06/24-09:30:18] [i] : /home/jeremy/Development/dtn/NetworkManagement/dtnmp_commanding/
+[2015/06/24-09:30:18] [i] : /home/jeremy/Development/dtn/NetworkManagement/dtnmp_commanding/
+[2015/06/24-09:30:18] [i] : /home/jeremy/Development/dtn/NetworkManagement/dtnmp_commanding/
+[2015/06/24-09:30:18] [i] : /home/jeremy/Development/dtn/NetworkManagement/dtnmp_commanding/
+[2015/06/24-09:30:18] [i] : /home/jeremy/Development/dtn/NetworkManagement/dtnmp_commanding/
+[2015/06/24-09:30:18] [i] : /home/jeremy/Development/dtn/NetworkManagement/dtnmp_commanding/
+[2015/06/24-09:30:18] [i] : /lib/x86_64-linux-gnu/libpthread.so.0(+0x80a4) [0x7ffff73260a4]
+[2015/06/24-09:30:18] [i] : /lib/x86_64-linux-gnu/libc.so.6(clone+0x6d) [0x7ffff683904d]
+[2015/06/24-09:30:18] at line 2117 of ici/sdr/sdrxn.c, Assertion failed. (from >= 0)
+[2015/06/24-09:30:18] [i] Current stack trace:
+[2015/06/24-09:30:18] [i] : /usr/local/lib/libici.so.0(printStackTrace+0x18) [0x7ffff774b8d8
+[2015/06/24-09:30:18] [i] : /usr/local/lib/libici.so.0(_iEnd+0x21) [0x7ffff774be41]
+[2015/06/24-09:30:18] [i] : /usr/local/lib/libici.so.0(_sdrfetch+0x98) [0x7ffff776cdc8]
+[2015/06/24-09:30:18] [i] : /usr/local/lib/libici.so.0(sdr_list_next+0x2d) [0x7ffff77704fd]
+[2015/06/24-09:30:18] [i] : /home/jeremy/Development/dtn/NetworkManagement/dtnmp_commanding/
+[2015/06/24-09:30:18] [i] : /home/jeremy/Development/dtn/NetworkManagement/dtnmp_commanding/
+[2015/06/24-09:30:18] [i] : /home/jeremy/Development/dtn/NetworkManagement/dtnmp_commanding/
+[2015/06/24-09:30:18] [i] : /home/jeremy/Development/dtn/NetworkManagement/dtnmp_commanding/
+[2015/06/24-09:30:18] [i] : /home/jeremy/Development/dtn/NetworkManagement/dtnmp_commanding/
+[2015/06/24-09:30:18] [i] : /home/jeremy/Development/dtn/NetworkManagement/dtnmp_commanding/
+[2015/06/24-09:30:18] [i] : /home/jeremy/Development/dtn/NetworkManagement/dtnmp_commanding/
+[2015/06/24-09:30:18] [i] : /lib/x86_64-linux-gnu/libpthread.so.0(+0x80a4) [0x7ffff73260a4]
+[2015/06/24-09:30:18] [i] : /lib/x86_64-linux-gnu/libc.so.6(clone+0x6d) [0x7ffff683904d]
+[2015/06/24-09:30:18] at line 2124 of ici/sdr/sdrxn.c, SDR boundaries or integrity violation. (read)
+[2015/06/24-09:30:18] at line 835 of ici/sdr/sdrxn.c, Transaction aborted.
+[2015/06/24-09:30:18] at line 360 of ici/daemon/rfxclock.c, rfxclock failed to begin new transaction.
+[2015/06/24-09:30:18] [i] rfxclock has ended.
+[2015/06/24-09:30:18] at line 53 of bp/daemon/bpclock.c, Assertion failed. (sdr_begin_xn(sdr))
+[2015/06/24-09:30:18] [i] Current stack trace:
+[2015/06/24-09:30:18] [i] : /usr/local/lib/libici.so.0(printStackTrace+0x18) [0x7ffff77458d8
+[2015/06/24-09:30:18] [i] : /usr/local/lib/libici.so.0(_iEnd+0x21) [0x7ffff7745e41]
+[2015/06/24-09:30:18] [i] : bpclock() [0x401114]
+[2015/06/24-09:30:18] [i] : /lib/x86_64-linux-gnu/libc.so.6(__libc_start_main+0xf5) [0x7ffff
+[2015/06/24-09:30:18] [i] : bpclock() [0x40165f]
+[2015/06/24-09:30:18] at line 375 of bp/daemon/bpclock.c, Can't dispatch events.
+[2015/06/24-09:30:18] [i] bpclock has ended.
+[2015/06/24-09:30:19] at line 704 of bp/library/libbp.c, Assertion failed. (sdr_begin_xn(sdr))
+[2015/06/24-09:30:19] [i] Current stack trace:
+[2015/06/24-09:30:19] [i] : /usr/local/lib/libici.so.0(printStackTrace+0x18) [0x7ffff774b8d8
+[2015/06/24-09:30:19] [i] : /usr/local/lib/libici.so.0(_iEnd+0x21) [0x7ffff774be41]
+[2015/06/24-09:30:19] [i] : /usr/local/lib/libbp.so.0(bp_receive+0x341) [0x7ffff7992501]
+[2015/06/24-09:30:19] [i] : /home/jeremy/Development/dtn/NetworkManagement/dtnmp_commanding/
+[2015/06/24-09:30:19] [i] : /home/jeremy/Development/dtn/NetworkManagement/dtnmp_commanding/
+[2015/06/24-09:30:19] [i] : /lib/x86_64-linux-gnu/libpthread.so.0(+0x80a4) [0x7ffff73260a4]
+[2015/06/24-09:30:19] [i] : /lib/x86_64-linux-gnu/libc.so.6(clone+0x6d) [0x7ffff683904d]
+[2015/06/24-09:30:21] at line 838 of cfdp/library/libcfdpP.c, Can't find CFDP database.
+[2015/06/24-09:30:21] [!] ionrestart can't attach to CFDP.
+[2015/06/24-09:30:21] [?] Can't find ION security database.
+[2015/06/24-09:30:21] [i] ipnfw forwarder has ended.
+[2015/06/24-09:30:21] [i] Endpoint has been stopped.
+[2015/06/24-09:30:21] [i] Administrative endpoint terminated.
+[2015/06/24-09:30:21] [i] ipnadminep has ended.
+[2015/06/24-09:30:21] [i] Outduct has been stopped.
+[2015/06/24-09:30:21] [i] ltpclo duct has ended.
+[2015/06/24-09:30:21] [i] bptransit has ended.
+[2015/06/24-09:30:21] [i] ltpcli receiver thread has ended.
+[2015/06/24-09:30:21] [i] ltpcli duct has ended.
+[2015/06/24-09:30:22] [i] ionrestart: BP stopped.
+[2015/06/24-09:30:22] [i] ionrestart: LTP stopped.
+[2015/06/24-09:30:22] [i] ionrestart: rfxclock stopped.
+[2015/06/24-09:30:22] [i] ionrestart: BP volatile database dropped.
+[2015/06/24-09:30:22] [i] ionrestart: LTP volatile database dropped.
+[2015/06/24-09:30:22] [i] ionrestart: ION volatile database dropped.
+[2015/06/24-09:30:22] [i] ionrestart: ION volatile database raised.
+[2015/06/24-09:30:22] [i] Span to engine 1 (max BER 0.000001, max xmit segment size 1024, max recv segment size 1): xmit segment loss rate 0.008266, recv segment loss rate 0.000008, max timeouts 3.
+[2015/06/24-09:30:22] [i] ionrestart: LTP volatile database raised.
+[2015/06/24-09:30:22] [i] ionrestart: BP volatile database raised.
+[2015/06/24-09:30:22] [i] ionrestart: rfxclock restarted.
+[2015/06/24-09:30:22] at line 750 of ltp/library/libltpP.c, LTP can't start: no LSI command.
+[2015/06/24-09:30:22] [i] rfxclock is running.
+[2015/06/24-09:30:23] [i] No congestion collapse predicted.
+[2015/06/24-09:30:23] [i] ionwarn finished.
+[2015/06/24-09:30:27] [!] ionrestart: LTP not restarted.
+[2015/06/24-09:30:27] [i] ionrestart: BP restarted.
+[2015/06/24-09:30:27] [i] ionrestart: finished restarting ION.
+[2015/06/24-09:30:27] [?] Can't find ION security database.
+[2015/06/24-09:30:27] [i] bptransit is running.
+[2015/06/24-09:30:27] [?] Can't find ION security database.
+[2015/06/24-09:30:27] [?] Can't find ION security database.
+[2015/06/24-09:30:27] [?] Can't find ION security database.
+[2015/06/24-09:30:27] [i] ipnadminep is running.
+[2015/06/24-09:30:27] [i] ipnfw is running.
+[2015/06/24-09:30:27] [i] ltpclo is running.
+[2015/06/24-09:30:27] [?] Can't find ION security database.
+[2015/06/24-09:30:27] [?] Can't find ION security database.
+[2015/06/24-09:30:27] [i] bpclock is running.
+[2015/06/24-09:30:27] [i] ltpcli is running.
+[2015/06/24-09:32:37] [?] Can't find ION security database.
+[2015/06/24-09:32:37] at line 2124 of ici/sdr/sdrxn.c, SDR boundaries or integrity violation. (read)
+[2015/06/24-09:32:37] at line 835 of ici/sdr/sdrxn.c, Transaction aborted.
+[2015/06/24-09:32:38] at line 360 of ici/daemon/rfxclock.c, rfxclock failed to begin new transaction.
+[2015/06/24-09:32:38] [i] rfxclock has ended.
+[2015/06/24-09:32:38] at line 53 of bp/daemon/bpclock.c, Assertion failed. (sdr_begin_xn(sdr))
+[2015/06/24-09:32:38] [i] Current stack trace:
+[2015/06/24-09:32:38] [i] : /usr/local/lib/libici.so.0(printStackTrace+0x18) [0x7ffff77458d8
+[2015/06/24-09:32:38] [i] : /usr/local/lib/libici.so.0(_iEnd+0x21) [0x7ffff7745e41]
+[2015/06/24-09:32:38] [i] : bpclock() [0x401114]
+[2015/06/24-09:32:38] [i] : /lib/x86_64-linux-gnu/libc.so.6(__libc_start_main+0xf5) [0x7ffff
+[2015/06/24-09:32:38] [i] : bpclock() [0x40165f]
+[2015/06/24-09:32:38] at line 375 of bp/daemon/bpclock.c, Can't dispatch events.
+[2015/06/24-09:32:38] [i] bpclock has ended.
+[2015/06/24-09:32:38] at line 704 of bp/library/libbp.c, Assertion failed. (sdr_begin_xn(sdr))
+[2015/06/24-09:32:38] [i] Current stack trace:
+[2015/06/24-09:32:38] [i] : /usr/local/lib/libici.so.0(printStackTrace+0x18) [0x7ffff774b8d8
+[2015/06/24-09:32:38] [i] : /usr/local/lib/libici.so.0(_iEnd+0x21) [0x7ffff774be41]
+[2015/06/24-09:32:38] [i] : /usr/local/lib/libbp.so.0(bp_receive+0x341) [0x7ffff7992501]
+[2015/06/24-09:32:38] [i] : /home/jeremy/Development/dtn/NetworkManagement/dtnmp_commanding/
+[2015/06/24-09:32:38] [i] : /home/jeremy/Development/dtn/NetworkManagement/dtnmp_commanding/
+[2015/06/24-09:32:38] [i] : /lib/x86_64-linux-gnu/libpthread.so.0(+0x80a4) [0x7ffff73260a4]
+[2015/06/24-09:32:38] [i] : /lib/x86_64-linux-gnu/libc.so.6(clone+0x6d) [0x7ffff683904d]
+[2015/06/24-09:32:40] at line 838 of cfdp/library/libcfdpP.c, Can't find CFDP database.
+[2015/06/24-09:32:40] [!] ionrestart can't attach to CFDP.
+[2015/06/24-09:32:40] [?] Can't find ION security database.
+[2015/06/24-09:32:40] [i] Endpoint has been stopped.
+[2015/06/24-09:32:40] [i] Administrative endpoint terminated.
+[2015/06/24-09:32:40] [i] ipnadminep has ended.
+[2015/06/24-09:32:40] [i] ipnfw forwarder has ended.
+[2015/06/24-09:32:40] [i] bptransit has ended.
+[2015/06/24-09:32:40] [i] ltpcli receiver thread has ended.
+[2015/06/24-09:32:40] [i] ltpcli duct has ended.
+[2015/06/24-09:32:40] [i] ltpclo duct has ended.
+[2015/06/24-09:32:41] [i] ionrestart: BP stopped.
+[2015/06/24-09:32:41] [i] ionrestart: LTP stopped.
+[2015/06/24-09:32:41] [i] ionrestart: rfxclock stopped.
+[2015/06/24-09:32:41] [i] ionrestart: BP volatile database dropped.
+[2015/06/24-09:32:41] [i] ionrestart: LTP volatile database dropped.
+[2015/06/24-09:32:41] [i] ionrestart: ION volatile database dropped.
+[2015/06/24-09:32:41] [i] ionrestart: ION volatile database raised.
+[2015/06/24-09:32:41] [i] Span to engine 1 (max BER 0.000001, max xmit segment size 1024, max recv segment size 1): xmit segment loss rate 0.008266, recv segment loss rate 0.000008, max timeouts 3.
+[2015/06/24-09:32:41] [i] ionrestart: LTP volatile database raised.
+[2015/06/24-09:32:41] [i] ionrestart: BP volatile database raised.
+[2015/06/24-09:32:41] [i] ionrestart: rfxclock restarted.
+[2015/06/24-09:32:41] at line 750 of ltp/library/libltpP.c, LTP can't start: no LSI command.
+[2015/06/24-09:32:41] [i] rfxclock is running.
+[2015/06/24-09:32:42] [i] No congestion collapse predicted.
+[2015/06/24-09:32:42] [i] ionwarn finished.
+[2015/06/24-09:32:44] [?] Can't find ION security database.
+[2015/06/24-09:32:46] [!] ionrestart: LTP not restarted.
+[2015/06/24-09:32:46] [i] ionrestart: BP restarted.
+[2015/06/24-09:32:46] [i] ionrestart: finished restarting ION.
+[2015/06/24-09:32:46] [?] Can't find ION security database.
+[2015/06/24-09:32:46] [i] bpclock is running.
+[2015/06/24-09:32:46] [?] Can't find ION security database.
+[2015/06/24-09:32:46] [?] Can't find ION security database.
+[2015/06/24-09:32:46] [i] bptransit is running.
+[2015/06/24-09:32:46] [?] Can't find ION security database.
+[2015/06/24-09:32:46] [i] ltpcli is running.
+[2015/06/24-09:32:46] [i] ipnadminep is running.
+[2015/06/24-09:32:46] [?] Can't find ION security database.
+[2015/06/24-09:32:46] [i] ltpclo is running.
+[2015/06/24-09:32:46] [?] Can't find ION security database.
+[2015/06/24-09:32:46] [i] ipnfw is running.
+[2015/06/24-09:32:47] [?] Can't find ION security database.
+[2015/06/24-09:32:47] at line 2124 of ici/sdr/sdrxn.c, SDR boundaries or integrity violation. (read)
+[2015/06/24-09:32:47] at line 835 of ici/sdr/sdrxn.c, Transaction aborted.
+[2015/06/24-09:32:47] at line 360 of ici/daemon/rfxclock.c, rfxclock failed to begin new transaction.
+[2015/06/24-09:32:47] [i] rfxclock has ended.
+[2015/06/24-09:32:47] at line 53 of bp/daemon/bpclock.c, Assertion failed. (sdr_begin_xn(sdr))
+[2015/06/24-09:32:47] [i] Current stack trace:
+[2015/06/24-09:32:47] [i] : /usr/local/lib/libici.so.0(printStackTrace+0x18) [0x7ffff77458d8
+[2015/06/24-09:32:47] [i] : /usr/local/lib/libici.so.0(_iEnd+0x21) [0x7ffff7745e41]
+[2015/06/24-09:32:47] [i] : bpclock() [0x401114]
+[2015/06/24-09:32:47] [i] : /lib/x86_64-linux-gnu/libc.so.6(__libc_start_main+0xf5) [0x7ffff
+[2015/06/24-09:32:47] [i] : bpclock() [0x40165f]
+[2015/06/24-09:32:47] at line 375 of bp/daemon/bpclock.c, Can't dispatch events.
+[2015/06/24-09:32:47] [i] bpclock has ended.
+[2015/06/24-09:32:47] at line 1482 of ltp/library/libltpP.c, Assertion failed. (sdr_begin_xn(sdr))
+[2015/06/24-09:32:47] [i] Current stack trace:
+[2015/06/24-09:32:47] [i] : /usr/local/lib/libici.so.0(printStackTrace+0x18) [0x7ffff71258d8
+[2015/06/24-09:32:47] [i] : /usr/local/lib/libici.so.0(_iEnd+0x21) [0x7ffff7125e41]
+[2015/06/24-09:32:47] [i] : /usr/local/lib/libltp.so.0(ltpAttachClient+0x80) [0x7ffff736c820
+[2015/06/24-09:32:47] [i] : ltpcli() [0x4015f2]
+[2015/06/24-09:32:47] [i] : /lib/x86_64-linux-gnu/libpthread.so.0(+0x80a4) [0x7ffff7bc70a4]
+[2015/06/24-09:32:47] [i] : /lib/x86_64-linux-gnu/libc.so.6(clone+0x6d) [0x7ffff6e5704d]
+[2015/06/24-09:32:47] at line 254 of bp/ltp/ltpcli.c, ltpcli can't open client access. (1)
+[2015/06/24-09:32:47] at line 128 of bp/daemon/bptransit.c, Assertion failed. (sdr_begin_xn(sdr))
+[2015/06/24-09:32:47] [i] Current stack trace:
+[2015/06/24-09:32:47] [i] : /usr/local/lib/libici.so.0(printStackTrace+0x18) [0x7ffff77458d8
+[2015/06/24-09:32:47] [i] : /usr/local/lib/libici.so.0(_iEnd+0x21) [0x7ffff7745e41]
+[2015/06/24-09:32:47] [i] : bptransit() [0x401ae4]
+[2015/06/24-09:32:47] [i] : /lib/x86_64-linux-gnu/libpthread.so.0(+0x80a4) [0x7ffff7bc70a4]
+[2015/06/24-09:32:47] [i] : /lib/x86_64-linux-gnu/libc.so.6(clone+0x6d) [0x7ffff747704d]
+[2015/06/24-09:32:47] [i] ltpcli duct has ended.
+[2015/06/24-09:32:48] at line 704 of bp/library/libbp.c, Assertion failed. (sdr_begin_xn(sdr))
+[2015/06/24-09:32:48] [i] Current stack trace:
+[2015/06/24-09:32:48] [i] : /usr/local/lib/libici.so.0(printStackTrace+0x18) [0x7ffff774b8d8
+[2015/06/24-09:32:48] [i] : /usr/local/lib/libici.so.0(_iEnd+0x21) [0x7ffff774be41]
+[2015/06/24-09:32:48] [i] : /usr/local/lib/libbp.so.0(bp_receive+0x341) [0x7ffff7992501]
+[2015/06/24-09:32:48] [i] : /home/jeremy/Development/dtn/NetworkManagement/dtnmp_commanding/
+[2015/06/24-09:32:48] [i] : /home/jeremy/Development/dtn/NetworkManagement/dtnmp_commanding/
+[2015/06/24-09:32:48] [i] : /lib/x86_64-linux-gnu/libpthread.so.0(+0x80a4) [0x7ffff73260a4]
+[2015/06/24-09:32:48] [i] : /lib/x86_64-linux-gnu/libc.so.6(clone+0x6d) [0x7ffff683904d]
+[2015/06/24-09:32:50] at line 838 of cfdp/library/libcfdpP.c, Can't find CFDP database.
+[2015/06/24-09:32:50] [!] ionrestart can't attach to CFDP.
+[2015/06/24-09:32:50] [?] Can't find ION security database.
+[2015/06/24-09:32:50] [i] ipnfw forwarder has ended.
+[2015/06/24-09:32:50] [i] Endpoint has been stopped.
+[2015/06/24-09:32:50] [i] Endpoint has been stopped.
+[2015/06/24-09:32:50] [i] Administrative endpoint terminated.
+[2015/06/24-09:32:50] [i] ipnadminep has ended.
+[2015/06/24-09:32:50] [i] Outduct has been stopped.
+[2015/06/24-09:32:50] [i] ltpclo duct has ended.
+[2015/06/24-09:32:50] [i] bptransit has ended.
+[2015/06/24-09:32:51] [i] ionrestart: BP stopped.
+[2015/06/24-09:32:51] [i] ionrestart: LTP stopped.
+[2015/06/24-09:32:51] [i] ionrestart: rfxclock stopped.
+[2015/06/24-09:32:51] [i] ionrestart: BP volatile database dropped.
+[2015/06/24-09:32:51] [i] ionrestart: LTP volatile database dropped.
+[2015/06/24-09:32:51] [i] ionrestart: ION volatile database dropped.
+[2015/06/24-09:32:51] [i] ionrestart: ION volatile database raised.
+[2015/06/24-09:32:51] [i] Span to engine 1 (max BER 0.000001, max xmit segment size 1024, max recv segment size 1): xmit segment loss rate 0.008266, recv segment loss rate 0.000008, max timeouts 3.
+[2015/06/24-09:32:51] [i] ionrestart: LTP volatile database raised.
+[2015/06/24-09:32:51] [i] ionrestart: BP volatile database raised.
+[2015/06/24-09:32:51] [!] Inferred restart loop.  Tasks not restarted.
+[2015/06/24-09:32:51] [i] ionrestart: finished restarting ION.
+[2015/06/24-09:33:01] [?] Can't find ION security database.
+[2015/06/24-09:33:01] at line 1964 of ici/library/platform_sm.c, Assertion failed. (i >= 0)
+[2015/06/24-09:33:01] [i] Current stack trace:
+[2015/06/24-09:33:01] [i] : /usr/local/lib/libici.so.0(printStackTrace+0x18) [0x7f22ed6058d8
+[2015/06/24-09:33:01] [i] : /usr/local/lib/libici.so.0(_iEnd+0x21) [0x7f22ed605e41]
+[2015/06/24-09:33:01] [i] : /usr/local/lib/libici.so.0(sm_SemEnd+0xa8) [0x7f22ed608708]
+[2015/06/24-09:33:01] [i] : /usr/local/lib/libbp.so.0(bpStop+0x157) [0x7f22ed84ecd7]
+[2015/06/24-09:33:01] [i] : bpadmin() [0x401f48]
+[2015/06/24-09:33:01] [i] : /lib/x86_64-linux-gnu/libc.so.6(__libc_start_main+0xf5) [0x7f22e
+[2015/06/24-09:33:01] [i] : bpadmin() [0x40201f]
+[2015/06/24-09:33:01] at line 1964 of ici/library/platform_sm.c, Assertion failed. (i >= 0)
+[2015/06/24-09:33:01] [i] Current stack trace:
+[2015/06/24-09:33:01] [i] : /usr/local/lib/libici.so.0(printStackTrace+0x18) [0x7f22ed6058d8
+[2015/06/24-09:33:01] [i] : /usr/local/lib/libici.so.0(_iEnd+0x21) [0x7f22ed605e41]
+[2015/06/24-09:33:01] [i] : /usr/local/lib/libici.so.0(sm_SemEnd+0xa8) [0x7f22ed608708]
+[2015/06/24-09:33:01] [i] : /usr/local/lib/libbp.so.0(bpStop+0x160) [0x7f22ed84ece0]
+[2015/06/24-09:33:01] [i] : bpadmin() [0x401f48]
+[2015/06/24-09:33:01] [i] : /lib/x86_64-linux-gnu/libc.so.6(__libc_start_main+0xf5) [0x7f22e
+[2015/06/24-09:33:01] [i] : bpadmin() [0x40201f]
+[2015/06/24-09:33:02] at line 838 of cfdp/library/libcfdpP.c, Can't find CFDP database.
+[2015/06/24-09:35:27] [i] rfxclock is running.
+[2015/06/24-09:35:27] [i] No congestion collapse predicted.
+[2015/06/24-09:35:27] [i] ionwarn finished.
+[2015/06/24-09:35:28] [i] No congestion collapse predicted.
+[2015/06/24-09:35:28] [i] ionwarn finished.
+[2015/06/24-09:35:28] [i] Span to engine 1 (max BER 0.000001, max xmit segment size 1024, max recv segment size 1): xmit segment loss rate 0.008266, recv segment loss rate 0.000008, max timeouts 3.
+[2015/06/24-09:35:28] [i] Total max export sessions does not exceed estimate.
+[2015/06/24-09:35:28] [i] udplso is running, spec=[127.0.0.1:1113], txbps=0 (0=unlimited), rengine=1.
+[2015/06/24-09:35:28] [i] ltpmeter is running.
+[2015/06/24-09:35:28] [i] udplsi is running, spec=[0.0.0.0:1113].
+[2015/06/24-09:35:28] [i] ltpclock is running.
+[2015/06/24-09:35:29] [?] Can't find ION security database.
+[2015/06/24-09:35:29] [?] Warning: running without bundle security.
+[2015/06/24-09:35:29] [?] Can't find ION security database.
+[2015/06/24-09:35:29] [i] ltpcli is running.
+[2015/06/24-09:35:29] [?] Can't find ION security database.
+[2015/06/24-09:35:29] [i] ltpclo is running.
+[2015/06/24-09:35:29] [?] Can't find ION security database.
+[2015/06/24-09:35:29] [i] ipnadminep is running.
+[2015/06/24-09:35:29] [?] Can't find ION security database.
+[2015/06/24-09:35:29] [?] Can't find ION security database.
+[2015/06/24-09:35:29] [i] bpclock is running.
+[2015/06/24-09:35:29] [?] Can't find ION security database.
+[2015/06/24-09:35:29] [i] ipnfw is running.
+[2015/06/24-09:35:29] [i] bptransit is running.
+[2015/06/24-09:35:30] [?] Can't find ION security database.
+[2015/06/24-09:36:22] [?] Can't find ION security database.
+[2015/06/24-09:36:28] [?] Can't find ION security database.
+[2015/06/24-09:36:29] [i] Span to engine 1 (max BER 0.000001, max xmit segment size 1024, max recv segment size 54): xmit segment loss rate 0.008266, recv segment loss rate 0.000438, max timeouts 3.
+[2015/06/24-09:36:37] [i] Span to engine 1 (max BER 0.000001, max xmit segment size 1024, max recv segment size 60): xmit segment loss rate 0.008266, recv segment loss rate 0.000486, max timeouts 3.
+[2015/06/24-09:36:38] at line 2124 of ici/sdr/sdrxn.c, SDR boundaries or integrity violation. (read)
+[2015/06/24-09:36:38] at line 835 of ici/sdr/sdrxn.c, Transaction aborted.
+[2015/06/24-09:36:39] at line 360 of ici/daemon/rfxclock.c, rfxclock failed to begin new transaction.
+[2015/06/24-09:36:39] [i] rfxclock has ended.
+[2015/06/24-09:36:39] at line 125 of ltp/daemon/ltpclock.c, Assertion failed. (sdr_begin_xn(sdr))
+[2015/06/24-09:36:39] [i] Current stack trace:
+[2015/06/24-09:36:39] [i] : /usr/local/lib/libici.so.0(printStackTrace+0x18) [0x7f2bf7b658d8
+[2015/06/24-09:36:39] [i] : /usr/local/lib/libici.so.0(_iEnd+0x21) [0x7f2bf7b65e41]
+[2015/06/24-09:36:39] [i] : ltpclock() [0x401296]
+[2015/06/24-09:36:39] [i] : /lib/x86_64-linux-gnu/libc.so.6(__libc_start_main+0xf5) [0x7f2bf
+[2015/06/24-09:36:39] [i] : ltpclock() [0x401741]
+[2015/06/24-09:36:39] at line 259 of ltp/daemon/ltpclock.c, Can't manage links.
+[2015/06/24-09:36:39] [i] ltpclock has ended.
+[2015/06/24-09:36:39] at line 53 of bp/daemon/bpclock.c, Assertion failed. (sdr_begin_xn(sdr))
+[2015/06/24-09:36:39] [i] Current stack trace:
+[2015/06/24-09:36:39] [i] : /usr/local/lib/libici.so.0(printStackTrace+0x18) [0x7efc9019e8d8
+[2015/06/24-09:36:39] [i] : /usr/local/lib/libici.so.0(_iEnd+0x21) [0x7efc9019ee41]
+[2015/06/24-09:36:39] [i] : bpclock() [0x401114]
+[2015/06/24-09:36:39] [i] : /lib/x86_64-linux-gnu/libc.so.6(__libc_start_main+0xf5) [0x7efc8
+[2015/06/24-09:36:39] [i] : bpclock() [0x40165f]
+[2015/06/24-09:36:39] at line 375 of bp/daemon/bpclock.c, Can't dispatch events.
+[2015/06/24-09:36:39] [i] bpclock has ended.
+[2015/06/24-09:36:39] at line 704 of bp/library/libbp.c, Assertion failed. (sdr_begin_xn(sdr))
+[2015/06/24-09:36:39] [i] Current stack trace:
+[2015/06/24-09:36:39] [i] : /usr/local/lib/libici.so.0(printStackTrace+0x18) [0x7ffff774b8d8
+[2015/06/24-09:36:39] [i] : /usr/local/lib/libici.so.0(_iEnd+0x21) [0x7ffff774be41]
+[2015/06/24-09:36:39] [i] : /usr/local/lib/libbp.so.0(bp_receive+0x341) [0x7ffff7992501]
+[2015/06/24-09:36:39] [i] : /home/jeremy/Development/dtn/NetworkManagement/dtnmp_commanding/
+[2015/06/24-09:36:39] [i] : /home/jeremy/Development/dtn/NetworkManagement/dtnmp_commanding/
+[2015/06/24-09:36:39] [i] : /lib/x86_64-linux-gnu/libpthread.so.0(+0x80a4) [0x7ffff73260a4]
+[2015/06/24-09:36:39] [i] : /lib/x86_64-linux-gnu/libc.so.6(clone+0x6d) [0x7ffff683904d]
+[2015/06/24-09:36:41] at line 838 of cfdp/library/libcfdpP.c, Can't find CFDP database.
+[2015/06/24-09:36:41] [!] ionrestart can't attach to CFDP.
+[2015/06/24-09:36:41] [?] Can't find ION security database.
+[2015/06/24-09:36:41] [i] ipnfw forwarder has ended.
+[2015/06/24-09:36:41] [i] Endpoint has been stopped.
+[2015/06/24-09:36:41] [i] Endpoint has been stopped.
+[2015/06/24-09:36:41] [i] Administrative endpoint terminated.
+[2015/06/24-09:36:41] [i] ipnadminep has ended.
+[2015/06/24-09:36:41] [i] Outduct has been stopped.
+[2015/06/24-09:36:41] [i] ltpclo duct has ended.
+[2015/06/24-09:36:41] [i] bptransit has ended.
+[2015/06/24-09:36:41] [i] ltpcli receiver thread has ended.
+[2015/06/24-09:36:41] [i] ltpcli duct has ended.
+[2015/06/24-09:36:42] [i] ionrestart: BP stopped.
+[2015/06/24-09:36:42] [i] LTP meter to engine 1 is stopped.
+[2015/06/24-09:36:42] [i] ltpmeter has ended.
+[2015/06/24-09:36:42] [i] LSO to engine 1 is stopped.
+[2015/06/24-09:36:42] [i] udplsi receiver thread has ended.
+[2015/06/24-09:36:42] [i] udplso receiver thread has ended.
+[2015/06/24-09:36:42] [i] udplsi has ended.
+[2015/06/24-09:36:42] [i] udplso has ended.
+[2015/06/24-09:36:43] [i] ionrestart: LTP stopped.
+[2015/06/24-09:36:43] [i] ionrestart: rfxclock stopped.
+[2015/06/24-09:36:43] [i] ionrestart: BP volatile database dropped.
+[2015/06/24-09:36:43] at line 1905 of ici/library/platform_sm.c, Assertion failed. (i < sembase->idsAllocated)
+[2015/06/24-09:36:43] [i] Current stack trace:
+[2015/06/24-09:36:43] [i] : /usr/local/lib/libici.so.0(printStackTrace+0x18) [0x7ffff79838d8
+[2015/06/24-09:36:43] [i] : /usr/local/lib/libici.so.0(_iEnd+0x21) [0x7ffff7983e41]
+[2015/06/24-09:36:43] [i] : /usr/local/lib/libici.so.0(sm_SemTake+0x120) [0x7ffff79865d0]
+[2015/06/24-09:36:43] [i] : /usr/local/lib/libici.so.0(Sm_rbt_destroy+0x4a) [0x7ffff79a018a]
+[2015/06/24-09:36:43] [i] : /usr/local/lib/libici.so.0(+0x12307) [0x7ffff798a307]
+[2015/06/24-09:36:43] [i] : /usr/local/lib/libici.so.0(Sm_list_destroy+0x2f) [0x7ffff798a8af
+[2015/06/24-09:36:43] [i] : /usr/local/lib/libltp.so.0(+0x73b6) [0x7ffff73233b6]
+[2015/06/24-09:36:43] [i] : /usr/local/lib/libltp.so.0(ltpDropVdb+0xc1) [0x7ffff7325db1]
+[2015/06/24-09:36:43] [i] : ionrestart() [0x401395]
+[2015/06/24-09:36:43] [i] : /lib/x86_64-linux-gnu/libc.so.6(__libc_start_main+0xf5) [0x7ffff
+[2015/06/24-09:36:43] [i] : ionrestart() [0x4015ef]
+[2015/06/24-09:36:43] at line 82 of ici/library/smrbt.c, Can't lock red-black table.
+[2015/06/24-09:36:43] at line 1882 of ici/library/platform_sm.c, Assertion failed. (i < sembase->idsAllocated)
+[2015/06/24-09:36:43] [i] Current stack trace:
+[2015/06/24-09:36:43] [i] : /usr/local/lib/libici.so.0(printStackTrace+0x18) [0x7ffff79838d8
+[2015/06/24-09:36:43] [i] : /usr/local/lib/libici.so.0(_iEnd+0x21) [0x7ffff7983e41]
+[2015/06/24-09:36:43] [i] : /usr/local/lib/libici.so.0(sm_SemDelete+0x3e) [0x7ffff798635e]
+[2015/06/24-09:36:43] [i] : /usr/local/lib/libici.so.0(Sm_rbt_destroy+0x74) [0x7ffff79a01b4]
+[2015/06/24-09:36:43] [i] : /usr/local/lib/libici.so.0(+0x12307) [0x7ffff798a307]
+[2015/06/24-09:36:43] [i] : /usr/local/lib/libici.so.0(Sm_list_destroy+0x2f) [0x7ffff798a8af
+[2015/06/24-09:36:43] [i] : /usr/local/lib/libltp.so.0(+0x73b6) [0x7ffff73233b6]
+[2015/06/24-09:36:43] [i] : /usr/local/lib/libltp.so.0(ltpDropVdb+0xc1) [0x7ffff7325db1]
+[2015/06/24-09:36:43] [i] : ionrestart() [0x401395]
+[2015/06/24-09:36:43] [i] : /lib/x86_64-linux-gnu/libc.so.6(__libc_start_main+0xf5) [0x7ffff
+[2015/06/24-09:36:43] [i] : ionrestart() [0x4015ef]
+[2015/06/24-09:36:43] [i] ionrestart: LTP volatile database dropped.
+[2015/06/24-09:36:43] [i] ionrestart: ION volatile database dropped.
+[2015/06/24-09:36:43] [i] ionrestart: ION volatile database raised.
+[2015/06/24-09:36:43] [i] Span to engine 1 (max BER 0.000001, max xmit segment size 1024, max recv segment size 1): xmit segment loss rate 0.008266, recv segment loss rate 0.000008, max timeouts 3.
+[2015/06/24-09:36:43] [i] ionrestart: LTP volatile database raised.
+[2015/06/24-09:36:43] [i] ionrestart: BP volatile database raised.
+[2015/06/24-09:36:43] [i] ionrestart: rfxclock restarted.
+[2015/06/24-09:36:43] at line 750 of ltp/library/libltpP.c, LTP can't start: no LSI command.
+[2015/06/24-09:36:43] [i] rfxclock is running.
+[2015/06/24-09:36:44] [i] No congestion collapse predicted.
+[2015/06/24-09:36:44] [i] ionwarn finished.
+[2015/06/24-09:36:48] [!] ionrestart: LTP not restarted.
+[2015/06/24-09:36:48] [i] ionrestart: BP restarted.
+[2015/06/24-09:36:48] [i] ionrestart: finished restarting ION.
+[2015/06/24-09:36:48] [?] Can't find ION security database.
+[2015/06/24-09:36:48] [i] ltpcli is running.
+[2015/06/24-09:36:48] [?] Can't find ION security database.
+[2015/06/24-09:36:48] [i] ipnadminep is running.
+[2015/06/24-09:36:48] [?] Can't find ION security database.
+[2015/06/24-09:36:48] [i] ltpclo is running.
+[2015/06/24-09:36:48] [?] Can't find ION security database.
+[2015/06/24-09:36:48] [i] ipnfw is running.
+[2015/06/24-09:36:48] [?] Can't find ION security database.
+[2015/06/24-09:36:48] [i] bpclock is running.
+[2015/06/24-09:36:48] [?] Can't find ION security database.
+[2015/06/24-09:36:48] [i] bptransit is running.
+[2015/06/24-09:40:42] [?] Can't find ION security database.
+[2015/06/24-09:40:42] at line 431 of ici/library/lyst.c, Assertion failed. (elt)
+[2015/06/24-09:40:42] [i] Current stack trace:
+[2015/06/24-09:40:42] [i] : /usr/local/lib/libici.so.0(printStackTrace+0x18) [0x7ffff774b8d8
+[2015/06/24-09:40:42] [i] : /usr/local/lib/libici.so.0(_iEnd+0x21) [0x7ffff774be41]
+[2015/06/24-09:40:42] [i] : /usr/local/lib/libici.so.0(lyst_next+0x28) [0x7ffff774fec8]
+[2015/06/24-09:40:42] [i] : /home/jeremy/Development/dtn/NetworkManagement/dtnmp_commanding/
+[2015/06/24-09:40:42] [i] : /home/jeremy/Development/dtn/NetworkManagement/dtnmp_commanding/
+[2015/06/24-09:40:42] [i] : /lib/x86_64-linux-gnu/libpthread.so.0(+0x80a4) [0x7ffff73260a4]
+[2015/06/24-09:40:42] [i] : /lib/x86_64-linux-gnu/libc.so.6(clone+0x6d) [0x7ffff683904d]
+[2015/06/24-09:40:50] [?] Can't find ION security database.
+[2015/06/24-09:40:54] [?] Can't find ION security database.
+[2015/06/24-09:41:06] [?] Can't find ION security database.
+[2015/06/24-09:41:06] [i] ipnfw forwarder has ended.
+[2015/06/24-09:41:06] [i] Endpoint has been stopped.
+[2015/06/24-09:41:06] [i] Administrative endpoint terminated.
+[2015/06/24-09:41:06] [i] ipnadminep has ended.
+[2015/06/24-09:41:06] [i] Outduct has been stopped.
+[2015/06/24-09:41:06] [i] ltpclo duct has ended.
+[2015/06/24-09:41:06] [i] bptransit has ended.
+[2015/06/24-09:41:06] [i] bpclock has ended.
+[2015/06/24-09:41:06] [i] ltpcli receiver thread has ended.
+[2015/06/24-09:41:06] [i] ltpcli duct has ended.
+[2015/06/24-09:41:07] at line 838 of cfdp/library/libcfdpP.c, Can't find CFDP database.
+[2015/06/24-09:41:09] [i] rfxclock has ended.
+[2015/06/24-09:42:14] [i] rfxclock is running.
+[2015/06/24-09:42:14] [i] No congestion collapse predicted.
+[2015/06/24-09:42:14] [i] ionwarn finished.
+[2015/06/24-09:42:15] [i] No congestion collapse predicted.
+[2015/06/24-09:42:15] [i] ionwarn finished.
+[2015/06/24-09:42:15] [i] Span to engine 1 (max BER 0.000001, max xmit segment size 1024, max recv segment size 1): xmit segment loss rate 0.008266, recv segment loss rate 0.000008, max timeouts 3.
+[2015/06/24-09:42:15] [i] Total max export sessions does not exceed estimate.
+[2015/06/24-09:42:15] [i] ltpmeter is running.
+[2015/06/24-09:42:15] [i] ltpclock is running.
+[2015/06/24-09:42:15] [i] udplsi is running, spec=[0.0.0.0:1113].
+[2015/06/24-09:42:15] [i] udplso is running, spec=[127.0.0.1:1113], txbps=0 (0=unlimited), rengine=1.
+[2015/06/24-09:42:16] [?] Can't find ION security database.
+[2015/06/24-09:42:16] [?] Warning: running without bundle security.
+[2015/06/24-09:42:16] [?] Can't find ION security database.
+[2015/06/24-09:42:16] [i] ltpclo is running.
+[2015/06/24-09:42:16] [?] Can't find ION security database.
+[2015/06/24-09:42:16] [i] ltpcli is running.
+[2015/06/24-09:42:16] [?] Can't find ION security database.
+[2015/06/24-09:42:16] [?] Can't find ION security database.
+[2015/06/24-09:42:16] [i] ipnadminep is running.
+[2015/06/24-09:42:16] [i] ipnfw is running.
+[2015/06/24-09:42:16] [?] Can't find ION security database.
+[2015/06/24-09:42:16] [i] bptransit is running.
+[2015/06/24-09:42:16] [?] Can't find ION security database.
+[2015/06/24-09:42:16] [i] bpclock is running.
+[2015/06/24-09:42:17] [?] Can't find ION security database.
+[2015/06/24-09:43:02] [?] Can't find ION security database.
+[2015/06/24-09:43:02] [i] ipnfw forwarder has ended.
+[2015/06/24-09:43:02] [i] Endpoint has been stopped.
+[2015/06/24-09:43:02] [i] Administrative endpoint terminated.
+[2015/06/24-09:43:02] [i] ipnadminep has ended.
+[2015/06/24-09:43:02] [i] Outduct has been stopped.
+[2015/06/24-09:43:02] [i] ltpclo duct has ended.
+[2015/06/24-09:43:02] [i] bptransit has ended.
+[2015/06/24-09:43:02] [i] bpclock has ended.
+[2015/06/24-09:43:02] [i] ltpcli receiver thread has ended.
+[2015/06/24-09:43:02] [i] ltpcli duct has ended.
+[2015/06/24-09:43:13] [?] Overlapping contact: 1
+[2015/06/24-09:43:13] [?] Overlapping range: 1
+[2015/06/24-09:43:13] [i] No congestion collapse predicted.
+[2015/06/24-09:43:13] [i] ionwarn finished.
+[2015/06/24-09:43:13] [i] No congestion collapse predicted.
+[2015/06/24-09:43:13] [i] ionwarn finished.
+[2015/06/24-09:43:14] [?] Duplicate span: 1
+[2015/06/24-09:43:14] [i] Total max export sessions does not exceed estimate.
+[2015/06/24-09:43:14] [i] ltpmeter is running.
+[2015/06/24-09:43:14] [i] udplso is running, spec=[127.0.0.1:1113], txbps=0 (0=unlimited), rengine=1.
+[2015/06/24-09:43:15] [?] Can't find ION security database.
+[2015/06/24-09:43:15] [?] Warning: running without bundle security.
+[2015/06/24-09:43:15] [?] Duplicate scheme: ipn
+[2015/06/24-09:43:15] [?] Duplicate endpoint: ipn:1.1
+[2015/06/24-09:43:15] [?] Duplicate endpoint: ipn:1.2
+[2015/06/24-09:43:15] [?] Duplicate protocol: ltp
+[2015/06/24-09:43:15] [?] Duplicate induct: 1
+[2015/06/24-09:43:15] [?] Duplicate outduct: 1
+[2015/06/24-09:43:15] [?] Can't find ION security database.
+[2015/06/24-09:43:15] [i] ipnfw is running.
+[2015/06/24-09:43:15] [?] Can't find ION security database.
+[2015/06/24-09:43:15] [i] ipnadminep is running.
+[2015/06/24-09:43:15] [?] Can't find ION security database.
+[2015/06/24-09:43:15] [i] bpclock is running.
+[2015/06/24-09:43:15] [?] Can't find ION security database.
+[2015/06/24-09:43:15] [i] bptransit is running.
+[2015/06/24-09:43:15] [?] Can't find ION security database.
+[2015/06/24-09:43:15] [i] ltpclo is running.
+[2015/06/24-09:43:15] [?] Can't find ION security database.
+[2015/06/24-09:43:15] [i] ltpcli is running.
+[2015/06/24-09:43:16] [?] Can't find ION security database.
+[2015/06/24-09:43:16] [?] Duplicate plan: 1
+[2015/06/24-09:44:09] [?] Can't find ION security database.
+[2015/06/24-09:44:17] [?] Can't find ION security database.
+[2015/06/24-09:44:17] [i] Span to engine 1 (max BER 0.000001, max xmit segment size 1024, max recv segment size 54): xmit segment loss rate 0.008266, recv segment loss rate 0.000438, max timeouts 3.
+[2015/06/24-09:44:22] [i] Span to engine 1 (max BER 0.000001, max xmit segment size 1024, max recv segment size 60): xmit segment loss rate 0.008266, recv segment loss rate 0.000486, max timeouts 3.
+[2015/06/24-09:44:24] at line 431 of ici/library/lyst.c, Assertion failed. (elt)
+[2015/06/24-09:44:24] [i] Current stack trace:
+[2015/06/24-09:44:24] [i] : /usr/local/lib/libici.so.0(printStackTrace+0x18) [0x7ffff774b8d8
+[2015/06/24-09:44:24] [i] : /usr/local/lib/libici.so.0(_iEnd+0x21) [0x7ffff774be41]
+[2015/06/24-09:44:24] [i] : /usr/local/lib/libici.so.0(lyst_next+0x28) [0x7ffff774fec8]
+[2015/06/24-09:44:24] [i] : /home/jeremy/Development/dtn/NetworkManagement/dtnmp_commanding/
+[2015/06/24-09:44:24] [i] : /home/jeremy/Development/dtn/NetworkManagement/dtnmp_commanding/
+[2015/06/24-09:44:24] [i] : /lib/x86_64-linux-gnu/libpthread.so.0(+0x80a4) [0x7ffff73260a4]
+[2015/06/24-09:44:24] [i] : /lib/x86_64-linux-gnu/libc.so.6(clone+0x6d) [0x7ffff683904d]
+[2015/06/24-09:44:24] [i] Span to engine 1 (max BER 0.000001, max xmit segment size 1024, max recv segment size 89): xmit segment loss rate 0.008266, recv segment loss rate 0.000721, max timeouts 3.
+[2015/06/24-09:44:29] at line 431 of ici/library/lyst.c, Assertion failed. (elt)
+[2015/06/24-09:44:29] [i] Current stack trace:
+[2015/06/24-09:44:29] [i] : /usr/local/lib/libici.so.0(printStackTrace+0x18) [0x7f90c095a8d8
+[2015/06/24-09:44:29] [i] : /usr/local/lib/libici.so.0(_iEnd+0x21) [0x7f90c095ae41]
+[2015/06/24-09:44:29] [i] : /usr/local/lib/libici.so.0(lyst_next+0x28) [0x7f90c095eec8]
+[2015/06/24-09:44:29] [i] : ./nm_mgr_netui() [0x413e61]
+[2015/06/24-09:44:29] [i] : ./nm_mgr_netui() [0x4150e5]
+[2015/06/24-09:44:29] [i] : /lib/x86_64-linux-gnu/libpthread.so.0(+0x80a4) [0x7f90bff180a4]
+[2015/06/24-09:44:29] [i] : /lib/x86_64-linux-gnu/libc.so.6(clone+0x6d) [0x7f90bfc4d04d]
+[2015/06/24-09:44:37] at line 431 of ici/library/lyst.c, Assertion failed. (elt)
+[2015/06/24-09:44:37] [i] Current stack trace:
+[2015/06/24-09:44:37] [i] : /usr/local/lib/libici.so.0(printStackTrace+0x18) [0x7f90c095a8d8
+[2015/06/24-09:44:37] [i] : /usr/local/lib/libici.so.0(_iEnd+0x21) [0x7f90c095ae41]
+[2015/06/24-09:44:37] [i] : /usr/local/lib/libici.so.0(lyst_next+0x28) [0x7f90c095eec8]
+[2015/06/24-09:44:37] [i] : ./nm_mgr_netui() [0x413e61]
+[2015/06/24-09:44:37] [i] : ./nm_mgr_netui() [0x4150e5]
+[2015/06/24-09:44:37] [i] : /lib/x86_64-linux-gnu/libpthread.so.0(+0x80a4) [0x7f90bff180a4]
+[2015/06/24-09:44:37] [i] : /lib/x86_64-linux-gnu/libc.so.6(clone+0x6d) [0x7f90bfc4d04d]

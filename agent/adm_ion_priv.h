@@ -86,13 +86,17 @@ expr_result_t ion_node_get_outducts(Lyst params);
 
 expr_result_t ion_node_get_groups(Lyst params);
 expr_result_t ion_node_get_plans(Lyst params);
+expr_result_t ion_node_get_outducts(Lyst params);
 /* ION Controls */
 uint32_t ion_ctrl_induct_reset(Lyst params);
 uint32_t ion_ctrl_outduct_reset(Lyst params);
 uint32_t ion_ctrl_plan_add(Lyst params);
 uint32_t ion_ctrl_plan_remove(Lyst params);
-uint32_t ion_ctrl_group_remove(Lyst params);
 uint32_t ion_ctrl_group_add(Lyst params);
+uint32_t ion_ctrl_group_remove(Lyst params);
+uint32_t ion_ctrl_outduct_add(Lyst params);
+uint32_t ion_ctrl_outduct_remove(Lyst params);
+
 #endif //ADM_ION_PRIV_H_
 
 #endif // _HAVE_ION_ADM_

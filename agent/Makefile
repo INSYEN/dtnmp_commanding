@@ -22,5 +22,5 @@ all:
 	-DMAXPATHLEN=2048 \
 	-c ${SOURCES} 
 
-	g++ -L${LIBPATH}/ -o nm_agent *.o -lltp -lbp -lici -lipnfw
+	g++ -L${LIBPATH}/ -o nm_agent *.o -lltp -lbp -lici -lipnfw -lpthread
 

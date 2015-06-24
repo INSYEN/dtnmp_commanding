@@ -157,6 +157,9 @@ void agent_adm_init_ion()
 	adm_build_mid_str(0x00, ION_ADM_NODE_NN, ION_ADM_NODE_NN_LEN, 4, mid_str);
 	adm_add_datadef_collect(mid_str,  ion_node_get_groups);
 
+	adm_build_mid_str(0x00, ION_ADM_NODE_NN, ION_ADM_NODE_NN_LEN, 5, mid_str);
+	adm_add_datadef_collect(mid_str,  ion_node_get_outducts);
+
 	/* Controls */
 	adm_build_mid_str(0x01, ION_ADM_CTRL_NN, ION_ADM_CTRL_NN_LEN, 0, mid_str);
 	adm_add_ctrl_run(mid_str,  ion_ctrl_induct_reset);
@@ -175,9 +178,13 @@ void agent_adm_init_ion()
 
 	adm_build_mid_str(0x41, ION_ADM_CTRL_NN, ION_ADM_CTRL_NN_LEN, 5, mid_str);
 	adm_add_ctrl_run(mid_str,  ion_ctrl_group_remove);
+
+	adm_build_mid_str(0x41, ION_ADM_CTRL_NN, ION_ADM_CTRL_NN_LEN, 6, mid_str);
+	adm_add_ctrl_run(mid_str,  ion_ctrl_outduct_add);
+
+	adm_build_mid_str(0x41, ION_ADM_CTRL_NN, ION_ADM_CTRL_NN_LEN, 7, mid_str);
+	adm_add_ctrl_run(mid_str,  ion_ctrl_outduct_remove);
 }
-
-
 /* Retrieval Functions. */
 
 expr_result_t ion_ici_get_sdr_state_all(Lyst params)
@@ -686,7 +693,57 @@ expr_result_t ion_node_get_groups(Lyst params)
 
 }
 
+expr_result_t ion_node_get_outducts(Lyst params)
+{
+    Sdr sdr = getIonsdr();
+    PsmPartition ionwm = getIonwm();
+	Object elt;
+	VOutduct* outductObj;
+	OBJ_POINTER(IpnPlan,curPlan);
+	OBJ_POINTER(Outduct,curDuct);
+	OBJ_POINTER(ClProtocol,curCLA);
+	uint32_t resultLen;
+	char* cloCmd=(char*)STAKE(SDRSTRING_BUFSZ);
+	int cloLen;
+	Lyst outdatacol = lyst_create();
+	expr_result_t result;
 
+	if (bpAttach() < 0)
+	{
+		DTNMP_DEBUG_ERR("ion_ctrl_plan_add","can't attach to BP", NULL);
+		SRELEASE(cloCmd);
+		return result;
+	}
+
+	result.type=EXPR_TYPE_BLOB;
+
+	sdr_begin_xn(sdr);
+	for (elt = sm_list_first(ionwm,(getBpVdb())->outducts); elt; elt = sm_list_next(ionwm, elt))
+	{
+		outductObj = (VOutduct*)psp(ionwm,sm_list_data(ionwm,elt));
+		GET_OBJ_POINTER(sdr,Outduct,curDuct,sdr_list_data(sdr,outductObj->outductElt));
+		GET_OBJ_POINTER(sdr,ClProtocol,curCLA,curDuct->protocol);
+
+        datalist_t planDL=datalist_create(NULL);
+		datalist_insert_with_type(&planDL,DLIST_TYPE_STRING,&curCLA->name,strlen(curCLA->name));
+		datalist_insert_with_type(&planDL,DLIST_TYPE_STRING,&curDuct->name,strlen(curDuct->name));
+		//Read ductname from string
+		cloLen=sdr_string_read(sdr,cloCmd,curDuct->cloCmd);
+		if(cloLen==-1)
+			continue;
+		datalist_insert_with_type(&planDL,DLIST_TYPE_STRING,cloCmd,cloLen);
+        datalist_insert_with_type(&planDL,DLIST_TYPE_UINT32,&curDuct->maxPayloadLen);
+		datacol_entry_t* dlSerialized = datalist_serialize_to_datacol(&planDL);
+
+		lyst_insert_last(outdatacol,dlSerialized);
+	}
+	sdr_exit_xn(sdr);
+
+	result.value=utils_datacol_serialize(outdatacol,&resultLen);
+	result.length=(uint32_t)resultLen;
+
+	return result;
+}
 /*	Control functions	*/
 
 uint32_t ion_ctrl_induct_reset(Lyst params)
@@ -706,11 +763,13 @@ uint32_t ion_ctrl_plan_add(Lyst params)
 
 	LystElt elt = 0;
 	unsigned short lystIdx = 0;
-	char* outductName = "*";
+	char* outductName = (char*)STAKE(128);
+	sprintf(outductName,"*");
 	char protocolName[D_ION_ADM_PROTONAME_SIZE];
 	char ipName[D_ION_ADM_IPNAME_SIZE];
 	uint32_t port;
 	DuctExpression ductExp;
+	ductExp.destDuctName=(char*)STAKE(128);
 	uvast nodeName;
 	VOutduct	*vduct;
 	PsmAddress vductElt;
@@ -743,7 +802,24 @@ uint32_t ion_ctrl_plan_add(Lyst params)
 		CHKVALID(datalist_get(&curDl,0,&nodeName,NULL,DLIST_TYPE_UVAST));
 		CHKVALID(datalist_get(&curDl,1,&protocolName[0],NULL,DLIST_TYPE_STRING));
 		CHKVALID(datalist_get(&curDl,2,&ipName[0],NULL,DLIST_TYPE_STRING));
-		CHKVALID(datalist_get(&curDl,3,&port,NULL,DLIST_TYPE_UINT32));
+		//We won't have this value for LTP spans
+		if(datalist_get(&curDl,3,&port,NULL,DLIST_TYPE_UINT32)==DLIST_INVALID)
+        {
+            if(strcmp(protocolName,"ltp")==0) //Be sure that this is an LTP span
+            {
+                DTNMP_DEBUG_INFO("ion_ctrl_plan_add","Using LTP Span",NULL);
+                sprintf(ductExp.destDuctName,"%s",ipName);
+                sprintf(outductName,"%s",ipName);
+            }
+        }
+        else
+        {
+            if(strcmp(protocolName,"tcp")==0) //Be sure that this is an TCP span
+            {
+                sprintf(outductName,"%s:%d",ipName,port);
+                sprintf(ductExp.destDuctName,"%s:%d",ipName,port);
+            }
+        }
 
 		findOutduct(protocolName, outductName, &vduct, &vductElt);
 
@@ -757,7 +833,6 @@ uint32_t ion_ctrl_plan_add(Lyst params)
 		DTNMP_DEBUG_WARN("ion_ctrl_plan_add","Adding %d \"%s\" \"%s\" %d %s",nodeName,protocolName,ipName,port,vduct->protocolName);
 
 		ductExp.outductElt=vduct->outductElt;
-		ductExp.destDuctName=(char*)malloc(128);
 		sprintf(ductExp.destDuctName,"%s:%d",ipName,port);
 		DTNMP_DEBUG_INFO("ion_ctrl_plan_add","Adding ductname \"%s\"",ductExp.destDuctName);
 		//Add the plan
@@ -916,5 +991,103 @@ uint32_t ion_ctrl_group_remove(Lyst params)
 
 	utils_datacol_destroy(&dlDatacol);
 	return 0;
+}
+uint32_t ion_ctrl_outduct_add(Lyst params)
+{
+	char protoName[64];
+	char outductName[128];
+	char cloCmd[128];
+	uint32_t payloadMax=0;
+	uint32_t datacolSize;
+
+	DTNMP_DEBUG_INFO("ion_ctrl_outduct_add","()",NULL);
+	//Sanity check
+	if(lyst_length(params)<1) //Not enough params
+	{
+		return 0; //Check for proper return codes
+	}
+	//Parameter handling
+	if (bpAttach() < 0)
+	{
+		DTNMP_DEBUG_ERR("ion_ctrl_outduct_add","Can't attach to BP", NULL);
+		return -1;
+	}
+
+	if (ipnInit() < 0)
+	{
+		DTNMP_DEBUG_ERR("ion_ctrl_outduct_add","Can't start routing DB", NULL);
+		return -1;
+	}
+
+	uint32_t bytesUsed;
+	datacol_entry_t* paramCol = (datacol_entry_t*)lyst_data(lyst_first(params));
+	Lyst dlDatacol=utils_datacol_deserialize((uint8_t*)paramCol->value,paramCol->length,&bytesUsed);
+
+	for(LystElt datalistElt = lyst_first(dlDatacol) ; datalistElt ; datalistElt=lyst_next(datalistElt))
+	{
+		datacol_entry_t* datacol = (datacol_entry_t*)lyst_data(datalistElt);
+		datalist_t curDl = datalist_deserialize_from_buffer(datacol->value,datacol->length,&datacolSize);
+		DTNMP_DEBUG_INFO("ion_ctrl_outduct_add","Deserialized %d bytes to datalist",datacolSize);
+
+		CHKVALID(datalist_get(&curDl,0,&protoName[0],NULL,DLIST_TYPE_STRING));
+		CHKVALID(datalist_get(&curDl,1,&outductName[0],NULL,DLIST_TYPE_STRING));
+		CHKVALID(datalist_get(&curDl,2,&cloCmd[0],NULL,DLIST_TYPE_STRING));
+        if(datalist_get(&curDl,3,&payloadMax,NULL,DLIST_TYPE_UINT32)==DLIST_INVALID)
+        {
+            payloadMax=0;
+        }
+		//Do the work
+        if(addOutduct(&protoName[0],&outductName[0],&cloCmd[0],payloadMax)==0)
+        {
+            DTNMP_DEBUG_ERR("ion_ctrl_outduct_add","Couldn't add outduct",NULL);
+        }
+
+		datalist_free_contents(&curDl);
+	}
+}
+uint32_t ion_ctrl_outduct_remove(Lyst params)
+{
+	char protoName[64];
+	char outductName[128];
+	uint32_t datacolSize;
+	DTNMP_DEBUG_INFO("ion_ctrl_outduct_remove","()",NULL);
+	//Sanity check
+	if(lyst_length(params)<1) //Not enough params
+	{
+		return 0; //Check for proper return codes
+	}
+	//Parameter handling
+	if (bpAttach() < 0)
+	{
+		DTNMP_DEBUG_ERR("ion_ctrl_outduct_remove","Can't attach to BP", NULL);
+		return -1;
+	}
+
+	if (ipnInit() < 0)
+	{
+		DTNMP_DEBUG_ERR("ion_ctrl_outduct_remove","Can't start routing DB", NULL);
+		return -1;
+	}
+
+	uint32_t bytesUsed;
+	datacol_entry_t* paramCol = (datacol_entry_t*)lyst_data(lyst_first(params));
+	Lyst dlDatacol=utils_datacol_deserialize((uint8_t*)paramCol->value,paramCol->length,&bytesUsed);
+
+	for(LystElt datalistElt = lyst_first(dlDatacol) ; datalistElt ; datalistElt=lyst_next(datalistElt))
+	{
+		datacol_entry_t* datacol = (datacol_entry_t*)lyst_data(datalistElt);
+		datalist_t curDl = datalist_deserialize_from_buffer(datacol->value,datacol->length,&datacolSize);
+		DTNMP_DEBUG_INFO("ion_ctrl_outduct_remove","Deserialized %d bytes to datalist",datacolSize);
+
+		CHKVALID(datalist_get(&curDl,0,&protoName[0],NULL,DLIST_TYPE_STRING));
+		CHKVALID(datalist_get(&curDl,1,&outductName[0],NULL,DLIST_TYPE_STRING));
+		//Do the work
+        if(removeOutduct(&protoName[0],&outductName[0])==0)
+        {
+            DTNMP_DEBUG_ERR("ion_ctrl_outduct_remove","Couldn't remove outduct",NULL);
+        }
+
+		datalist_free_contents(&curDl);
+	}
 }
 //#endif /* _HAVE_ION_ADM_ */

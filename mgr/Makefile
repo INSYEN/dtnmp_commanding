@@ -25,7 +25,7 @@ without-db:
 	-DDTNMP_DEBUGGING \
 	-c ${SOURCES} 
 
-	g++ -L${LIBPATH}/ -o nm_mgr_netui *.o -lltp -lbp -lici
+	g++ -L${LIBPATH}/ -o nm_mgr_netui *.o -lltp -lbp -lici -pthread
 
 with-db:
 	g++ ${OPTS} \

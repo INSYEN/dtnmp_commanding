@@ -602,7 +602,7 @@ void ui_eventLoop()
 
 				}
 				DTNMP_DEBUG_INFO("netui_eventloop","Variable: %s",curEntry->name);
-				uint16_t varStrSize = snprintf(varBuffer,D_VARSTRSIZE,"v:%s@%d\\%s(%s)=%s;\n",curEntry->producer_eid.name,curEntry->timestamp,curEntry->name,varTextRep,varValue);
+				uint16_t varStrSize = snprintf(varBuffer,D_VARSTRSIZE,"v:%s@%u\\%s(%s)=%s;\n",curEntry->producer_eid.name,curEntry->timestamp,curEntry->name,varTextRep,varValue);
 
 
 
@@ -2111,7 +2111,7 @@ datalist_t netui_parse_datalist(char* dlText)
 	for(char* curItem = strtok_r(dlText,",",&strReentry) ; curItem ; curItem = strtok_r(NULL,",",&strReentry))
 	{
 		//Parse the textual form
-
+		memset(valueTxt,'\0',64);
 		sscanf(curItem,"(%[^)]) %64c",typeTxt,valueTxt);
 
 		//Determine type

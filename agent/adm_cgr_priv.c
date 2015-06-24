@@ -130,8 +130,9 @@ uint32_t cgr_ctrl_contact_add(Lyst params)
 		CHKVALID(datalist_get(&curDl,4,&probability,NULL,DLIST_TYPE_REAL32));
 		CHKVALID(datalist_get(&curDl,5,&xmitRate,NULL,DLIST_TYPE_UINT32));
 
-		DTNMP_DEBUG_INFO("cgr_ctrl_contact_add","Trying to add f:%d t:%d %ud %ud %ud",fromNode,toNode,startTime,endTime,xmitRate);
-		//Fuck it, lets give it a shot
+        DTNMP_DEBUG_INFO("cgr_ctrl_contact","xmit %u",xmitRate);
+		DTNMP_DEBUG_INFO("cgr_ctrl_contact_add","Trying to add f: %d t: %d (%ud %ud xmitRate: %u)",fromNode,toNode,startTime,endTime,xmitRate);
+		//lets give it a shot
 		if(rfx_insert_contact(startTime, endTime,fromNode,toNode, xmitRate,probability)==0)
 		{
 			DTNMP_DEBUG_ERR("cgr_ctrl_contact_add","Couldn't add contact",NULL);

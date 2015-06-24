@@ -121,6 +121,9 @@ void adm_ion_init()
 	adm_build_mid_str(0x00,ION_ADM_NODE_NN,ION_ADM_NODE_NN_LEN,4,mid_str);
 	adm_add_datadef("ION_NODE_GET_GROUPS",mid_str,0,adm_datalists_to_queue,adm_size_datalists);
 
+	adm_build_mid_str(0x00,ION_ADM_NODE_NN,ION_ADM_NODE_NN_LEN,5,mid_str);
+	adm_add_datadef("ION_NODE_GET_OUTDUCTS",mid_str,0,adm_datalists_to_queue,adm_size_datalists);
+
 	/* Controls */
 	adm_build_mid_str(0x01, ION_ADM_CTRL_NN, ION_ADM_CTRL_NN_LEN, 0, mid_str);
 	adm_add_ctrl("ION_INDUCT_RESET",  mid_str, 0);
@@ -129,16 +132,22 @@ void adm_ion_init()
 	adm_add_ctrl("ION_OUTDUCT_RESET", mid_str, 0);
 
 	adm_build_mid_str(0x41, ION_ADM_CTRL_NN, ION_ADM_CTRL_NN_LEN, 2, mid_str);
-	adm_add_ctrl("ION_PLAN_ADD", mid_str, 1); //node, proto, IP, port
+	adm_add_ctrl("ION_PLAN_ADD", mid_str, 1); //Datalists
 
 	adm_build_mid_str(0x41, ION_ADM_CTRL_NN, ION_ADM_CTRL_NN_LEN, 3, mid_str);
-	adm_add_ctrl("ION_PLAN_REMOVE", mid_str, 1); //Node, proto, IP
+	adm_add_ctrl("ION_PLAN_REMOVE", mid_str, 1); //Datalists
 
 	adm_build_mid_str(0x41, ION_ADM_CTRL_NN, ION_ADM_CTRL_NN_LEN, 4, mid_str);
-	adm_add_ctrl("ION_GROUP_ADD", mid_str, 1); //node, proto, IP, port
+	adm_add_ctrl("ION_GROUP_ADD", mid_str, 1); //Datalists
 
 	adm_build_mid_str(0x41, ION_ADM_CTRL_NN, ION_ADM_CTRL_NN_LEN, 5, mid_str);
-	adm_add_ctrl("ION_GROUP_REMOVE", mid_str, 1); //Node, proto, IP
+	adm_add_ctrl("ION_GROUP_REMOVE", mid_str, 1); //Datalists
+
+	adm_build_mid_str(0x41, ION_ADM_CTRL_NN, ION_ADM_CTRL_NN_LEN, 6, mid_str);
+	adm_add_ctrl("ION_OUTDUCT_ADD", mid_str, 1); //Datalists
+
+	adm_build_mid_str(0x41, ION_ADM_CTRL_NN, ION_ADM_CTRL_NN_LEN, 7, mid_str);
+	adm_add_ctrl("ION_OUTDUCT_REMOVE", mid_str, 1); //Datalists
 
 }
 
