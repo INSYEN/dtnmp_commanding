@@ -174,7 +174,7 @@ void ui_clear_reports(agent_t* agent)
  *  01/18/13  E. Birrane     Initial Implementation
  *  04/18/13  V.Ramachandran Multiple-agent support (added param)
  *  06/25/13  E. Birrane     Renamed message "bundle" message "group".
- *  03/01/2015 J.P. Mayer	 Migrated to cmdFormat
+ *  03/01/15  J.P. Mayer	 Migrated to cmdFormat
  *****************************************************************************/
 
 void netui_construct_ctrl_by_idx(agent_t* agent,cmdFormat* curCmd)
@@ -242,7 +242,7 @@ void netui_construct_ctrl_by_idx(agent_t* agent,cmdFormat* curCmd)
  *  --------  ------------   ---------------------------------------------
  *  01/18/13  E. Birrane     Initial Implementation
  *  06/25/13  E. Birrane     Renamed message "bundle" message "group".
- *  03/01/2015 J.P. Mayer	 Migrated to cmdFormat
+ *  03/01/15  J.P. Mayer	 Migrated to cmdFormat
  *****************************************************************************/
 
 void netui_construct_time_rule_by_idx(agent_t* agent,cmdFormat* curCmd)
@@ -524,7 +524,7 @@ void ui_eventLoop()
 		printf("Socket error: Could not create initial listener\n");
 		return;
 	}
-
+	reUseAddress(conSock);
 	memset(&localAddr,0,sizeof(sockaddr_in));
 
 	localAddr.sin_family=AF_INET;
@@ -561,8 +561,12 @@ void ui_eventLoop()
 			else
 			{
 				DTNMP_DEBUG_INFO("ui_eventloop","connected",NULL);
-				struct timeval tv={0.2,0};
-				setsockopt(dataSock,SOL_SOCKET,SO_RCVTIMEO,(char *)&tv,sizeof(struct timeval));
+				struct timeval tv={1,0};
+				if(setsockopt(dataSock,SOL_SOCKET,SO_RCVTIMEO,(char *)&tv,sizeof(struct timeval)) == -1)
+				{
+					DTNMP_DEBUG_ERR("netui_eventloop","Could not set receive timeout",NULL);
+					return;
+				}
 				reUseAddress(dataSock);
 			}
 		}
@@ -598,7 +602,7 @@ void ui_eventLoop()
 					case TYPE_INT32: netui_print_int32(curEntry->value,curEntry->size,varValue);varTextRep="int32";break;
 					case TYPE_UINT32: netui_print_uint32(curEntry->value,curEntry->size,varValue);varTextRep="uint32"; break;
 					case TYPE_STRING: netui_print_string(curEntry->value,curEntry->size,varValue); varTextRep="string";break;
-					case TYPE_DATALIST: netui_print_datalist(curEntry->value,curEntry->size,varValue); varTextRep="datalist";break;
+					case TYPE_DATALIST: netui_print_datalist(curEntry->value,curEntry->size,varValue); varTextRep="tdc";break;
 
 				}
 				DTNMP_DEBUG_INFO("netui_eventloop","Variable: %s",curEntry->name);
@@ -625,13 +629,12 @@ void ui_eventLoop()
 		unlockResource(&variable_queue_mutex);
 
 		//Check if we have (properly formatted) data
-
 		int sockstatus=0;
 		if(!moreData)
 		{
 			memset(&cmdBuffer,'\0',D_CMDBUFSIZE);
-			DTNMP_DEBUG_INFO("ui_eventloop","Grabbing additional data",NULL);
-			sockstatus = recv(dataSock,&cmdBuffer,D_CMDBUFSIZE-1,0);
+			DTNMP_DEBUG_INFO("netui_eventloop","Grabbing additional data",NULL);
+			sockstatus = recv(dataSock,&cmdBuffer,D_CMDBUFSIZE-2,0);
 			if(sockstatus > 0)
 			{
 				cmdBuffer[sockstatus+1]='\0';
@@ -642,31 +645,27 @@ void ui_eventLoop()
 			{
 				if((errno==EWOULDBLOCK|EAGAIN)&(sockstatus!=0)) //We just don't have data
 				{
-					DTNMP_DEBUG_INFO("ui_eventloop","No data, continuing",NULL);
+					DTNMP_DEBUG_INFO("netui_eventloop","No data, continuing",NULL);
 					continue;
 				}
 				close(dataSock);
 				dataSock=0;
-				DTNMP_DEBUG_INFO("ui_eventloop","Socket broken, continuing",NULL);
+				DTNMP_DEBUG_INFO("netui_eventloop","Socket broken, continuing",NULL);
 				continue;
 			}
-			//else if (sockstatus==0)
-			//	continue; //No data
-
 
 			commandReentry=&cmdBuffer[0];
 		}
 
-
 		cmdFormat* curCmd=netui_create_cmdformat();
 		moreData = netui_build_command(&commandReentry,curCmd,sizeof(cmdFormat));
-		if(moreData==0)
+
+		if(moreData == 0)
 		{
 			netui_free_cmdformat(curCmd);
-			DTNMP_DEBUG_WARN("ui_eventLoop","Invalid command received data: %s",&commandReentry[0]);
+			DTNMP_DEBUG_WARN("netui_eventLoop","Invalid command",NULL);
 			continue;
 		}
-
 
 		short cmdIdx = 0;
 		char* curChunk = (curCmd->cmdChunks[cmdIdx]);
@@ -676,36 +675,39 @@ void ui_eventLoop()
 			netui_free_cmdformat(curCmd);
 			continue;
 		}
-		//DTNMP_DEBUG_INFO("ui_eventLoop","command has %d tokens, first is \"%s\" %d",curCmd->numChunks,(char*)(curCmd->cmdChunks[cmdIdx]),&(curCmd->cmdChunks[cmdIdx]));
+		DTNMP_DEBUG_INFO("ui_eventLoop","command has %d tokens, first is \"%s\" %d",curCmd->numChunks,(char*)(curCmd->cmdChunks[cmdIdx]),&(curCmd->cmdChunks[cmdIdx]));
 
 		/* notes on top level structure:
 		<agent>.manager. - For reg/dereg
 		<agent>.reports. - For reporting
-		<agent>.controls.
-
-		I should probably also note that these macros actually wrap if (END_SECTION is just }), I'm channeling Steve Bourne
+		<agent>.controls. - For control transmission
 		*/
-
-		NETUI_START_SECTION("manager");
+		DTNMP_DEBUG_INFO("netui_eventloop","%d number of chunks",curCmd->numChunks);
+		NETUI_SECTION("manager")
+		{
 			NETUI_DEF_ACTION("register",netui_register_agent(curCmd));
 			NETUI_DEF_ACTION("deregister",ui_deregister_agent(netui_find_agent_by_name(curCmd->eid)));
-		NETUI_END_SECTION();
+		}
 
-		NETUI_START_SECTION("controls");
+		NETUI_SECTION("controls")
+		{
 			NETUI_DEF_ACTION("create",netui_construct_ctrl_by_idx(netui_find_agent_by_name(curCmd->eid),curCmd));
-		NETUI_END_SECTION();
+		}
 
-		NETUI_START_SECTION("debug");
+		NETUI_SECTION("debug")
+		{
 			NETUI_DEF_ACTION("controls",ui_print_ctrls());
 			NETUI_DEF_ACTION("datarefs",ui_print_mids());
-		NETUI_END_SECTION();
+		}
 
-		NETUI_START_SECTION("reports");
+		NETUI_SECTION("reports")
+		{
+				DTNMP_DEBUG_INFO("netui_eventloop","In reports",NULL);
 			NETUI_DEF_ACTION("time",netui_construct_time_rule_by_idx(netui_find_agent_by_name(curCmd->eid),curCmd));
 			NETUI_DEF_ACTION("show",netui_print_reports(netui_find_agent_by_name(curCmd->eid)));
 			NETUI_DEF_ACTION("number",netui_get_num_reports_by_agent());
 			NETUI_DEF_ACTION("delete",ui_clear_reports(netui_find_agent_by_name(curCmd->eid)));
-		NETUI_END_SECTION();
+		}
 
 		netui_free_cmdformat(curCmd);
 
@@ -1406,7 +1408,7 @@ void *net_ui_thread(void * threadId)
  * \par Function Name: netui_build_command
  *
  * \par Purpose: The core of the lazyRPC system, this function takea a buffer, and creates a cmdFormat.
- * \return The number of chunks in the command, or NULL if there is no valid data.
+ * \return 1 if successful, 0 if failed
  *
  *
  * \param[in]   inBuffer	A pointer to the null-terminated text buffer.
@@ -1434,7 +1436,8 @@ short netui_build_command(char** inBuffer,cmdFormat* cmdOutput,size_t bufSize)
 	char* tok_r;
 	unsigned char cmdIdx = 0;
 	char* retPtr = NULL;
-	char* inputBuffer=(char*)STAKE(D_INPUTBUFFERSIZE);
+	//char* intBuffer=(char*)STAKE(D_INPUTBUFFERSIZE);
+	char* inputBuffer;//=intBuffer;
 	char* curTokEnd;
 	size_t tokSize;
 
@@ -1444,7 +1447,7 @@ short netui_build_command(char** inBuffer,cmdFormat* cmdOutput,size_t bufSize)
 	//strncpy(inputBuffer,buffer,bufSize);
 	curTokEnd = strpbrk(buffer,";");
 
-	if(curTokEnd!=NULL)
+	if(curTokEnd!=NULL) /*& (curTokEnd-buffer > bufSize))*/
 	{
 		curTokEnd[0]='\0';
 		*inBuffer = curTokEnd+1;
@@ -1455,13 +1458,15 @@ short netui_build_command(char** inBuffer,cmdFormat* cmdOutput,size_t bufSize)
 		DTNMP_DEBUG_ERR("Netui_build_command","Invalid command",NULL);
 		return 0;
 	}
-	DTNMP_DEBUG_INFO("build","%s",buffer);
+	//DTNMP_DEBUG_INFO("build","%s",buffer);
 	char* argPtr=strchr(buffer,'=');
-	if(argPtr!=NULL)
+	if(argPtr != NULL)
 	{
-		cmdOutput->arguments=(char*)STAKE(strlen(argPtr));
-		strcpy(cmdOutput->arguments,argPtr+1);
-		DTNMP_DEBUG_INFO("Netui_build_command","Copied arguments: %s",cmdOutput->arguments);
+	    size_t argLen = strlen(argPtr);
+
+		cmdOutput->arguments=(char*)STAKE(argLen+1);
+		memset(cmdOutput->arguments,'\0',argLen+1);
+		strncpy(cmdOutput->arguments,argPtr+1,argLen);
 	}
 	//Find acting UID
 	cmdOutput->eid=strtok(buffer,"\\");
@@ -1469,13 +1474,14 @@ short netui_build_command(char** inBuffer,cmdFormat* cmdOutput,size_t bufSize)
 	//DTNMP_DEBUG_INFO("netui_build_command, found EID","%s",cmdOutput->eid)
 	if(cmdOutput->eid==NULL)
 	{
-		SRELEASE(inputBuffer);
+		//SRELEASE(inputBuffer);
 		return 0;
 	}
 	inputBuffer=strtok(NULL,"\\=");
 
 	for(;;inputBuffer=NULL)
 	{
+		DTNMP_DEBUG_ERR("netui_build_command","loop",NULL);
 		curTok=strtok_r(inputBuffer,".",&tok_r);
 
 		if(curTok==NULL)
@@ -1484,11 +1490,12 @@ short netui_build_command(char** inBuffer,cmdFormat* cmdOutput,size_t bufSize)
 				break;
 			else
 			{
-				SRELEASE(inputBuffer);
+				//SRELEASE(intBuffer);
 				return 0;
 			}
 
 		}
+		DTNMP_DEBUG_ERR("netui_build_command","loop3",NULL);
 	//Now, do the parsing
 
 		tokSize = strlen(curTok);
@@ -1498,11 +1505,9 @@ short netui_build_command(char** inBuffer,cmdFormat* cmdOutput,size_t bufSize)
 			continue;
 		}
 
-		DTNMP_DEBUG_INFO("Netui_build_command","Found token: %d %s %d",cmdIdx,curTok,tokSize);
 		cmdOutput->cmdChunks[cmdIdx] = (char*)STAKE(tokSize);
-
 		sscanf(curTok,"%s",cmdOutput->cmdChunks[cmdIdx]);
-		DTNMP_DEBUG_INFO("Netui_build_command","Copied token: %s",cmdOutput->cmdChunks[cmdIdx]);
+		DTNMP_DEBUG_INFO("Netui_build_command","Copied token (%d): %s",cmdIdx,cmdOutput->cmdChunks[cmdIdx]);
 		cmdIdx++;
 
 	}
@@ -1552,10 +1557,10 @@ cmdFormat* netui_create_cmdformat()
  *****************************************************************************/
 void netui_free_cmdformat(cmdFormat* toFree)
 {
-	if(toFree==NULL)
+	if(toFree == NULL)
 		return;
 	unsigned int x;
-	DTNMP_DEBUG_ENTRY("netui_free_cmdformat","Freeing %d chunks",toFree->numChunks);
+	DTNMP_DEBUG_ENTRY("netui_free_cmdformat","Freeing %#u",toFree);
 	for(x=0;x<=toFree->numChunks;x++)
 	{
 		if(toFree->cmdChunks[x]!=NULL)
@@ -1987,6 +1992,7 @@ char** netui_parse_arguments(char* argString,uint8_t* numArgsOut)
 	char* curArg;
 	char* arg_r;
 	char* cursor;
+	DTNMP_DEBUG_INFO("netui_parse_arguments","Working with argument: %s",argString);
 	char** allArgs=(char**)STAKE(D_INPUTMAXCHUNKS*sizeof(char*));
 	unsigned int numArgs=0;
 
@@ -2001,7 +2007,7 @@ char** netui_parse_arguments(char* argString,uint8_t* numArgsOut)
 		//printf("new argString = %s\n",cursor);
 		if((cursor[0]=='{') || (cursor[0]=='[') || (cursor[0]=='\"'))//We have one
 		{
-
+			
 			argBuf=cursor;
 			char endChar;
 
@@ -2060,7 +2066,7 @@ char** netui_parse_arguments(char* argString,uint8_t* numArgsOut)
  *****************************************************************************/
 void netui_get_num_reports_by_agent()
 {
-	DTNMP_DEBUG_ENTRY("netui_get_num_reports_by_agent","Starting",NULL);
+	DTNMP_DEBUG_INFO("netui_get_num_reports_by_agent","Starting",NULL);
 
 	LystElt elt;
 	uint32_t tempValue;

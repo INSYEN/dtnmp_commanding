@@ -41,15 +41,14 @@
 #include "shared/primitives/mid.h"
 #include "shared/primitives/datalist.h"
 
-#define D_CMDBUFSIZE 1024
-#define D_VARENTRYSIZE 1024
+#define D_CMDBUFSIZE 2048
+#define D_VARENTRYSIZE 2048
 #define D_VARSTRSIZE 1316
-#define NETUI_START_SECTION(name); if(strcasecmp(curChunk,name) == 0) {curChunk=curCmd->cmdChunks[++cmdIdx];
-#define NETUI_DEF_ACTION(name,func) {if(strcasecmp(curChunk,name)==0) {func;}};
-#define NETUI_END_SECTION() }
+#define NETUI_DEF_ACTION(name,func) {if(strcasecmp(curCmd->cmdChunks[cmdIdx],name)==0) {func;}};
+#define NETUI_SECTION(name) if((strncasecmp(curCmd->cmdChunks[0],name,strlen(name)) == 0) ? ++cmdIdx:0)
 
 #define D_INPUTMAXCHUNKS 128
-#define D_INPUTBUFFERSIZE 1024
+#define D_INPUTBUFFERSIZE 4096
 extern int gContext;
 
 typedef enum

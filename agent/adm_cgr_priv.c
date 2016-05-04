@@ -81,7 +81,6 @@ uint32_t cgr_ctrl_contact_add(Lyst params)
 	uvast toNode;
 	time_t startTime;
 	time_t endTime;
-	float probability;
 	uint32_t xmitRate;
 	uint32_t datacolSize;
 	struct timeval	done_time;
@@ -127,13 +126,12 @@ uint32_t cgr_ctrl_contact_add(Lyst params)
 		CHKVALID(datalist_get(&curDl,1,&toNode,NULL,DLIST_TYPE_UVAST));
 		CHKVALID(datalist_get(&curDl,2,&startTime,NULL,DLIST_TYPE_UINT64));
 		CHKVALID(datalist_get(&curDl,3,&endTime,NULL,DLIST_TYPE_UINT64));
-		CHKVALID(datalist_get(&curDl,4,&probability,NULL,DLIST_TYPE_REAL32));
-		CHKVALID(datalist_get(&curDl,5,&xmitRate,NULL,DLIST_TYPE_UINT32));
+		CHKVALID(datalist_get(&curDl,4,&xmitRate,NULL,DLIST_TYPE_UINT32));
 
         DTNMP_DEBUG_INFO("cgr_ctrl_contact","xmit %u",xmitRate);
 		DTNMP_DEBUG_INFO("cgr_ctrl_contact_add","Trying to add f: %d t: %d (%ud %ud xmitRate: %u)",fromNode,toNode,startTime,endTime,xmitRate);
 		//lets give it a shot
-		if(rfx_insert_contact(startTime, endTime,fromNode,toNode, xmitRate,probability)==0)
+		if(rfx_insert_contact(startTime, endTime,fromNode,toNode, xmitRate,1.0)==0)
 		{
 			DTNMP_DEBUG_ERR("cgr_ctrl_contact_add","Couldn't add contact",NULL);
 		}

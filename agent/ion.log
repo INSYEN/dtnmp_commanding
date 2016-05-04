@@ -12455,3 +12455,100 @@
 [2015/06/24-12:59:43] [i] : ./nm_agent() [0x427ebb]
 [2015/06/24-12:59:43] [i] : /lib/x86_64-linux-gnu/libpthread.so.0(+0x80a4) [0x7f69a4efa0a4]
 [2015/06/24-12:59:43] [i] : /lib/x86_64-linux-gnu/libc.so.6(clone+0x6d) [0x7f69a440d04d]
+[2015/06/24-13:16:59] [i] No congestion collapse predicted.
+[2015/06/24-13:16:59] [i] ionwarn finished.
+[2015/06/25-08:23:53] [x] src from 1970/01/01-01:00:00 to 2015/06/25-08:23:53: (0) 0 0 (1) 234 20394 (2) 0 0 (+) 234 20394
+[2015/06/25-08:23:53] [x] fwd from 1970/01/01-01:00:00 to 2015/06/25-08:23:53: (0) 0 0 (1) 0 0 (2) 0 0 (+) 234 20394
+[2015/06/25-08:23:53] [x] xmt from 1970/01/01-01:00:00 to 2015/06/25-08:23:53: (0) 0 0 (1) 234 20394 (2) 0 0 (+) 234 20394
+[2015/06/25-08:23:53] [x] rcv from 1970/01/01-01:00:00 to 2015/06/25-08:23:53: (0) 0 0 (1) 234 20394 (2) 0 0 (+) 234 20394
+[2015/06/25-08:23:53] [x] dlv from 1970/01/01-01:00:00 to 2015/06/25-08:23:53: (0) 0 0 (1) 0 0 (2) 0 0 (+) 0 0
+[2015/06/25-08:23:53] [x] ctr from 1970/01/01-01:00:00 to 2015/06/25-08:23:53: (0) 0 0 (1) 0 0 (2) 0 0 (+) 0 0
+[2015/06/25-08:23:53] [x] rfw from 1970/01/01-01:00:00 to 2015/06/25-08:23:53: (0) 0 0 (1) 0 0 (2) 0 0 (+) 0 0
+[2015/06/25-08:23:53] [x] exp from 1970/01/01-01:00:00 to 2015/06/25-08:23:53: (0) 0 0 (1) 0 0 (2) 0 0 (+) 234 20394
+[2015/06/25-08:23:55] [i] No congestion collapse predicted.
+[2015/06/25-08:23:55] [i] ionwarn finished.
+[2015/06/29-11:41:59] [?] Can't find ION security database.
+[2015/06/29-11:41:59] at line 1770 of ici/sdr/sdrxn.c, Assertion failed. (sdrv)
+[2015/06/29-11:41:59] [i] Current stack trace:
+[2015/06/29-11:41:59] [i] : /usr/local/lib/libici.so.0(printStackTrace+0x18) [0x7fba5d67a8d8
+[2015/06/29-11:41:59] [i] : /usr/local/lib/libici.so.0(_iEnd+0x21) [0x7fba5d67ae41]
+[2015/06/29-11:41:59] [i] : /usr/local/lib/libici.so.0(sdr_begin_xn+0x40) [0x7fba5d69b100]
+[2015/06/29-11:41:59] [i] : ./Debug/dtncms() [0x401bc8]
+[2015/06/29-11:41:59] [i] : ./Debug/dtncms() [0x4024f2]
+[2015/06/29-11:41:59] [i] : /lib/x86_64-linux-gnu/libc.so.6(__libc_start_main+0xf5) [0x7fba5
+[2015/06/29-11:41:59] [i] : ./Debug/dtncms() [0x401a69]
+[2015/06/29-11:41:59] at line 34 of /home/jeremy/Development/dtn/Protocol/dtncms/main.cpp, Assertion failed. (sdr_begin_xn(sdr))
+[2015/06/29-11:41:59] [i] Current stack trace:
+[2015/06/29-11:41:59] [i] : /usr/local/lib/libici.so.0(printStackTrace+0x18) [0x7fba5d67a8d8
+[2015/06/29-11:41:59] [i] : /usr/local/lib/libici.so.0(_iEnd+0x21) [0x7fba5d67ae41]
+[2015/06/29-11:41:59] [i] : ./Debug/dtncms() [0x401be0]
+[2015/06/29-11:41:59] [i] : ./Debug/dtncms() [0x4024f2]
+[2015/06/29-11:41:59] [i] : /lib/x86_64-linux-gnu/libc.so.6(__libc_start_main+0xf5) [0x7fba5
+[2015/06/29-11:41:59] [i] : ./Debug/dtncms() [0x401a69]
+[2015/06/29-11:41:59] at line 1782 of ici/sdr/sdrxn.c, Assertion failed. (sdrv)
+[2015/06/29-11:41:59] [i] Current stack trace:
+[2015/06/29-11:41:59] [i] : /usr/local/lib/libici.so.0(printStackTrace+0x18) [0x7fba5d67a8d8
+[2015/06/29-11:41:59] [i] : /usr/local/lib/libici.so.0(_iEnd+0x21) [0x7fba5d67ae41]
+[2015/06/29-11:41:59] [i] : /usr/local/lib/libici.so.0(sdr_in_xn+0x68) [0x7fba5d69b178]
+[2015/06/29-11:41:59] [i] : /usr/local/lib/libici.so.0(Sdr_malloc+0x1e) [0x7fba5d69d11e]
+[2015/06/29-11:41:59] [i] : ./Debug/dtncms() [0x401ede]
+[2015/06/29-11:41:59] [i] : ./Debug/dtncms() [0x402676]
+[2015/06/29-11:41:59] [i] : /lib/x86_64-linux-gnu/libc.so.6(__libc_start_main+0xf5) [0x7fba5
+[2015/06/29-11:41:59] [i] : ./Debug/dtncms() [0x401a69]
+[2015/06/29-11:41:59] at line 95 of /home/jeremy/Development/dtn/Protocol/dtncms/main.cpp, Assertion failed. (sdr_in_xn(sdrv))
+[2015/06/29-11:41:59] [i] Current stack trace:
+[2015/06/29-11:41:59] [i] : /usr/local/lib/libici.so.0(printStackTrace+0x18) [0x7fba5d67a8d8
+[2015/06/29-11:41:59] [i] : /usr/local/lib/libici.so.0(_iEnd+0x21) [0x7fba5d67ae41]
+[2015/06/29-11:41:59] [i] : /usr/local/lib/libici.so.0(Sdr_malloc+0x5d) [0x7fba5d69d15d]
+[2015/06/29-11:41:59] [i] : ./Debug/dtncms() [0x401ede]
+[2015/06/29-11:41:59] [i] : ./Debug/dtncms() [0x402676]
+[2015/06/29-11:41:59] [i] : /lib/x86_64-linux-gnu/libc.so.6(__libc_start_main+0xf5) [0x7fba5
+[2015/06/29-11:41:59] [i] : ./Debug/dtncms() [0x401a69]
+[2015/06/29-11:41:59] at line 1782 of ici/sdr/sdrxn.c, Assertion failed. (sdrv)
+[2015/06/29-11:41:59] [i] Current stack trace:
+[2015/06/29-11:41:59] [i] : /usr/local/lib/libici.so.0(printStackTrace+0x18) [0x7fba5d67a8d8
+[2015/06/29-11:41:59] [i] : /usr/local/lib/libici.so.0(_iEnd+0x21) [0x7fba5d67ae41]
+[2015/06/29-11:41:59] [i] : /usr/local/lib/libici.so.0(sdr_in_xn+0x68) [0x7fba5d69b178]
+[2015/06/29-11:41:59] [i] : /usr/local/lib/libici.so.0(Sdr_write+0x28) [0x7fba5d69bcb8]
+[2015/06/29-11:41:59] [i] : ./Debug/dtncms() [0x401f10]
+[2015/06/29-11:41:59] [i] : ./Debug/dtncms() [0x402676]
+[2015/06/29-11:41:59] [i] : /lib/x86_64-linux-gnu/libc.so.6(__libc_start_main+0xf5) [0x7fba5
+[2015/06/29-11:41:59] [i] : ./Debug/dtncms() [0x401a69]
+[2015/06/29-11:41:59] at line 96 of /home/jeremy/Development/dtn/Protocol/dtncms/main.cpp, Assertion failed. (sdr_in_xn(sdrv))
+[2015/06/29-11:41:59] [i] Current stack trace:
+[2015/06/29-11:41:59] [i] : /usr/local/lib/libici.so.0(printStackTrace+0x18) [0x7fba5d67a8d8
+[2015/06/29-11:41:59] [i] : /usr/local/lib/libici.so.0(_iEnd+0x21) [0x7fba5d67ae41]
+[2015/06/29-11:41:59] [i] : ./Debug/dtncms() [0x401f10]
+[2015/06/29-11:41:59] [i] : ./Debug/dtncms() [0x402676]
+[2015/06/29-11:41:59] [i] : /lib/x86_64-linux-gnu/libc.so.6(__libc_start_main+0xf5) [0x7fba5
+[2015/06/29-11:41:59] [i] : ./Debug/dtncms() [0x401a69]
+[2015/06/29-11:41:59] at line 1168 of ici/library/zco.c, Assertion failed. (sdr)
+[2015/06/29-11:41:59] [i] Current stack trace:
+[2015/06/29-11:41:59] [i] : /usr/local/lib/libici.so.0(printStackTrace+0x18) [0x7fba5d67a8d8
+[2015/06/29-11:41:59] [i] : /usr/local/lib/libici.so.0(_iEnd+0x21) [0x7fba5d67ae41]
+[2015/06/29-11:41:59] [i] : /usr/local/lib/libici.so.0(zco_create+0x27d) [0x7fba5d693e1d]
+[2015/06/29-11:41:59] [i] : ./Debug/dtncms() [0x401f40]
+[2015/06/29-11:41:59] [i] : ./Debug/dtncms() [0x402676]
+[2015/06/29-11:41:59] [i] : /lib/x86_64-linux-gnu/libc.so.6(__libc_start_main+0xf5) [0x7fba5
+[2015/06/29-11:41:59] [i] : ./Debug/dtncms() [0x401a69]
+[2015/06/29-11:42:06] [?] Can't find ION security database.
+[2015/06/29-11:42:06] [i] Outduct has been stopped.
+[2015/06/29-11:42:06] [i] ltpclo duct has ended.
+[2015/06/29-11:42:06] [i] bptransit has ended.
+[2015/06/29-11:42:06] [i] bpclock has ended.
+[2015/06/29-11:42:06] [i] ltpcli receiver thread has ended.
+[2015/06/29-11:42:06] [i] Endpoint has been stopped.
+[2015/06/29-11:42:06] [i] Administrative endpoint terminated.
+[2015/06/29-11:42:06] [i] ipnadminep has ended.
+[2015/06/29-11:42:06] [i] ipnfw forwarder has ended.
+[2015/06/29-11:42:06] [i] ltpcli duct has ended.
+[2015/06/29-11:42:08] at line 838 of cfdp/library/libcfdpP.c, Can't find CFDP database.
+[2015/06/29-11:42:09] [i] ltpclock has ended.
+[2015/06/29-11:42:09] [i] LTP meter to engine 1 is stopped.
+[2015/06/29-11:42:09] [i] ltpmeter has ended.
+[2015/06/29-11:42:09] [i] LSO to engine 1 is stopped.
+[2015/06/29-11:42:09] [i] udplsi receiver thread has ended.
+[2015/06/29-11:42:09] [i] udplso receiver thread has ended.
+[2015/06/29-11:42:09] [i] udplsi has ended.
+[2015/06/29-11:42:09] [i] udplso has ended.
+[2015/06/29-11:42:10] [i] rfxclock has ended.
