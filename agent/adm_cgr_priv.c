@@ -56,10 +56,10 @@ void agent_adm_init_cgr()
 	adm_build_mid_str(0x41, CGR_ADM_DATA_CTRL_NN, CGR_ADM_DATA_CTRL_NN_LEN, 1, mid_str);
 	adm_add_ctrl_run(mid_str,  cgr_ctrl_contact_remove);
 
-	adm_build_mid_str(0x41, CGR_ADM_DATA_CTRL_NN, CGR_ADM_DATA_CTRL_NN_LEN, 3, mid_str);
+	adm_build_mid_str(0x41, CGR_ADM_DATA_CTRL_NN, CGR_ADM_DATA_CTRL_NN_LEN, 2, mid_str);
 	adm_add_ctrl_run(mid_str,  cgr_ctrl_range_add);
 
-	adm_build_mid_str(0x41, CGR_ADM_DATA_CTRL_NN, CGR_ADM_DATA_CTRL_NN_LEN, 4, mid_str);
+	adm_build_mid_str(0x41, CGR_ADM_DATA_CTRL_NN, CGR_ADM_DATA_CTRL_NN_LEN, 3, mid_str);
 	adm_add_ctrl_run(mid_str,  cgr_ctrl_range_remove);
 
 }
@@ -354,7 +354,6 @@ expr_result_t cgr_node_get_contacts(Lyst params)
 		datalist_insert_with_type(&contactDL,DLIST_TYPE_UVAST,&contact->toNode);
 		datalist_insert_with_type(&contactDL,DLIST_TYPE_UINT64,&contact->fromTime);
 		datalist_insert_with_type(&contactDL,DLIST_TYPE_UINT64,&contact->toTime);
-		datalist_insert_with_type(&contactDL,DLIST_TYPE_REAL32,&contact->prob);
 		datalist_insert_with_type(&contactDL,DLIST_TYPE_UINT32,&contact->xmitRate);
 
 		DTNMP_DEBUG_INFO("adm_get_contacts","%d %d %u",contact->fromTime,contact->toTime,contact->xmitRate);
@@ -396,8 +395,8 @@ expr_result_t cgr_node_get_ranges(Lyst params)
 
 		datalist_insert_with_type(&rangeDL,DLIST_TYPE_UVAST,&range->fromNode);
 		datalist_insert_with_type(&rangeDL,DLIST_TYPE_UVAST,&range->toNode);
-		datalist_insert_with_type(&rangeDL,DLIST_TYPE_UVAST,&range->fromTime);
-		datalist_insert_with_type(&rangeDL,DLIST_TYPE_UVAST,&range->toTime);
+		datalist_insert_with_type(&rangeDL,DLIST_TYPE_UINT64,&range->fromTime);
+		datalist_insert_with_type(&rangeDL,DLIST_TYPE_UINT64,&range->toTime);
 		datalist_insert_with_type(&rangeDL,DLIST_TYPE_UINT32,&range->owlt);
 
 		datacol_entry_t* dlSerialized = datalist_serialize_to_datacol(&rangeDL);
