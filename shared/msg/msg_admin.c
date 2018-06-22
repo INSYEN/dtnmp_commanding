@@ -2,12 +2,6 @@
  **                           COPYRIGHT NOTICE
  **      (c) 2012 The Johns Hopkins University Applied Physics Laboratory
  **                         All rights reserved.
- **
- **     This material may only be used, modified, or reproduced by or for the
- **       U.S. Government pursuant to the license rights granted under
- **          FAR clause 52.227-14 or DFARS clauses 252.227-7013/7014
- **
- **     For any other permissions, please contact the Legal Office at JHU/APL.
  ******************************************************************************/
 
 /*****************************************************************************
@@ -24,15 +18,15 @@
  ** Modification History:
  **  MM/DD/YY  AUTHOR         DESCRIPTION
  **  --------  ------------   ---------------------------------------------
- **  10/21/12  E. Birrane     Initial Implementation
+ **  10/21/12  E. Birrane     Initial Implementation (JHU/APL)
  *****************************************************************************/
 
 #include "platform.h"
 #include "ion.h"
 
-#include "shared/utils/utils.h"
-#include "shared/utils/nm_types.h"
-#include "shared/msg/msg_admin.h"
+#include "../utils/utils.h"
+#include "../utils/nm_types.h"
+#include "../msg/msg_admin.h"
 
 
 /**
@@ -55,14 +49,14 @@ uint8_t *msg_serialize_reg_agent(adm_reg_agent_t *msg, uint32_t *len)
 	uint8_t *result = NULL;
 	uint8_t *cursor = NULL;
 
-	DTNMP_DEBUG_ENTRY("msg_serialize_reg_agent","(0x%x, 0x%x)",
+	AMP_DEBUG_ENTRY("msg_serialize_reg_agent","(0x%x, 0x%x)",
 			          (unsigned long)msg, (unsigned long) len);
 
 	/* Step 0: Sanity Checks. */
 	if((msg == NULL) || (len == NULL))
 	{
-		DTNMP_DEBUG_ERR("msg_serialize_reg_agent","Bad Args",NULL);
-		DTNMP_DEBUG_EXIT("msg_serialize_reg_agent","->NULL",NULL);
+		AMP_DEBUG_ERR("msg_serialize_reg_agent","Bad Args",NULL);
+		AMP_DEBUG_EXIT("msg_serialize_reg_agent","->NULL",NULL);
 		return NULL;
 	}
 
@@ -77,10 +71,10 @@ uint8_t *msg_serialize_reg_agent(adm_reg_agent_t *msg, uint32_t *len)
 	/* STEP 4: Allocate the serialized message. */
 	if((result = (uint8_t*)STAKE(*len)) == NULL)
 	{
-		DTNMP_DEBUG_ERR("msg_serialize_reg_agent","Can't alloc %d bytes", *len);
+		AMP_DEBUG_ERR("msg_serialize_reg_agent","Can't alloc %d bytes", *len);
 		*len = 0;
 
-		DTNMP_DEBUG_EXIT("msg_serialize_reg_agent","->NULL",NULL);
+		AMP_DEBUG_EXIT("msg_serialize_reg_agent","->NULL",NULL);
 		return NULL;
 	}
 
@@ -96,16 +90,16 @@ uint8_t *msg_serialize_reg_agent(adm_reg_agent_t *msg, uint32_t *len)
 	/* Step 6: Last sanity check. */
 	if((cursor - result) != *len)
 	{
-		DTNMP_DEBUG_ERR("msg_serialize_reg_agent","Wrote %d bytes but allcated %d",
+		AMP_DEBUG_ERR("msg_serialize_reg_agent","Wrote %d bytes but allcated %d",
 				(unsigned long) (cursor - result), *len);
 		*len = 0;
-		MRELEASE(result);
+		SRELEASE(result);
 
-		DTNMP_DEBUG_EXIT("msg_serialize_reg_agent","->NULL",NULL);
+		AMP_DEBUG_EXIT("msg_serialize_reg_agent","->NULL",NULL);
 		return NULL;
 	}
 
-	DTNMP_DEBUG_EXIT("msg_serialize_reg_agent","->0x%x",(unsigned long)result);
+	AMP_DEBUG_EXIT("msg_serialize_reg_agent","->0x%x",(unsigned long)result);
 	return result;
 }
 
@@ -130,14 +124,14 @@ uint8_t *msg_serialize_rpt_policy(adm_rpt_policy_t *msg, uint32_t *len)
 	uint8_t *result = NULL;
 	uint8_t *cursor = NULL;
 
-	DTNMP_DEBUG_ENTRY("msg_serialize_rpt_policy","(0x%x, 0x%x)",
+	AMP_DEBUG_ENTRY("msg_serialize_rpt_policy","(0x%x, 0x%x)",
 			          (unsigned long)msg, (unsigned long) len);
 
 	/* Step 0: Sanity Checks. */
 	if((msg == NULL) || (len == NULL))
 	{
-		DTNMP_DEBUG_ERR("msg_serialize_rpt_policy","Bad Args",NULL);
-		DTNMP_DEBUG_EXIT("msg_serialize_rpt_policy","->NULL",NULL);
+		AMP_DEBUG_ERR("msg_serialize_rpt_policy","Bad Args",NULL);
+		AMP_DEBUG_EXIT("msg_serialize_rpt_policy","->NULL",NULL);
 		return NULL;
 	}
 
@@ -151,10 +145,10 @@ uint8_t *msg_serialize_rpt_policy(adm_rpt_policy_t *msg, uint32_t *len)
 	/* STEP 4: Allocate the serialized message. */
 	if((result = (uint8_t*)STAKE(*len)) == NULL)
 	{
-		DTNMP_DEBUG_ERR("msg_serialize_rpt_policy","Can't alloc %d bytes", *len);
+		AMP_DEBUG_ERR("msg_serialize_rpt_policy","Can't alloc %d bytes", *len);
 		*len = 0;
 
-		DTNMP_DEBUG_EXIT("msg_serialize_rpt_policy","->NULL",NULL);
+		AMP_DEBUG_EXIT("msg_serialize_rpt_policy","->NULL",NULL);
 		return NULL;
 	}
 
@@ -167,16 +161,16 @@ uint8_t *msg_serialize_rpt_policy(adm_rpt_policy_t *msg, uint32_t *len)
 	/* Step 6: Last sanity check. */
 	if((cursor - result) != *len)
 	{
-		DTNMP_DEBUG_ERR("msg_serialize_rpt_policy","Wrote %d bytes but allcated %d",
+		AMP_DEBUG_ERR("msg_serialize_rpt_policy","Wrote %d bytes but allcated %d",
 				(unsigned long) (cursor - result), *len);
 		*len = 0;
-		MRELEASE(result);
+		SRELEASE(result);
 
-		DTNMP_DEBUG_EXIT("msg_serialize_rpt_policy","->NULL",NULL);
+		AMP_DEBUG_EXIT("msg_serialize_rpt_policy","->NULL",NULL);
 		return NULL;
 	}
 
-	DTNMP_DEBUG_EXIT("msg_serialize_rpt_policy","->0x%x",(unsigned long)result);
+	AMP_DEBUG_EXIT("msg_serialize_rpt_policy","->0x%x",(unsigned long)result);
 	return result;
 }
 
@@ -209,14 +203,14 @@ uint8_t *msg_serialize_stat_msg(adm_stat_msg_t *msg, uint32_t *len)
 
 	Sdnv time;
 
-	DTNMP_DEBUG_ENTRY("msg_serialize_stat_msg","(0x%x, 0x%x)",
+	AMP_DEBUG_ENTRY("msg_serialize_stat_msg","(0x%x, 0x%x)",
 			          (unsigned long)msg, (unsigned long) len);
 
 	/* Step 0: Sanity Checks. */
 	if((msg == NULL) || (len == NULL))
 	{
-		DTNMP_DEBUG_ERR("msg_serialize_stat_msg","Bad Args",NULL);
-		DTNMP_DEBUG_EXIT("msg_serialize_stat_msg","->NULL",NULL);
+		AMP_DEBUG_ERR("msg_serialize_stat_msg","Bad Args",NULL);
+		AMP_DEBUG_EXIT("msg_serialize_stat_msg","->NULL",NULL);
 		return NULL;
 	}
 
@@ -224,19 +218,19 @@ uint8_t *msg_serialize_stat_msg(adm_stat_msg_t *msg, uint32_t *len)
 	/* STEP 3: Serialize the Code. */
 	if((code = mid_serialize(msg->code, &code_size)) == NULL)
 	{
-		DTNMP_DEBUG_ERR("msg_serialize_stat_msg","Can't serialize code.",
+		AMP_DEBUG_ERR("msg_serialize_stat_msg","Can't serialize code.",
 				         NULL);
-		DTNMP_DEBUG_EXIT("msg_serialize_stat_msg","->NULL",NULL);
+		AMP_DEBUG_EXIT("msg_serialize_stat_msg","->NULL",NULL);
 		return NULL;
 	}
 
 	/* STEP 4: Serialize the MID Collection. */
 	if((list = midcol_serialize(msg->generators, &list_size)) == NULL)
 	{
-		DTNMP_DEBUG_ERR("msg_serialize_stat_msg","Can't serialize code.",
+		AMP_DEBUG_ERR("msg_serialize_stat_msg","Can't serialize code.",
 				         NULL);
-		MRELEASE(code);
-		DTNMP_DEBUG_EXIT("msg_serialize_stat_msg","->NULL",NULL);
+		SRELEASE(code);
+		AMP_DEBUG_EXIT("msg_serialize_stat_msg","->NULL",NULL);
 		return NULL;
 
 	}
@@ -251,11 +245,11 @@ uint8_t *msg_serialize_stat_msg(adm_stat_msg_t *msg, uint32_t *len)
 	/* STEP 7: Allocate the serialized message. */
 	if((result = (uint8_t*)STAKE(*len)) == NULL)
 	{
-		DTNMP_DEBUG_ERR("msg_serialize_stat_msg","Can't alloc %d bytes", *len);
+		AMP_DEBUG_ERR("msg_serialize_stat_msg","Can't alloc %d bytes", *len);
 		*len = 0;
-		MRELEASE(code);
-		MRELEASE(list);
-		DTNMP_DEBUG_EXIT("msg_serialize_stat_msg","->NULL",NULL);
+		SRELEASE(code);
+		SRELEASE(list);
+		AMP_DEBUG_EXIT("msg_serialize_stat_msg","->NULL",NULL);
 		return NULL;
 	}
 
@@ -264,28 +258,28 @@ uint8_t *msg_serialize_stat_msg(adm_stat_msg_t *msg, uint32_t *len)
 
 	memcpy(cursor,code,code_size);
 	cursor += code_size;
-	MRELEASE(code);
+	SRELEASE(code);
 
 	memcpy(cursor, time.text, time.length);
 	cursor += time.length;
 
 	memcpy(cursor, list, list_size);
 	cursor += list_size;
-	MRELEASE(list);
+	SRELEASE(list);
 
 	/* Step 9: Last sanity check. */
 	if((cursor - result) != *len)
 	{
-		DTNMP_DEBUG_ERR("msg_serialize_stat_msg","Wrote %d bytes but alloc %d",
+		AMP_DEBUG_ERR("msg_serialize_stat_msg","Wrote %d bytes but alloc %d",
 				(unsigned long) (cursor - result), *len);
 		*len = 0;
-		MRELEASE(result);
+		SRELEASE(result);
 
-		DTNMP_DEBUG_EXIT("msg_serialize_stat_msg","->NULL",NULL);
+		AMP_DEBUG_EXIT("msg_serialize_stat_msg","->NULL",NULL);
 		return NULL;
 	}
 
-	DTNMP_DEBUG_EXIT("msg_serialize_stat_msg","->0x%x",(unsigned long)result);
+	AMP_DEBUG_EXIT("msg_serialize_stat_msg","->0x%x",(unsigned long)result);
 	return result;
 }
 
@@ -311,28 +305,26 @@ adm_reg_agent_t *msg_deserialize_reg_agent(uint8_t *cursor,
 		                                   uint32_t size,
 		                                   uint32_t *bytes_used)
 {
-	Sdnv id;
 	adm_reg_agent_t *result = NULL;
-	uint32_t bytes = 0;
 
-	DTNMP_DEBUG_ENTRY("msg_deserialize_reg_agent","(0x%x, %d, 0x%x)",
+	AMP_DEBUG_ENTRY("msg_deserialize_reg_agent","(0x%x, %d, 0x%x)",
 			          (unsigned long)cursor, size, (unsigned long) bytes_used);
 
 	/* Step 0: Sanity Checks. */
 	if((cursor == NULL) || (bytes_used == 0))
 	{
-		DTNMP_DEBUG_ERR("msg_deserialize_reg_agent","Bad Args.",NULL);
-		DTNMP_DEBUG_EXIT("msg_deserialize_reg_agent","->NULL",NULL);
+		AMP_DEBUG_ERR("msg_deserialize_reg_agent","Bad Args.",NULL);
+		AMP_DEBUG_EXIT("msg_deserialize_reg_agent","->NULL",NULL);
 		return NULL;
 	}
 
 	/* Step 1: Allocate the new message structure. */
 	if((result = (adm_reg_agent_t*)STAKE(sizeof(adm_reg_agent_t))) == NULL)
 	{
-		DTNMP_DEBUG_ERR("msg_deserialize_reg_agent","Can't Alloc %d Bytes.",
+		AMP_DEBUG_ERR("msg_deserialize_reg_agent","Can't Alloc %d Bytes.",
 				        sizeof(adm_reg_agent_t));
 		*bytes_used = 0;
-		DTNMP_DEBUG_EXIT("msg_deserialize_reg_agent","->NULL",NULL);
+		AMP_DEBUG_EXIT("msg_deserialize_reg_agent","->NULL",NULL);
 		return NULL;
 	}
 	else
@@ -347,15 +339,15 @@ adm_reg_agent_t *msg_deserialize_reg_agent(uint8_t *cursor,
 	uvast sdnv_tmp = 0;
 
 	sdnv_len = decodeSdnv(&(sdnv_tmp), cursor);
-	if(sdnv_len > MAX_EID_LEN)
+	if(sdnv_len > AMP_MAX_EID_LEN)
 	{
-		DTNMP_DEBUG_ERR("msg_deserialize_reg_agent", "EID size %d > max %d.",
-				        sdnv_tmp, MAX_EID_LEN);
+		AMP_DEBUG_ERR("msg_deserialize_reg_agent", "EID size %d > max %d.",
+				        sdnv_tmp, AMP_MAX_EID_LEN);
 
 		msg_release_reg_agent(result);
 		*bytes_used = 0;
 
-		DTNMP_DEBUG_EXIT("msg_deserialize_reg_agent","->NULL",NULL);
+		AMP_DEBUG_EXIT("msg_deserialize_reg_agent","->NULL",NULL);
 		return NULL;
 	}
 	else
@@ -371,7 +363,7 @@ adm_reg_agent_t *msg_deserialize_reg_agent(uint8_t *cursor,
 	size -= sdnv_tmp;
 	*bytes_used += sdnv_tmp;
 
-	DTNMP_DEBUG_EXIT("msg_deserialize_reg_agent","->0x%x",(unsigned long)result);
+	AMP_DEBUG_EXIT("msg_deserialize_reg_agent","->0x%x",(unsigned long)result);
 	return result;
 }
 
@@ -397,27 +389,26 @@ adm_rpt_policy_t *msg_deserialize_rpt_policy(uint8_t *cursor,
         									 	 uint32_t *bytes_used)
 {
 	adm_rpt_policy_t *result = NULL;
-	uint32_t bytes = 0;
 
-	DTNMP_DEBUG_ENTRY("msg_deserialize_rpt_policy","(0x%x, %d, 0x%x)",
+	AMP_DEBUG_ENTRY("msg_deserialize_rpt_policy","(0x%x, %d, 0x%x)",
 			          (unsigned long)cursor, size,
 			          (unsigned long) bytes_used);
 
 	/* Step 0: Sanity Checks. */
 	if((cursor == NULL) || (bytes_used == 0))
 	{
-		DTNMP_DEBUG_ERR("msg_deserialize_rpt_policy","Bad Args.",NULL);
-		DTNMP_DEBUG_EXIT("msg_deserialize_rpt_policy","->NULL",NULL);
+		AMP_DEBUG_ERR("msg_deserialize_rpt_policy","Bad Args.",NULL);
+		AMP_DEBUG_EXIT("msg_deserialize_rpt_policy","->NULL",NULL);
 		return NULL;
 	}
 
 	/* Step 1: Allocate the new message structure. */
 	if((result = (adm_rpt_policy_t*)STAKE(sizeof(adm_rpt_policy_t))) == NULL)
 	{
-		DTNMP_DEBUG_ERR("msg_deserialize_rpt_policy","Can't Alloc %d Bytes.",
+		AMP_DEBUG_ERR("msg_deserialize_rpt_policy","Can't Alloc %d Bytes.",
 				        sizeof(adm_rpt_policy_t));
 		*bytes_used = 0;
-		DTNMP_DEBUG_EXIT("msg_deserialize_rpt_policy","->NULL",NULL);
+		AMP_DEBUG_EXIT("msg_deserialize_rpt_policy","->NULL",NULL);
 		return NULL;
 	}
 	else
@@ -434,7 +425,7 @@ adm_rpt_policy_t *msg_deserialize_rpt_policy(uint8_t *cursor,
 	*bytes_used += 1;
 
 
-	DTNMP_DEBUG_EXIT("msg_deserialize_rpt_policy","->0x%x",
+	AMP_DEBUG_EXIT("msg_deserialize_rpt_policy","->0x%x",
 			         (unsigned long)result);
 	return result;
 }
@@ -464,25 +455,25 @@ adm_stat_msg_t   *msg_deserialize_stat_msg(uint8_t *cursor,
 	adm_stat_msg_t *result = NULL;
 	uint32_t bytes = 0;
 
-	DTNMP_DEBUG_ENTRY("msg_deserialize_stat_msg","(0x%x, %d, 0x%x)",
+	AMP_DEBUG_ENTRY("msg_deserialize_stat_msg","(0x%x, %d, 0x%x)",
 			          (unsigned long)cursor, size,
 			          (unsigned long) bytes_used);
 
 	/* Step 0: Sanity Checks. */
 	if((cursor == NULL) || (bytes_used == 0))
 	{
-		DTNMP_DEBUG_ERR("msg_deserialize_stat_msg","Bad Args.",NULL);
-		DTNMP_DEBUG_EXIT("msg_deserialize_stat_msg","->NULL",NULL);
+		AMP_DEBUG_ERR("msg_deserialize_stat_msg","Bad Args.",NULL);
+		AMP_DEBUG_EXIT("msg_deserialize_stat_msg","->NULL",NULL);
 		return NULL;
 	}
 
 	/* Step 1: Allocate the new message structure. */
 	if((result = (adm_stat_msg_t*)STAKE(sizeof(adm_stat_msg_t))) == NULL)
 	{
-		DTNMP_DEBUG_ERR("msg_deserialize_stat_msg","Can't Alloc %d Bytes.",
+		AMP_DEBUG_ERR("msg_deserialize_stat_msg","Can't Alloc %d Bytes.",
 				        sizeof(adm_stat_msg_t));
 		*bytes_used = 0;
-		DTNMP_DEBUG_EXIT("msg_deserialize_stat_msg","->NULL",NULL);
+		AMP_DEBUG_EXIT("msg_deserialize_stat_msg","->NULL",NULL);
 		return NULL;
 	}
 	else
@@ -495,11 +486,11 @@ adm_stat_msg_t   *msg_deserialize_stat_msg(uint8_t *cursor,
 	/* Grab the mask */
 	if((result->code = mid_deserialize(cursor,size,&bytes)) == NULL)
 	{
-		DTNMP_DEBUG_ERR("msg_deserialize_stat_msg","Can't get code MID.",NULL);
+		AMP_DEBUG_ERR("msg_deserialize_stat_msg","Can't get code MID.",NULL);
 		*bytes_used = 0;
 		msg_release_stat_msg(result);
 
-		DTNMP_DEBUG_EXIT("msg_deserialize_stat_msg","->NULL",NULL);
+		AMP_DEBUG_EXIT("msg_deserialize_stat_msg","->NULL",NULL);
 		return NULL;
 	}
 	else
@@ -513,11 +504,11 @@ adm_stat_msg_t   *msg_deserialize_stat_msg(uint8_t *cursor,
 	uvast val = 0;
 	if((bytes = utils_grab_sdnv(cursor, size, &val)) == 0)
 	{
-		DTNMP_DEBUG_ERR("msg_deserialize_stat_msg","Can't get timestamp.",NULL);
+		AMP_DEBUG_ERR("msg_deserialize_stat_msg","Can't get timestamp.",NULL);
 		*bytes_used = 0;
 		msg_release_stat_msg(result);
 
-		DTNMP_DEBUG_EXIT("msg_deserialize_stat_msg","->NULL",NULL);
+		AMP_DEBUG_EXIT("msg_deserialize_stat_msg","->NULL",NULL);
 		return NULL;
 	}
 	else
@@ -531,15 +522,15 @@ adm_stat_msg_t   *msg_deserialize_stat_msg(uint8_t *cursor,
 	/* Grab the Lyst. */
 	if((result->generators = midcol_deserialize(cursor,size,&bytes)) == NULL)
 	{
-		DTNMP_DEBUG_ERR("msg_deserialize_stat_msg","Can't get generators.",NULL);
+		AMP_DEBUG_ERR("msg_deserialize_stat_msg","Can't get generators.",NULL);
 		*bytes_used = 0;
 		msg_release_stat_msg(result);
 
-		DTNMP_DEBUG_EXIT("msg_deserialize_stat_msg","->NULL",NULL);
+		AMP_DEBUG_EXIT("msg_deserialize_stat_msg","->NULL",NULL);
 		return NULL;
 	}
 
-	DTNMP_DEBUG_EXIT("msg_deserialize_stat_msg","->0x%x",
+	AMP_DEBUG_EXIT("msg_deserialize_stat_msg","->0x%x",
 			         (unsigned long)result);
 	return result;
 }
@@ -551,15 +542,15 @@ adm_stat_msg_t   *msg_deserialize_stat_msg(uint8_t *cursor,
 
 /*******
 
-prod_rule *createProdRule(pdu* cur_pdu)
+prod_rule *createProdRule(pdu* cur_pdu) 
 {
     unsigned char* cursor;
     int sdnv_len = 0;
     unsigned long sdnv_tmp = 0;
     prod_rule *rule;
-
-    DTNMP_DEBUG_PROC("+ PDU: createRule", NULL);
-
+    
+    DTNMP_DEBUG_PROC("+ PDU: createRule", NULL); 
+    
     / * Step 0: Sanity check the pdu type to ensure it contains a rule * /
     if(cur_pdu->hdr.type != MSG_TYPE_CTRL_PERIOD_PROD)
     {
@@ -574,75 +565,75 @@ prod_rule *createProdRule(pdu* cur_pdu)
     {
         DTNMP_DEBUG_ERR("x PDU: Unable to allocate new rule.", NULL);
         DTNMP_DEBUG_PROC("- PDU: createRule -> NULL", NULL);
-        return NULL;
+        return NULL;        
     }
     rule->mids = lyst_create();
-
-    cursor = cur_pdu->content;
-
+    
+    cursor = cur_pdu->content;    
+    
     DTNMP_DEBUG_INFO("i  PDU: Cursor is %x", (unsigned long) cursor);
-
-
+    
+    
     / * Step 2: Extract the Offset for the Rule. * /
     if((sdnv_len = decodeSdnv(&sdnv_tmp, cursor)) == 0)
     {
         DTNMP_DEBUG_ERR("x PDU: No offset field in rule msg.", NULL);
 
         lyst_destroy(rule->mids);
-        MRELEASE(rule);
-
+        SRELEASE(rule);
+        
         DTNMP_DEBUG_PROC("- PDU: createRule -> NULL", NULL);
         return NULL;
     }
-
-
+        
+    
     rule->offset = sdnv_tmp;
     cursor += sdnv_len;
-
+   
     DTNMP_DEBUG_INFO("i  PDU: Rule has offset value of %d", rule->offset);
-
+    
     / * Step 3: Extract the Period for the Rule. * /
     if((sdnv_len = decodeSdnv(&(sdnv_tmp), cursor)) == 0)
     {
         DTNMP_DEBUG_ERR("x PDU: No period field in rule msg.", NULL);
 
         lyst_destroy(rule->mids);
-        MRELEASE(rule);
-
+        SRELEASE(rule);
+        
         DTNMP_DEBUG_PROC("- PDU: createRule -> NULL", NULL);
         return NULL;
     }
-
+    
     //rule->interval_ticks = ntohl(sdnv_tmp);
     rule->interval_ticks = sdnv_tmp;
     rule->countdown_ticks = rule->interval_ticks;
     cursor += sdnv_len;
     DTNMP_DEBUG_INFO("i  PDU: Rule has interval value of %d", rule->interval_ticks);
 
-
+    
     / * Step 4: Extract the # Evaluations for this Rule * /
     if((sdnv_len = decodeSdnv(&(sdnv_tmp), cursor)) == 0)
     {
         DTNMP_DEBUG_ERR("x PDU: No eval count field in rule msg.", NULL);
-
+        
         lyst_destroy(rule->mids);
-        MRELEASE(rule);
-
+        SRELEASE(rule);
+        
         DTNMP_DEBUG_PROC("- PDU: createRule -> NULL", NULL);
         return NULL;
     }
-
+    
     //rule->num_evals = ntohl(sdnv_tmp);
     rule->num_evals = sdnv_tmp;
     if(rule->num_evals == 0)
     {
         rule->num_evals = DTNMP_RULE_EXEC_ALWAYS;
     }
-
+    
     cursor += sdnv_len;
     DTNMP_DEBUG_INFO("i  PDU: Rule has num evals value of %d", rule->num_evals);
 
-
+    
     / * Step 5: Grab the list of MIDs to be produced by this rule. * /
     mid_t *cur_mid = NULL;
     unsigned long mid_used = 0;
@@ -656,36 +647,36 @@ prod_rule *createProdRule(pdu* cur_pdu)
     {
         cur_mid = build_mid(cursor, (cur_pdu->content + cur_pdu->data_size) - cursor, &mid_used);
 
-
+        
         if(cur_mid != NULL)
         {
         	char *mid_str = mid_string(cur_mid);
             lyst_insert_last(rule->mids, cur_mid);
             cursor += mid_used;
             DTNMP_DEBUG_INFO("i  PDU: Added MID %s to this RUle.", mid_str);
-            MRELEASE(mid_str);
+            SRELEASE(mid_str);
 
         }
         else
         {
         	DTNMP_DEBUG_ERR("x  PDU: Unknown MID.", NULL);
             lyst_destroy(rule->mids);
-            MRELEASE(rule);
+            SRELEASE(rule);
             return NULL;
         }
     }
-
+    
     if(cursor != (cur_pdu->content + cur_pdu->data_size))
     {
         DTNMP_DEBUG_WARN("w MID: Unexpected size mismatch: cursor (%x) end data (%x)",
-                         (unsigned long) cursor, (unsigned long) (cur_pdu->content + cur_pdu->data_size));
+                         (unsigned long) cursor, (unsigned long) (cur_pdu->content + cur_pdu->data_size));        
     }
-
+    
     strcpy(rule->sender.name, cur_pdu->meta.senderEid.name);
-    DTNMP_DEBUG_INFO("i PDU: PDU sender EID is %s", rule->sender.name);
-
+    DTNMP_DEBUG_INFO("i PDU: PDU sender EID is %s", rule->sender.name);    
+    
     DTNMP_DEBUG_PROC("- PDU: createProdRule -> %x", (unsigned long) rule);
-
+    
     return rule;
 }
 
@@ -727,7 +718,7 @@ nm_custom_report* createCustomReport(pdu *cur_pdu)
     report->report_id = build_mid(cursor, (cur_pdu->content + cur_pdu->data_size) - cursor, &mid_used);
     mid_str = mid_string(report->report_id);
     DTNMP_DEBUG_INFO("i PDU: Report has ID of %s. Used is %d.", mid_str, mid_used);
-    MRELEASE(mid_str);
+    SRELEASE(mid_str);
 
     cursor += mid_used;
 
@@ -742,7 +733,7 @@ nm_custom_report* createCustomReport(pdu *cur_pdu)
             lyst_insert_last(report->mids, cur_mid);
             cursor += mid_used;
             DTNMP_DEBUG_INFO("i  PDU: Added MID %s of size %d to report.", name, mid_used);
-            MRELEASE(name);
+            SRELEASE(name);
         }
     }
 
@@ -801,7 +792,7 @@ nm_report *createDataReport(pdu *cur_pdu)
         DTNMP_DEBUG_ERR("x PDU: No timestamp field in report msg.", NULL);
 
         lyst_destroy(report->report_data);
-        MRELEASE(report);
+        SRELEASE(report);
 
         DTNMP_DEBUG_PROC("- PDU: createDataReport -> NULL", NULL);
         return NULL;
@@ -825,7 +816,7 @@ nm_report *createDataReport(pdu *cur_pdu)
         				        &mid_size)) == NULL)
         {
         	DTNMP_DEBUG_ERR("x PDU: Unable to build MID!", NULL);
-        	MRELEASE(report);
+        	SRELEASE(report);
             DTNMP_DEBUG_PROC("- PDU: createDataReport -> NULL", NULL);
             return NULL;
         }
@@ -851,7 +842,7 @@ nm_report *createDataReport(pdu *cur_pdu)
         mid_str = mid_string(cur_entry->mid);
         DTNMP_DEBUG_INFO("i PDU: Added entry for mid %s of size %d",
         			      mid_str, cur_entry->data_size);
-        MRELEASE(mid_str);
+        SRELEASE(mid_str);
 
         / * Add the entry to the entry list. * /
         lyst_insert_last(report->report_data, cur_entry);
@@ -922,7 +913,7 @@ uint8_t *buildProdRulePDU(int offset, int period, int evals, Lyst mids, int mid_
 		{
 			DTNMP_DEBUG_ERR("x PDU: Invalid sizes. Length %d, idx+mid %d",
 							 length, idx + entry->mid_len);
-			MRELEASE(pdu);
+			SRELEASE(pdu);
 			return NULL;
 		}
 		memcpy(&pdu[idx], entry->mid, entry->mid_len);
@@ -959,12 +950,12 @@ uint8_t *buildReportDefPDU(mid_t *report_id, Lyst mids, uint32_t mid_size, int *
 		{
 			DTNMP_DEBUG_ERR("x PDU: Invalid sizes. Length %d, idx+mid %d",
 							 *msg_len, idx + cur_mid->raw_size);
-			MRELEASE(pdu);
+			SRELEASE(pdu);
 			return NULL;
 		}
 		mid_str = mid_string(cur_mid);
 		DTNMP_DEBUG_INFO("i PFU: Adding mid %s to custom report.", mid_str);
-		MRELEASE(mid_str);
+		SRELEASE(mid_str);
 		memcpy(&pdu[idx], cur_mid->raw, cur_mid->raw_size);
 		idx += cur_mid->raw_size;
 	}

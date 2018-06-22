@@ -1,15 +1,8 @@
 /******************************************************************************
  **                           COPYRIGHT NOTICE
- **      (c) 2011 The Johns Hopkins University Applied Physics Laboratory
+ **      (c) 2012 The Johns Hopkins University Applied Physics Laboratory
  **                         All rights reserved.
- **
- **     This material may only be used, modified, or reproduced by or for the
- **       U.S. Government pursuant to the license rights granted under
- **          FAR clause 52.227-14 or DFARS clauses 252.227-7013/7014
- **
- **     For any other permissions, please contact the Legal Office at JHU/APL.
  ******************************************************************************/
-
 /*****************************************************************************
  ** \file nm_mgr.h
  **
@@ -27,8 +20,9 @@
  ** Modification History:
  **  MM/DD/YY  AUTHOR          DESCRIPTION
  **  --------  ------------    ---------------------------------------------
- **  09/01/11  V. Ramachandran Initial Implementation
- **  08/19/13  E. Birrane      Documentation clean up and code review comments.
+ **  09/01/11  V. Ramachandran Initial Implementation (JHU/APL)
+ **  08/19/13  E. Birrane      Documentation clean up and code review comments. (JHU/APL)
+ **  08/21/16  E. Birrane     Update to AMP v02 (Secure DTN - NASA: NNX14CS58P)
  *****************************************************************************/
 
 #ifndef NM_MGR_H
@@ -46,21 +40,22 @@
 
 // Application includes
 
-#include "shared/utils/nm_types.h"
-#include "shared/utils/ion_if.h"
-#include "shared/primitives/variables.h"
-#include "shared/adm/adm.h"
+#include "../shared/utils/nm_types.h"
+#include "../shared/utils/ion_if.h"
 
-#include "shared/primitives/mid.h"
+#include "../shared/adm/adm.h"
 
-#include "shared/msg/pdu.h"
-#include "shared/msg/msg_def.h"
-#include "shared/msg/msg_reports.h"
-#include "shared/msg/msg_admin.h"
-#include "shared/msg/msg_ctrl.h"
+#include "../shared/primitives/mid.h"
+#include "../shared/primitives/report.h"
+
+#include "../shared/msg/pdu.h"
+#include "../shared/msg/msg_admin.h"
+#include "../shared/msg/msg_ctrl.h"
 
 /* Constants */
 static const int32_t NM_RECEIVE_TIMEOUT_MILLIS = 3600;
+static const int32_t NM_RECEIVE_TIMEOUT_SEC = 2;
+
 static const int32_t MSG_TYPE_SIZE             = 1; // Change this
 static const int32_t TIMESTAMP_SIZE            = 4; // Change this too?
 static const int32_t PENDING_LIST_LEN_SIZE     = 2; // Change this too.
@@ -68,7 +63,7 @@ static const char	 MGR_SDR_PROFILE_NAME[]	   = "NM_MGR";
 static const int32_t MGR_SDR_HEAP_SIZE		   = 131072; // Do this intelligently?
 
 // Likely number of managed agents.  Used to initialize the hashtable of agents.
-#define EST_NUM_AGENTS (10)
+#define EST_NUM_AGENTS (5)
 
 
 
@@ -85,12 +80,12 @@ typedef struct {
 	 * Agent's endpoint identifier.
 	 **/
 	eid_t agent_eid;
-
+	
 	/**
 	 * Custom MID definitions that have been sent to this agent.
 	 **/
 	Lyst custom_defs;
-
+	
 	/**
 	 * Reports that have been received from this agent.
 	 **/
@@ -102,16 +97,9 @@ typedef struct {
 	ResourceLock mutex;
 } agent_t;
 
-/**
-*A list of all pending variables, along with their source.
-* Used for generic printing operations.
-**/
 
-extern Lyst variable_queue;
-extern ResourceLock variable_queue_mutex;
 
-void AddVariableToQueue(variableQueueEntry* entry);
-void AddVariableToQueue(char* name,variableType type, void* value,eid_t* sourceEid=NULL,size_t size = 0, time_t timestamp = 0);
+
 // ============================= Global Data ===============================
 /**
  * Indicates if the thread loops should continue to run. This
@@ -132,11 +120,6 @@ extern Lyst known_agents;
 extern ResourceLock agents_mutex;
 
 extern Sdr g_sdr;
-
-extern Lyst macro_defs;
-extern ResourceLock macro_defs_mutex;
-
-
 
 extern uint32_t g_reports_total;
 
@@ -163,7 +146,7 @@ void     mgr_agent_remove_cb(LystElt elt, void *nil);
 
 int      mgr_cleanup();
 int      mgr_init(char *argv[]);
-void*    mgr_rx_thread(void* threadId);
-void variable_queue_clear(Lyst variableQueue,ResourceLock* mutex);
+void*    mgr_rx_thread(int *running);
+
 
 #endif // NM_MGR_H

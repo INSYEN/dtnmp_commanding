@@ -1,18 +1,46 @@
+/******************************************************************************
+ **                           COPYRIGHT NOTICE
+ **      (c) 2012 The Johns Hopkins University Applied Physics Laboratory
+ **                         All rights reserved.
+ ******************************************************************************/
+
+/*****************************************************************************
+ **
+ ** File Name: adm_ion_priv.h
+ **
+ ** Description: This file contains the definitions of the ION
+ **              ADM.
+ **
+ ** Notes:
+ **
+ ** Assumptions:
+ ** 	1. We current use a non-official OID root tree for DTN Bundle Protocol
+ **         identifiers.
+ **
+ **
+ ** Modification History:
+ **  MM/DD/YY  AUTHOR         DESCRIPTION
+ **  --------  ------------   ---------------------------------------------
+ **  10/22/11  E. Birrane     Initial Implementation
+ *****************************************************************************/
+
+#ifdef _HAVE_ION_ADM_
 #include "ion.h"
 #include "platform.h"
 
 
-#include "shared/adm/adm_ion.h"
-#include "shared/utils/utils.h"
+#include "../adm/adm_ion.h"
+#include "../utils/utils.h"
 
 
 void adm_ion_init()
 {
 	/* Register Nicknames */
 	uint8_t mid_str[ADM_MID_ALLOC];
+
 	/* ICI */
-//	adm_build_mid_str(0x00, ION_ADM_ICI_NN, ION_ADM_ICI_NN_LEN, 0, mid_str);
-//	adm_add_datadef("ICI_SDR_STATE_ALL",   mid_str, 0, ion_print_sdr_state_all,     ion_size_sdr_state_all);
+	adm_build_mid_str(0x00, ION_ADM_ICI_NN, ION_ADM_ICI_NN_LEN, 0, mid_str);
+	adm_add_datadef("ICI_SDR_STATE_ALL",   mid_str, 0, ion_print_sdr_state_all,     ion_size_sdr_state_all);
 
 	adm_build_mid_str(0x00, ION_ADM_ICI_NN, ION_ADM_ICI_NN_LEN, 1, mid_str);
 	adm_add_datadef("ICI_SMALL_POOL_SIZE", mid_str, 0, NULL, NULL);
@@ -38,12 +66,11 @@ void adm_ion_init()
 
 
 	/* Inducts */
-	/*
-//	adm_build_mid_str(0x40, ION_ADM_INDUCT_NN, ION_ADM_INDUCT_NN_LEN, 0, mid_str);
-//	adm_add_datadef("ICI_INDUCT_ALL",             mid_str, 1, ion_induct_print_all,    ion_induct_size_all);
+	adm_build_mid_str(0x40, ION_ADM_INDUCT_NN, ION_ADM_INDUCT_NN_LEN, 0, mid_str);
+	adm_add_datadef("ICI_INDUCT_ALL",             mid_str, 1, ion_induct_print_all,    ion_induct_size_all);
 
-//	adm_build_mid_str(0x40, ION_ADM_INDUCT_NN, ION_ADM_INDUCT_NN_LEN, 1, mid_str);
-	adm_add_datadef("ION_INDUCT_NAME",            mid_str, 1, adm_string_to_queue,        adm_size_string);
+	adm_build_mid_str(0x40, ION_ADM_INDUCT_NN, ION_ADM_INDUCT_NN_LEN, 1, mid_str);
+	adm_add_datadef("ION_INDUCT_NAME",            mid_str, 1, adm_print_string,        adm_size_string);
 
 	adm_build_mid_str(0x40, ION_ADM_INDUCT_NN, ION_ADM_INDUCT_NN_LEN, 2, mid_str);
 	adm_add_datadef("ION_INDUCT_LAST_RESET",      mid_str, 1, NULL, NULL);
@@ -71,15 +98,14 @@ void adm_ion_init()
 
 	adm_build_mid_str(0x40, ION_ADM_INDUCT_NN, ION_ADM_INDUCT_NN_LEN, 10, mid_str);
 	adm_add_datadef("ION_INDUCT_OVERFLOW_BYTES",  mid_str, 1, NULL, NULL);
-*/
+
 
 	/* Outducts */
-	/*
-	//adm_build_mid_str(0x40, ION_ADM_OUTDUCT_NN, ION_ADM_OUTDUCT_NN_LEN, 0, mid_str);
-	//adm_add_datadef("ION_OUTDUCT_ALL",              mid_str, 1, ion_outduct_print_all,   ion_outduct_size_all);
+	adm_build_mid_str(0x40, ION_ADM_OUTDUCT_NN, ION_ADM_OUTDUCT_NN_LEN, 0, mid_str);
+	adm_add_datadef("ION_OUTDUCT_ALL",              mid_str, 1, ion_outduct_print_all,   ion_outduct_size_all);
 
 	adm_build_mid_str(0x40, ION_ADM_OUTDUCT_NN, ION_ADM_OUTDUCT_NN_LEN, 1, mid_str);
-	adm_add_datadef("ION_OUTDUCT_NAME",             mid_str, 1, adm_string_to_queue,        adm_size_string);
+	adm_add_datadef("ION_OUTDUCT_NAME",             mid_str, 1, adm_print_string,        adm_size_string);
 
 	adm_build_mid_str(0x40, ION_ADM_OUTDUCT_NN, ION_ADM_OUTDUCT_NN_LEN, 2, mid_str);
 	adm_add_datadef("ION_OUTDUCT_CUR_QUEUE_BUNDLES",mid_str, 1, NULL, NULL);
@@ -102,11 +128,11 @@ void adm_ion_init()
 	adm_build_mid_str(0x40, ION_ADM_OUTDUCT_NN, ION_ADM_OUTDUCT_NN_LEN, 8, mid_str);
 	adm_add_datadef("ION_OUTDUCT_DEQUEUED_BYTES",   mid_str, 1,  NULL, NULL);
 
-*/
+
 
 	/* Node */
 
-/*	adm_build_mid_str(0x00, ION_ADM_NODE_NN, ION_ADM_NODE_NN_LEN, 0, mid_str);
+	adm_build_mid_str(0x00, ION_ADM_NODE_NN, ION_ADM_NODE_NN_LEN, 0, mid_str);
 	adm_add_datadef("ION_NODE_ALL",     mid_str, 0, ion_node_print_all,    ion_node_size_all);
 
 	adm_build_mid_str(0x00, ION_ADM_NODE_NN, ION_ADM_NODE_NN_LEN, 1, mid_str);
@@ -114,15 +140,7 @@ void adm_ion_init()
 
 	adm_build_mid_str(0x00, ION_ADM_NODE_NN, ION_ADM_NODE_NN_LEN, 2, mid_str);
 	adm_add_datadef("ION_NODE_OUTDUCTS",mid_str, 0, adm_print_string_list, adm_size_string_list);
-*/
-	adm_build_mid_str(0x00,ION_ADM_NODE_NN,ION_ADM_NODE_NN_LEN,3,mid_str);
-	adm_add_datadef("ION_NODE_GET_PLANS",mid_str,0,adm_datalists_to_queue,adm_size_datalists);
 
-	adm_build_mid_str(0x00,ION_ADM_NODE_NN,ION_ADM_NODE_NN_LEN,4,mid_str);
-	adm_add_datadef("ION_NODE_GET_GROUPS",mid_str,0,adm_datalists_to_queue,adm_size_datalists);
-
-	adm_build_mid_str(0x00,ION_ADM_NODE_NN,ION_ADM_NODE_NN_LEN,5,mid_str);
-	adm_add_datadef("ION_NODE_GET_OUTDUCTS",mid_str,0,adm_datalists_to_queue,adm_size_datalists);
 
 	/* Controls */
 	adm_build_mid_str(0x01, ION_ADM_CTRL_NN, ION_ADM_CTRL_NN_LEN, 0, mid_str);
@@ -130,25 +148,6 @@ void adm_ion_init()
 
 	adm_build_mid_str(0x01, ION_ADM_CTRL_NN, ION_ADM_CTRL_NN_LEN, 1, mid_str);
 	adm_add_ctrl("ION_OUTDUCT_RESET", mid_str, 0);
-
-	adm_build_mid_str(0x41, ION_ADM_CTRL_NN, ION_ADM_CTRL_NN_LEN, 2, mid_str);
-	adm_add_ctrl("ION_PLAN_ADD", mid_str, 1); //Datalists
-
-	adm_build_mid_str(0x41, ION_ADM_CTRL_NN, ION_ADM_CTRL_NN_LEN, 3, mid_str);
-	adm_add_ctrl("ION_PLAN_REMOVE", mid_str, 1); //Datalists
-
-	adm_build_mid_str(0x41, ION_ADM_CTRL_NN, ION_ADM_CTRL_NN_LEN, 4, mid_str);
-	adm_add_ctrl("ION_GROUP_ADD", mid_str, 1); //Datalists
-
-	adm_build_mid_str(0x41, ION_ADM_CTRL_NN, ION_ADM_CTRL_NN_LEN, 5, mid_str);
-	adm_add_ctrl("ION_GROUP_REMOVE", mid_str, 1); //Datalists
-
-	adm_build_mid_str(0x41, ION_ADM_CTRL_NN, ION_ADM_CTRL_NN_LEN, 6, mid_str);
-	adm_add_ctrl("ION_OUTDUCT_ADD", mid_str, 1); //Datalists
-
-	adm_build_mid_str(0x41, ION_ADM_CTRL_NN, ION_ADM_CTRL_NN_LEN, 7, mid_str);
-	adm_add_ctrl("ION_OUTDUCT_REMOVE", mid_str, 1); //Datalists
-
 }
 
 
@@ -203,7 +202,7 @@ char *ion_print_sdr_state_all(uint8_t* buffer, uint64_t buffer_len, uint64_t dat
 		return NULL;
 	}
 
-	memset(result, 	'\0', *str_len);
+	memset(result, '\0', *str_len);
 
 	sprintf(result,
 			"\nsmallPoolSize = %ld\nsmallPoolFree = %ld\nsmallPoolAllocated = %ld\n \
@@ -213,7 +212,7 @@ unusedSize = %ld\n",state.smallPoolSize, state.smallPoolFree, state.smallPoolAll
 
 	return result;
 }
-/*
+
 char *ion_induct_print_all(uint8_t* buffer, uint64_t buffer_len, uint64_t data_len, uint32_t *str_len)
 {
 	NmbpInduct induct;
@@ -287,10 +286,10 @@ bundleDequeuedCount = %ld\nbundleDequeuedBytes = %ld\n",
 
 	return result;
 }
-*/
+
 
 /* SIZE */
-/*
+
 uint32_t ion_induct_size_all(uint8_t* buffer, uint64_t buffer_len)
 {
 	return sizeof(NmbpInduct);
@@ -300,7 +299,7 @@ uint32_t ion_outduct_size_all(uint8_t* buffer, uint64_t buffer_len)
 {
 	return sizeof(NmbpOutduct);
 }
-*/
+
 uint32_t ion_node_size_all(uint8_t* buffer, uint64_t buffer_len)
 {
 	uint32_t result = 0;
@@ -315,3 +314,6 @@ uint32_t ion_size_sdr_state_all(uint8_t* buffer, uint64_t buffer_len)
 	SdrnmState state;
 	return sizeof(state);
 }
+
+
+#endif /* _HAVE_ION_ADM_ */

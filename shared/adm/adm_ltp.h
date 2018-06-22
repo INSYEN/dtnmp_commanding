@@ -1,22 +1,42 @@
-//
-//  adm_bp.h
-//
-//  Created by Birrane, Edward J. on 10/22/11.
-//  Copyright 2011 __MyCompanyName__. All rights reserved.
-//
+/******************************************************************************
+ **                           COPYRIGHT NOTICE
+ **      (c) 2012 The Johns Hopkins University Applied Physics Laboratory
+ **                         All rights reserved.
+ ******************************************************************************/
+
+/*****************************************************************************
+ **
+ ** File Name: adm_ion_priv.h
+ **
+ ** Description: This file contains the definitions of the LTP
+ **              ADM.
+ **
+ ** Notes:
+ **
+ ** Assumptions:
+ ** 	1. We current use a non-official OID root tree for DTN Bundle Protocol
+ **         identifiers.
+ **
+ **
+ ** Modification History:
+ **  MM/DD/YY  AUTHOR         DESCRIPTION
+ **  --------  ------------   ---------------------------------------------
+ **  10/22/11  E. Birrane     Initial Implementation
+ *****************************************************************************/
+
 #ifndef ADM_LTP_H_
 #define ADM_LTP_H_
-
-#define _HAVE_LTP_ADM_
 
 #ifdef _HAVE_LTP_ADM_
 
 #include "lyst.h"
 #include "ltpnm.h"
 
-#include "shared/utils/nm_types.h"
 
-#include "shared/adm/adm.h"
+
+#include "../utils/nm_types.h"
+
+#include "...adm/adm.h"
 
 /*
  * We will invent an OID space for LTP ADM information, to live at:
