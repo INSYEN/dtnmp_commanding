@@ -6,7 +6,7 @@ SOURCES += 	mgr_db.c \
 			nm_mgr_rx.c
 
 IONDIR = ../../
-OPTS = -Wno-write-strings -g 
+OPTS = -Wno-write-strings -g
 
 all:with-netui
 
@@ -72,6 +72,6 @@ with-db:
 	gcc -o nm_mgr *.o -lltp -lbp -lici -lmysqlclient -lpthread
 
 clean:
-	rm -f nm_mgr
+	rm -f nm_mgr nm_mgr_netui
 	rm -f *.o
 
