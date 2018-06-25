@@ -47,6 +47,7 @@
 
 #include "../shared/primitives/mid.h"
 #include "../shared/primitives/report.h"
+#include "../shared/primitives/variables.h"
 
 #include "../shared/msg/pdu.h"
 #include "../shared/msg/msg_admin.h"
@@ -63,7 +64,7 @@ static const char	 MGR_SDR_PROFILE_NAME[]	   = "NM_MGR";
 static const int32_t MGR_SDR_HEAP_SIZE		   = 131072; // Do this intelligently?
 
 // Likely number of managed agents.  Used to initialize the hashtable of agents.
-#define EST_NUM_AGENTS (5)
+#define EST_NUM_AGENTS (10)
 
 
 
@@ -80,12 +81,12 @@ typedef struct {
 	 * Agent's endpoint identifier.
 	 **/
 	eid_t agent_eid;
-	
+
 	/**
 	 * Custom MID definitions that have been sent to this agent.
 	 **/
 	Lyst custom_defs;
-	
+
 	/**
 	 * Reports that have been received from this agent.
 	 **/
@@ -119,6 +120,13 @@ extern Object agents_hashtable;
 extern Lyst known_agents;
 extern ResourceLock agents_mutex;
 
+/**
+*A list of all pending variables, along with their source.
+* Used for generic printing operations.
+**/
+extern Lyst variable_queue;
+extern ResourceLock variable_queue_mutex;
+
 extern Sdr g_sdr;
 
 extern uint32_t g_reports_total;
@@ -147,6 +155,11 @@ void     mgr_agent_remove_cb(LystElt elt, void *nil);
 int      mgr_cleanup();
 int      mgr_init(char *argv[]);
 void*    mgr_rx_thread(int *running);
+
+void AddVariableEntryToQueue(variableQueueEntry* entry);
+void AddVariableToQueue(char* name,variableType type, void* value,
+    eid_t* sourceEid, size_t size, time_t timestamp);
+void variable_queue_clear(Lyst variableQueue,ResourceLock* mutex);
 
 
 #endif // NM_MGR_H

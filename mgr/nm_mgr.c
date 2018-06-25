@@ -63,6 +63,8 @@ Sdr 		 g_sdr;
 MgrDB      gMgrDB;
 MgrVDB     gMgrVDB;
 
+Lyst variable_queue;
+ResourceLock variable_queue_mutex;
 
 // This function looks to be completely unused at this time.
 // To prevent compilation warnings, Josh Schendel commented it out on
@@ -583,6 +585,9 @@ int mgr_cleanup()
 	lyst_destroy(known_agents);
 	killResourceLock(&agents_mutex);
 
+    variable_queue_clear(variable_queue,&variable_queue_mutex);
+	killResourceLock(&variable_queue_mutex);
+
 	LystElt elt;
 	for(elt = lyst_first(gParmSpec); elt; elt = lyst_next(elt))
 	{
@@ -681,6 +686,23 @@ int mgr_init(char *argv[])
         return -1;
     }
 
+    if((variable_queue = lyst_create()) == NULL)
+    {
+        AMP_DEBUG_ERR("mgr_init","Failed to create variable queue list.%s",NULL);
+        //SRELEASE(ion_ptr);
+        AMP_DEBUG_EXIT("mgr_init","->-1.",NULL);
+        return -1;
+    }
+
+    if (initResourceLock(&variable_queue_mutex))
+    {
+    	AMP_DEBUG_ERR("mgr_init","Cant init varqueue list mutex. errno = %s",
+    			        strerror(errno));
+        //SRELEASE(ion_ptr);
+        AMP_DEBUG_EXIT("mgr_init","->-1.",NULL);
+    	return -1;
+    }
+
     oid_nn_init();
     names_init();
 	adm_init();
@@ -725,8 +747,42 @@ int mgr_init(char *argv[])
 // {
 // 	isignal(SIGINT, mgr_signal_handler);
 // 	isignal(SIGTERM, mgr_signal_handler);
-// 
+//
 // 	g_running = 0;
 // }
 
+void AddVariableEntryToQueue(variableQueueEntry* entry)
+{
+	AMP_DEBUG_INFO("AddVariableToQueue","Adding",NULL);
+	lockResource(&variable_queue_mutex);
+	lyst_insert_last(variable_queue,entry);
+	unlockResource(&variable_queue_mutex);
+	AMP_DEBUG_INFO("AddVariableToQueue","Done",NULL);
+}
 
+void AddVariableToQueue(char* name,variableType type, void* value,eid_t* sourceEid,size_t size, time_t timestamp)
+{
+
+	variableQueueEntry* entry = (variableQueueEntry*)STAKE(sizeof(variableQueueEntry));
+	*entry = AddVariable(name,type,value,sourceEid,size,timestamp);
+	AddVariableEntryToQueue(entry);
+	AMP_DEBUG_INFO("AddVariableEntryToQueue","Done",NULL);
+}
+
+void variable_queue_clear(Lyst variableQueue,ResourceLock* mutex)
+{
+	lockResource(mutex);
+	LystElt elt;
+	variableQueueEntry* curEntry;
+	for (elt=lyst_first(variableQueue);elt;elt=lyst_next(elt))
+	{
+		curEntry=(variableQueueEntry*)lyst_data(elt);
+
+		SRELEASE(curEntry->value);
+		SRELEASE(curEntry->name);
+		SRELEASE(curEntry);
+	}
+
+	lyst_destroy(variableQueue);
+	unlockResource(mutex);
+}
