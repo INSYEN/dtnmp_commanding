@@ -47,7 +47,7 @@
 // Definitions of global data.
 iif_t ion_ptr;
 
-uint8_t      gRunning;
+volatile uint8_t      gRunning;
 
 Object		 agents_hashtable;
 Lyst		 known_agents;
@@ -66,14 +66,9 @@ MgrVDB     gMgrVDB;
 Lyst variable_queue;
 ResourceLock variable_queue_mutex;
 
-// This function looks to be completely unused at this time.
-// To prevent compilation warnings, Josh Schendel commented it out on
-//    Aug 22, 2013.
-// Per comments regarding it's signal registerer, I suspect it should be
-// uncommented once the UI thread is deprecated and signal handler routines
-// are reactivated.
-//
+
 //static void     mgr_signal_handler();
+
 
 
 /******************************************************************************
@@ -128,10 +123,20 @@ int main(int argc, char *argv[])
 
     AMP_DEBUG_INFO("main","Manager EID: %s", argv[1]);
 
-    /* Register signal handlers. */
-    /* DOn't use signal handlers until we deprecate the UI thread... */
-/*	isignal(SIGINT, mgr_signal_handler);
-	isignal(SIGTERM, mgr_signal_handler);*/
+    /* Register signal handlers.
+     * DOn't use signal handlers until we deprecate the UI thread...
+     */
+	//signal(SIGINT, mgr_signal_handler);
+	//signal(SIGTERM, mgr_signal_handler);
+
+#ifdef HAVE_NETUI
+    // block sigint here, so that the netui thread can receive it. Otherwise, accept() is not canceled.
+    sigset_t intmask;
+    sigemptyset(&intmask);
+    sigaddset(&intmask, SIGINT);
+    sigprocmask(SIG_BLOCK, &intmask, NULL);
+#endif // HAVE_NETUI
+
 
     /* Spawn threads for receiving msgs, user interface, and db connection. */
 
@@ -585,7 +590,7 @@ int mgr_cleanup()
 	lyst_destroy(known_agents);
 	killResourceLock(&agents_mutex);
 
-    variable_queue_clear(variable_queue,&variable_queue_mutex);
+    variable_queue_clear(variable_queue, &variable_queue_mutex);
 	killResourceLock(&variable_queue_mutex);
 
 	LystElt elt;
@@ -596,7 +601,6 @@ int mgr_cleanup()
 		SRELEASE(spec);
 	}
 	lyst_destroy(gParmSpec);
-
 
 	adm_destroy();
 	names_lyst_destroy(&gMgrNames);
@@ -678,6 +682,7 @@ int mgr_init(char *argv[])
     	return -1;
     }
 
+#ifndef HAVE_NETUI
     if((gParmSpec = lyst_create()) == NULL)
     {
         AMP_DEBUG_ERR("mgr_init","Failed to create parmsepc list.%s",NULL);
@@ -685,6 +690,7 @@ int mgr_init(char *argv[])
         AMP_DEBUG_EXIT("mgr_init","->-1.",NULL);
         return -1;
     }
+#endif // HAVE_NETUI
 
     if((variable_queue = lyst_create()) == NULL)
     {
@@ -721,7 +727,7 @@ int mgr_init(char *argv[])
 
 
 
-
+#if 0
 /******************************************************************************
  *
  * \par Function Name: mgr_signal_handler
@@ -736,20 +742,11 @@ int mgr_init(char *argv[])
  **  08/18/13  E. Birrane    Initial Implementation
  *****************************************************************************/
 
-// This function looks to be completely unused at this time.
-// To prevent compilation warnings, Josh Schendel commented it out on
-//    Aug 22, 2013.
-// Per comments regarding it's signal registerer, I suspect it should be
-// uncommented once the UI thread is deprecated and signal handler routines
-// are reactivated.
-//
-// static void mgr_signal_handler()
-// {
-// 	isignal(SIGINT, mgr_signal_handler);
-// 	isignal(SIGTERM, mgr_signal_handler);
-//
-// 	g_running = 0;
-// }
+static void mgr_signal_handler()
+{
+ 	gRunning = 0;
+}
+#endif // 0
 
 void AddVariableEntryToQueue(variableQueueEntry* entry)
 {

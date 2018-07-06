@@ -107,7 +107,7 @@ typedef struct {
  * value is updated by the main() and read by the subordinate
  * threads.
  **/
- extern uint8_t g_running;
+ extern volatile uint8_t gRunning;
 
 /**
  * Storage list for production rules sent by a manager and received

@@ -117,6 +117,8 @@ int msg_rx_data_rpt(eid_t *sender_eid, uint8_t *cursor, uint32_t size, uint32_t 
 
 			/* Step 1.2: Update statistics. */
 			g_reports_total++;
+			AddVariableToQueue("total_reports", TYPE_UINT32,& g_reports_total,
+                NULL, 0, 0);
 		}
 	}
 
@@ -148,11 +150,11 @@ int msg_rx_data_rpt(eid_t *sender_eid, uint8_t *cursor, uint32_t size, uint32_t 
 
 void *mgr_rx_thread(int *running)
 {
-   
+
     AMP_DEBUG_ENTRY("mgr_rx_thread","(0x%x)", (unsigned long) running);
-    
+
     AMP_DEBUG_INFO("mgr_rx_thread","Receiver thread running...", NULL);
-    
+
     uint32_t num_msgs = 0;
     uint8_t *buf = NULL;
     uint8_t *cursor = NULL;
@@ -169,7 +171,15 @@ void *mgr_rx_thread(int *running)
     uint32_t incoming_idx = 0;
     uint32_t hdr_len = 0;
 
-    /* 
+#ifdef HAVE_NETUI
+    // block sigint here, since it's required for netui
+    sigset_t intmask;
+    sigemptyset(&intmask);
+    sigaddset(&intmask, SIGINT);
+    sigprocmask(SIG_BLOCK, &intmask, NULL);
+#endif // HAVE_NETUI
+
+    /*
      * g_running controls the overall execution of threads in the
      * NM Agent.
      */
@@ -177,7 +187,7 @@ void *mgr_rx_thread(int *running)
 
         /* Step 1: Receive a message from the Bundle Protocol Agent. */
         buf = iif_receive(&ion_ptr, &size, &meta, NM_RECEIVE_TIMEOUT_SEC);
-        
+
         if(buf != NULL)
         {
             AMP_DEBUG_INFO("mgr_rx_thread","Received buf (%x) of size %d",
@@ -227,7 +237,7 @@ void *mgr_rx_thread(int *running)
                 		size -= bytes;
                 	}
                 	break;
-                
+
                 	case MSG_TYPE_ADMIN_REG_AGENT:
                 	{
                 		AMP_DEBUG_ALWAYS("mgr_rx_thread",
@@ -278,7 +288,7 @@ void *mgr_rx_thread(int *running)
             buf = NULL;
         }
     }
-   
+
 
 #ifdef HAVE_MYSQL
 	db_mgt_close();
