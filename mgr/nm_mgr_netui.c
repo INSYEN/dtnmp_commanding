@@ -141,7 +141,6 @@ void netui_construct_ctrl_by_idx(agent_t* agent,cmdFormat* curCmd)
 
 
 	/* Step 1: Parse the user input. */
-	char* midIdxC;
 	int midIdx = netui_find_ctrl_idx_by_name((curCmd->cmdChunks[curCmd->numChunks]));
 
 	if(midIdx==-1)
@@ -149,9 +148,9 @@ void netui_construct_ctrl_by_idx(agent_t* agent,cmdFormat* curCmd)
 		AMP_DEBUG_ERR("netui_construct_ctrl_by_idx","Couldn't find ADM %d",curCmd->numChunks);
 		return;
 	}
-	sprintf(midIdxC,"%d",midIdx);
-	//sscanf(curCmd->arguments,"%s", &offset, mid_str);
-	mids = netui_parse_mid_str(curCmd,midIdxC, lyst_length(gAdmCtrls)-1, MID_CONTROL);
+	sprintf(mid_str,"%d",midIdx);
+
+	mids = netui_parse_mid_str(curCmd,mid_str, lyst_length(gAdmCtrls)-1, MID_CONTROL);
 
 	if (lyst_length(mids) > 1)
 	{
@@ -159,13 +158,13 @@ void netui_construct_ctrl_by_idx(agent_t* agent,cmdFormat* curCmd)
             "Got %d MIDs, but CTRL message just supports one MID.",
             lyst_length(mids));
     }
-    LystElt mid = lyst_first(mids);
 
-	/* Step 2: Construct the control primitive. */
-	ctrl_exec_t *entry = ctrl_create(0, (mid_t*)lyst_data(mid), manager_eid);
+    /* Step 2: Construct the control primitive. */
+    msg_perf_ctrl_t *ctrl = msg_create_perf_ctrl(0, mids);
 
-	/* Step 3: Construct a PDU to hold the primitive. */
-	uint8_t *data = ctrl_serialize(entry, &size);
+    /* Step 3: Construct a PDU to hold the primitive. */
+    uint8_t *data = msg_serialize_perf_ctrl(ctrl, &size);
+
 	pdu_msg_t *pdu_msg = pdu_create_msg(MSG_TYPE_CTRL_EXEC, data, size, NULL);
 	pdu_group_t *pdu_group = pdu_create_group(pdu_msg);
 
@@ -174,7 +173,8 @@ void netui_construct_ctrl_by_idx(agent_t* agent,cmdFormat* curCmd)
 
 	/* Step 5: Release remaining resources. */
 	pdu_release_group(pdu_group);
-	ctrl_release(entry);
+	msg_destroy_perf_ctrl(ctrl);
+	midcol_destroy(&mids);
 
 	AMP_DEBUG_EXIT("netui_construct_ctrl_by_idx","->.", NULL);
 }
@@ -198,7 +198,7 @@ void netui_construct_ctrl_by_idx(agent_t* agent,cmdFormat* curCmd)
  *  06/25/13  E. Birrane     Renamed message "bundle" message "group".
  *  03/01/15  J.P. Mayer	 Migrated to cmdFormat
  *****************************************************************************/
-#if 0
+
 void netui_construct_time_rule_by_idx(agent_t* agent,cmdFormat* curCmd)
 {
 	time_t offset = 0;
@@ -281,10 +281,10 @@ void netui_construct_time_rule_by_idx(agent_t* agent,cmdFormat* curCmd)
 /*	mids = netui_parse_mid_str(curCmd,midIdxC, lyst_length(gAdmData))-1, MID_TYPE_DATA);
 
 	/* Step 2: Construct the control primitive. */
-	rule_time_prod_t *entry = rule_create_time_prod_entry(offset, evals, period, mids);
+	trl_t *entry = trl_create(ADM_AGENT_CTL_ADDTRL_MID, offset, evals, period, mids);
 
 	/* Step 3: Construct a PDU to hold the primitive. */
-	uint8_t *data = ctrl_serialize_time_prod_entry(entry, &size);
+	uint8_t *data = trl_serialize(entry, &size);
 	pdu_msg_t *pdu_msg = pdu_create_msg(MSG_TYPE_CTRL_PERIOD_PROD, data, size, NULL);
 	pdu_group_t *pdu_group = pdu_create_group(pdu_msg);
 
@@ -293,13 +293,13 @@ void netui_construct_time_rule_by_idx(agent_t* agent,cmdFormat* curCmd)
 
 	/* Step 5: Release remaining resources. */
 	pdu_release_group(pdu_group);
-	rule_release_time_prod_entry(entry);
+	trl_release(entry);
 
 	SRELEASE(args);
 
 	AMP_DEBUG_EXIT("ui_construct_time_rule_by_idx","->.", NULL);
 }
-#endif // 0
+
 /******************************************************************************
  *
  * \par Function Name: netui_register_agent
@@ -586,8 +586,8 @@ void ui_eventLoop(int *running)
 
 		NETUI_SECTION("reports")
 		{
-				AMP_DEBUG_INFO("netui_eventloop","In reports",NULL);
-			//XXXNETUI_DEF_ACTION("time",netui_construct_time_rule_by_idx(netui_find_agent_by_name(curCmd->eid),curCmd));
+			AMP_DEBUG_INFO("netui_eventloop","In reports",NULL);
+			NETUI_DEF_ACTION("time",netui_construct_time_rule_by_idx(netui_find_agent_by_name(curCmd->eid),curCmd));
 			NETUI_DEF_ACTION("show",netui_print_reports(netui_find_agent_by_name(curCmd->eid)));
 			NETUI_DEF_ACTION("number",netui_get_num_reports_by_agent());
 			NETUI_DEF_ACTION("delete",ui_clear_reports(netui_find_agent_by_name(curCmd->eid)));
@@ -1492,6 +1492,7 @@ void netui_parse_single_mid_str(Lyst mids,char *mid_str, char* arguments,int max
 		/* If this MID has parameters, get them */
 		if(num_parms > 0)
 		{
+		    AMP_DEBUG_INFO("netui_parse_single_mid_str","Get MID params: %d", num_parms);
 			netui_define_raw_mid_params(mid_str,arguments, num_parms, midp);
 			mid_internal_serialize(midp);
 		}
