@@ -11,7 +11,7 @@ typedef enum
 	TYPE_UINT32,
 	TYPE_INT32,
 	TYPE_STRING,
-	TYPE_DATALIST,
+	TYPE_TDC,
 	TYPE_UVAST,
 	TYPE_VAST,
 } variableType;
