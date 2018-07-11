@@ -2,12 +2,6 @@
  **                           COPYRIGHT NOTICE
  **      (c) 2012 The Johns Hopkins University Applied Physics Laboratory
  **                         All rights reserved.
- **
- **     This material may only be used, modified, or reproduced by or for the
- **       U.S. Government pursuant to the license rights granted under
- **          FAR clause 52.227-14 or DFARS clauses 252.227-7013/7014
- **
- **     For any other permissions, please contact the Legal Office at JHU/APL.
  ******************************************************************************/
 
 #ifdef _HAVE_LTP_ADM_
@@ -27,20 +21,15 @@
  **  MM/DD/YY  AUTHOR         DESCRIPTION
  **  --------  ------------   ---------------------------------------------
  **  07/16/13  E. Birrane     Initial Implementation
- **  06/18/15  J. P. Mayer	  Added commanding
  *****************************************************************************/
 #ifndef ADM_LTP_PRIV_H_
 #define ADM_LTP_PRIV_H_
 
 #include "lyst.h"
 #include "ltpnm.h"
-#include "ltpP.h"
 
-#include "shared/adm/adm_ltp.h"
-#include "shared/utils/expr.h"
-#include "shared/primitives/datalist.h"
-
-#define D_LTP_ADM_ADAPTER_SIZE 256
+#include "../shared/adm/adm_ltp.h"
+#include "../shared/utils/expr.h"
 
 void agent_adm_init_ltp();
 
@@ -100,11 +89,9 @@ expr_result_t ltp_get_eng_in_canc_xmit_cnt(Lyst params);
 expr_result_t ltp_get_eng_in_ack_rexmt_cnt(Lyst params);
 expr_result_t ltp_get_eng_in_canc_rcv_cnt(Lyst params);
 expr_result_t ltp_get_eng_in_compl_cnt(Lyst params);
-expr_result_t ltp_get_all_spans(Lyst params);
 
 uint32_t ltp_engine_reset(Lyst params);
-uint32_t ltp_ctrl_span_add(Lyst params);
-uint32_t ltp_ctrl_span_remove(Lyst params);
+
 
 #endif //ADM_LTP_PRIV_H_
 #endif /* _HAVE_LTP_ADM_ */

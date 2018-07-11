@@ -7,36 +7,36 @@
 
 /*****************************************************************************
  **
- ** File Name: lcc.h
+ ** \file instr.c
  **
- ** Description: This implements the NM Agent Local Command and Control (LCC).
- **              This applies controls and macros.
+ **
+ ** Description: DTNMP Instrumentation functions.
  **
  ** Notes:
  **
  ** Assumptions:
  **
- **
  ** Modification History:
  **  MM/DD/YY  AUTHOR         DESCRIPTION
  **  --------  ------------   ---------------------------------------------
- **  01/22/13  E. Birrane     Update to latest version of DTNMP. Cleanup. (JHU/APL)
+ **  07/04/13  E. Birrane     Initial Implementation (JHU/APL)
  *****************************************************************************/
 
-#ifndef _LCC_H_
-#define _LCC_H_
+#include "instr.h"
 
-#include "../shared/adm/adm.h"
+#include <string.h>
 
-
-
-int lcc_run_ctrl_mid(mid_t *id);
-int lcc_run_ctrl(ctrl_exec_t *ctrl);
-
-int lcc_run_macro(Lyst macro);
-
-void lcc_send_retval(eid_t *rx, tdc_t *retval, mid_t *mid);
+agent_instr_t gAgentInstr;
 
 
-#endif // _LCC_H_
+void agent_instr_init()
+{
+	agent_instr_clear();
+}
+
+void agent_instr_clear()
+{
+	memset(&gAgentInstr,0, sizeof(gAgentInstr));
+}
+
 
