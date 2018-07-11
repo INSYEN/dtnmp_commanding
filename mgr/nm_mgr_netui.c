@@ -128,7 +128,7 @@ void netui_construct_ctrl_by_idx(agent_t* agent,cmdFormat* curCmd)
 	char line[256];
 	uint32_t offset;
 	char mid_str[256];
-	Lyst mids = lyst_create();
+	Lyst mids;
 	uint32_t size = 0;
 
 	if(agent == NULL)
@@ -488,8 +488,10 @@ void ui_eventLoop(int *running)
 					case TYPE_UINT32: netui_print_uint32(curEntry->value,curEntry->size,varValue);varTextRep="uint32"; break;
 					case TYPE_STRING: netui_print_string(curEntry->value,curEntry->size,varValue); varTextRep="string";break;
 					case TYPE_TDC: netui_print_tdc(curEntry->value,curEntry->size,varValue); varTextRep="tdc";break;
-
+					default: AMP_DEBUG_ERR("netui_eventloop", "Type not supported: %u\n", curEntry->type); continue;
 				}
+
+
 				AMP_DEBUG_INFO("netui_eventloop","Variable: %s",curEntry->name);
 				uint16_t varStrSize = snprintf(varBuffer,D_VARSTRSIZE,"v:%s@%lu\\%s(%s)=%s;\n",curEntry->producer_eid.name,curEntry->timestamp,curEntry->name,varTextRep,varValue);
 
@@ -1212,10 +1214,14 @@ int netui_find_ctrl_idx_by_name(char* name)
 	for(elt = lyst_first(result); elt; elt = lyst_next(elt))
 	{
         cur = (mgr_name_t *) lyst_data(elt);
-		if(strcasecmp(cur->name,name)==0)
+		if(strcasecmp(cur->name,name)==0) {
+            lyst_destroy(result);
             return i; //Found it!
+		}
         i++;
 	}
+
+	lyst_destroy(result);
 
 	AMP_DEBUG_INFO("netui_find_ctrl_idx_by_name","finding %s failed.", name);
 	return -1;
@@ -1517,7 +1523,7 @@ void netui_parse_single_mid_str(Lyst mids,char *mid_str, char* arguments,int max
 
 	AMP_DEBUG_EXIT("ui_parse_mid_str","->0x%x.", mids);
 }
-/******************************************************************************XXX
+/******************************************************************************
  *
  * \par Function Name: netui_parse_single_mid_string
  *
@@ -1547,7 +1553,7 @@ Lyst netui_parse_mid_str(cmdFormat* curCmd, char *mid_str, int max_idx, int type
 
 	return mids;
 }
-/******************************************************************************XXX
+/******************************************************************************
  *
  * \par Function Name: netui_parse_arguments
  *
@@ -1632,7 +1638,7 @@ char** netui_parse_arguments(char* argString,uint8_t* numArgsOut)
 	return allArgs;
 }
 
-/******************************************************************************XXX
+/******************************************************************************
  *
  * \par Function Name: get_num_reports_by_agent
  *
@@ -1850,10 +1856,12 @@ size_t netui_print_tdc(void* inBuffer,size_t size,char* outBuffer)
 	{
 		AMP_DEBUG_INFO("netui_print_tdc","Getting tdc...",NULL);
 		blob_t* dataCol = (blob_t*)lyst_data(dlElt);
-		tdc_t* curDl = tdc_deserialize(dataCol->value,dataCol->length,&bytesUsedPerDL); //XXX: Do I have to free it?
+		tdc_t* curDl = tdc_deserialize(dataCol->value,dataCol->length,&bytesUsedPerDL);
 
 		//Alright, now we have a single DL
 		netui_print_tdc_def(curDl, NULL, cursor);
+
+		tdc_destroy(&curDl);
 	}
 
 	(cursor++)[0]='}';
