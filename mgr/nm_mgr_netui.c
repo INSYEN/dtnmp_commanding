@@ -272,7 +272,7 @@ void netui_construct_time_rule_by_idx(agent_t* agent,cmdFormat* curCmd)
 		snprintf(&mid_str[0],256,"%d",mididx);
 		//Insert into lyst
 
-		netui_parse_single_mid_str(mids,(char*)&mid_str[0],arguments,lyst_length(gAdmData)-1, MID_ATOMIC);
+		netui_parse_single_mid_str(mids, mid_str,arguments,lyst_length(gAdmData)-1, MID_ATOMIC);
 
 
 		//mids = netui_parse_mid_str(curCmd,midIdxC, lyst_length(gAdmData))-1, MID_TYPE_DATA)
@@ -281,7 +281,7 @@ void netui_construct_time_rule_by_idx(agent_t* agent,cmdFormat* curCmd)
 /*	mids = netui_parse_mid_str(curCmd,midIdxC, lyst_length(gAdmData))-1, MID_TYPE_DATA);
 
 	/* Step 2: Construct the control primitive. */
-	trl_t *entry = trl_create(ADM_AGENT_CTL_ADDTRL_MID, offset, evals, period, mids);
+	trl_t *entry = trl_create(NULL, offset, evals, period, mids); // XXX: Place some MID ID here
 
 	/* Step 3: Construct a PDU to hold the primitive. */
 	uint8_t *data = trl_serialize(entry, &size);
@@ -294,6 +294,7 @@ void netui_construct_time_rule_by_idx(agent_t* agent,cmdFormat* curCmd)
 	/* Step 5: Release remaining resources. */
 	pdu_release_group(pdu_group);
 	trl_release(entry);
+	midcol_destroy(&mids);
 
 	SRELEASE(args);
 
@@ -486,7 +487,7 @@ void ui_eventLoop(int *running)
 					case TYPE_INT32: netui_print_int32(curEntry->value,curEntry->size,varValue);varTextRep="int32";break;
 					case TYPE_UINT32: netui_print_uint32(curEntry->value,curEntry->size,varValue);varTextRep="uint32"; break;
 					case TYPE_STRING: netui_print_string(curEntry->value,curEntry->size,varValue); varTextRep="string";break;
-//XXX					case TYPE_DATALIST: netui_print_datalist(curEntry->value,curEntry->size,varValue); varTextRep="tdc";break;
+					case TYPE_TDC: netui_print_tdc(curEntry->value,curEntry->size,varValue); varTextRep="tdc";break;
 
 				}
 				AMP_DEBUG_INFO("netui_eventloop","Variable: %s",curEntry->name);
@@ -658,109 +659,137 @@ ui_parm_spec_t* ui_get_parmspec(mid_t *mid)
 	return NULL;
 }
 
-/******************************************************************************XXX
+
+/*
+ * We need to find out a description for the entry so we can print it out.
+ * So, if entry is <RPT MID> <int d1><int d2><int d3> we need to match the items
+ * to elements of the report definition.
  *
- * \par Function Name: ui_print_custom_rpt
- *
- * \par Prints a custom report received by a DTNMP Agent.
- *
- * \par Notes:
- *
- * \param[in]  rpt_entry  The entry containing the report data to print.
- * \param[in]  rpt_def    The static definition of the report.
- *
- *
- * Modification History:
- *  MM/DD/YY  AUTHOR         DESCRIPTION
- *  --------  ------------   ---------------------------------------------
- *  01/18/13  E. Birrane     Initial Implementation
- *****************************************************************************/
-void netui_print_custom_rpt(rpt_entry_t *rpt_entry, def_gen_t *rpt_def)
+ */
+void netui_print_entry(rpt_entry_t *entry, eid_t *receiver, time_t ts, uvast *mid_sizes, uvast *data_sizes)
 {
-	LystElt elt;
-	uint64_t idx = 0;
-	mid_t *cur_mid = NULL;
-	adm_datadef_t *adu = NULL;
-	uint64_t data_used;
+	LystElt elt = NULL;
+	def_gen_t *cur_def = NULL;
+	uint8_t del_def = 0;
 
-	for(elt = lyst_first(rpt_def->contents); elt; elt = lyst_next(elt))
+	if((entry == NULL) || (mid_sizes == NULL) || (data_sizes == NULL))
 	{
-		char *mid_str;
-		cur_mid = (mid_t*)lyst_data(elt);
-		mid_str = mid_to_string(cur_mid);
-		if((adu = adm_find_datadef(cur_mid)) != NULL)
-		{
-			AMP_DEBUG_INFO("ui_print_custom_rpt","Printing MID %s", mid_str);
-		//	netui_print_predefined_rpt(cur_mid, (uint8_t*)&(rpt_entry->contents[idx]),
-		//			             rpt_entry->size - idx, &data_used, adu);
-			idx += data_used;
-		}
-		else
-		{
-			AMP_DEBUG_ERR("ui_print_custom_rpt","Unable to find MID %s", mid_str);
-		}
-
-		SRELEASE(mid_str);
-	}
-}
-
-/******************************************************************************
- *
- * \par Function Name: ui_print_predefined_rpt
- *
- * \par Prints a pre-defined report received by a DTNMP Agent.
- *
- * \par Notes:
- *
- * \param[in]  mid        The identifier of the data item being printed.
- * \param[in]  data       The contents of the data item.
- * \param[in]  data_size  The size of the data to be printed.
- * \param[out] data_used  The bytes of the data consumed by printing.
- * \param[in]  adu        The static definition of the report.
- *
- *
- * Modification History:
- *  MM/DD/YY  AUTHOR         DESCRIPTION
- *  --------  ------------   ---------------------------------------------
- *  01/18/13  E. Birrane     Initial Implementation
- *****************************************************************************/
-
-void netui_print_predefined_rpt(mid_t *mid, tdc_t *data, uint64_t data_size, uint64_t *data_used, adm_datadef_t *adu,eid_t* eid,time_t time)
-{
-	uint64_t len;
-	char* mid_str = NULL;
-	variableQueueEntry  *mid_val = NULL;
-	uint32_t val_size = adu->get_size(data, data_size);
-	uint32_t str_size = 0;
-
-
-	if((mid_val = adu->to_string(data, data_size, val_size, &str_size)) == NULL)
-	{
-		AMP_DEBUG_ERR("ui_print_predefined_rpt","Can't copy varentry",NULL);
-
-		SRELEASE(mid_str);
+		AMP_DEBUG_ERR("netui_print_entry","Bad Args.", NULL);
 		return;
 	}
-	else
+
+	/* Step 1: Calculate sizes...*/
+    *mid_sizes = *mid_sizes + entry->id->raw_size;
+
+    for(elt = lyst_first(entry->contents->datacol); elt; elt = lyst_next(elt))
+    {
+    	blob_t *cur = lyst_data(elt);
+        *data_sizes = *data_sizes + cur->length;
+    }
+    *data_sizes = *data_sizes + entry->contents->hdr.length;
+
+	/* Step 1: Print the MID associated with the Entry. */
+    printf(" (");
+    ui_print_mid(entry->id);
+	printf(") has %d values. ", entry->contents->hdr.length);
+
+
+    /*
+     * Step 2: Try and find the metadata associated with each
+     *         value in the TDC. Since the TDC is already typed, the
+     *         needed meta-data information is simply the
+     *         "name" of the data.
+     *
+     *         i Only computed data definitions, reports, and macros
+     *         need names. Literals, controls, and atomic data do
+     *         not (currently) define extra meta-data for their
+     *         definitions.
+     *
+     *         \todo: Consider printing names for each return
+     *         value from a control.
+     */
+
+    cur_def = NULL;
+
+	if(MID_GET_FLAG_ID(entry->id->flags) == MID_ATOMIC)
 	{
+		adm_datadef_t *ad_entry = adm_find_datadef(entry->id);
 
-		if(eid!=NULL)
+		/* Fake a def_gen_t for now. */
+		if(ad_entry != NULL)
 		{
-			AMP_DEBUG_INFO("report_print","Copying eid",NULL);
-			memcpy(&mid_val->producer_eid,eid,sizeof(eid_t));
-			AMP_DEBUG_INFO("report_print","eid successful",NULL);
+	    	Lyst tmp = lyst_create();
+	    	lyst_insert(tmp,mid_copy(ad_entry->mid));
+	    	cur_def = def_create_gen(mid_copy(ad_entry->mid), ad_entry->type, tmp);
+	    	del_def = 1;
 		}
+	}
+	else if(MID_GET_FLAG_ID(entry->id->flags) == MID_COMPUTED)
+	{
+		var_t *cd = NULL;
+	    if(MID_GET_FLAG_ISS(entry->id->flags) == 0)
+	    {
+	    	cd = var_find_by_id(gAdmComputed, NULL, entry->id);
+	    }
+	    else
+	    {
+	    	cd = var_find_by_id(gMgrVDB.compdata, &(gMgrVDB.compdata_mutex), entry->id);
+	    }
 
-		mid_val->timestamp=time;
-		//AMP_DEBUG_INFO("value","%d name: %s",mid_val->value,*adu->name)
-		AMP_DEBUG_INFO("report_print","Adding to queue",NULL);
-		AddVariableEntryToQueue(mid_val);
-		AMP_DEBUG_INFO("report_print","successful",NULL);
+	    // Fake a def_gen just for this CD item.
+	    if(cd != NULL)
+	    {
+	    	Lyst tmp = lyst_create();
+	    	lyst_insert(tmp,mid_copy(cd->id));
+	    	cur_def = def_create_gen(mid_copy(cd->id), cd->value.type, tmp);
+	    	del_def = 1;
+	    }
+	}
+	else if(MID_GET_FLAG_ID(entry->id->flags) == MID_REPORT)
+	{
+	    if(MID_GET_FLAG_ISS(entry->id->flags) == 0)
+	    {
+	    	cur_def = def_find_by_id(gAdmRpts, NULL, entry->id);
+	    }
+	    else
+	    {
+	    	cur_def = def_find_by_id(gMgrVDB.reports, &(gMgrVDB.reports_mutex), entry->id);
+	    }
+	}
+	else if(MID_GET_FLAG_ID(entry->id->flags) == MID_MACRO)
+	{
+	    if(MID_GET_FLAG_ISS(entry->id->flags) == 0)
+	    {
+	    	cur_def = def_find_by_id(gAdmMacros, NULL, entry->id);
+	    }
+	    else
+	    {
+	    	cur_def = def_find_by_id(gMgrVDB.macros, &(gMgrVDB.macros_mutex), entry->id);
+	    }
+
 	}
 
+	/* Step 3: Print the TDC holding data for the entry. */
+	ui_print_tdc(entry->contents, cur_def);
+    printf("\n");
+
+    /* print to RPC */
+    char tmp_buf[D_VARENTRYSIZE];
+    char *name = names_get_name(entry->id);
+    size_t size;
+
+    size = netui_print_tdc_def(entry->contents, cur_def, tmp_buf);
+    tmp_buf[size] = '\0';
+
+	AddVariableToQueue(name, TYPE_STRING, tmp_buf, receiver, 0, ts);
+	SRELEASE(name);
+
+    if(del_def)
+    {
+    	def_release_gen(cur_def);
+    }
+    return;
 }
-
-
 
 /******************************************************************************XXX
  *
@@ -811,62 +840,40 @@ void netui_print_reports(agent_t* agent)
 	     }
 	     else
 	     {
-	    	 unsigned long mid_sizes = 0;
-	    	 unsigned long data_sizes = 0;
-	    	 adm_datadef_t *adu = NULL;
-	    	 def_gen_t *report = NULL;
-
+	    	 uvast mid_sizes = 0;
+	    	 uvast data_sizes = 0;
 
 			/* Print the Report Header */
 	    	//AddVariableToQueue("SentTo",TYPE_STRING,cur_report->recipient.name,&agent->agent_eid,strlen(cur_report->recipient.name),cur_report->time);
 	    	//AddVariableToQueue("NumMids",TYPE_UINT32,lyst_length(cur_report->reports),agent->agent_eid.name);
-	    	/*
-	    	 printf("\n-----------------\nDTNMP DATA REPORT\n-----------------\n");
-	    	 printf("Sent to  : %s\n", cur_report->recipient.name);
-	    	 printf("Rpt. Size: %d\n", cur_report->size);
-	    	 printf("Timestamp: %ld\n", cur_report->time);
-	    	 printf("Num Mids : %ld\n", lyst_length(cur_report->reports));
-	    	 printf("Value(s)\n---------------------------------\n");
-*/
+
+	    	 printf("\n----------------------------------------");
+	    	 printf("\n            DTNMP DATA REPORT           ");
+	    	 printf("\n----------------------------------------");
+	    	 printf("\nSent to   : %s", cur_report->recipient.name);
+	    	 printf("\nTimestamp : %s", ctime(&(cur_report->time)));
+	    	 printf("\n# Entries : %lu",
+			 (unsigned long) lyst_length(cur_report->entries));
+	    	 printf("\n----------------------------------------\n");
 
 	    	 /* For each MID in this report, print and deleteit. */
 	    	 for(entry_elt = lyst_first(cur_report->entries); entry_elt; entry_elt = lyst_next(entry_elt))
 	    	 {
 	    		 cur_entry = (rpt_entry_t*)lyst_data(entry_elt);
 
-	    		 mid_sizes += cur_entry->id->raw_size;
-	    		 data_sizes += tdc_get_entry_size(cur_entry->contents, 0); //XXX: can there be several indices?
-
-	    		 /* See if this is a pre-defined report, or a custom report. */
-	    		 /* Find ADM associated with this entry. */
-	    		 if((adu = adm_find_datadef(cur_entry->id)) != NULL)
-	    		 {
-	    			 uint64_t used;
-	    			 netui_print_predefined_rpt(cur_entry->id, cur_entry->contents, tdc_get_entry_size(cur_entry->contents, 0), &used, adu,&agent->agent_eid,cur_report->time);
-
-	    		 }
-	    		 else if((report = def_find_by_id(agent->custom_defs, &(agent->mutex), cur_entry->id)) != NULL)
-	    		 {
-	    			 netui_print_custom_rpt(cur_entry, report);
-	    		 }
-	    		 else
-	    		 {
-	    			 char *mid_str = mid_to_string(cur_entry->id);
-	    			 AMP_DEBUG_ERR("netui_print_reports","Could not print MID %s", mid_str);
-	    			 SRELEASE(mid_str);
-	    		 }
+	    		 netui_print_entry(cur_entry, &cur_report->recipient, cur_report->time, &mid_sizes, &data_sizes);
 	    	 }
-	    	 printf("=================\n");
+	    	 printf("\n----------------------------------------\n");
 	    	 printf("STATISTICS:\n");
-	    	 printf("MIDs total %ld bytes\n", mid_sizes);
-	    	 printf("Data total: %ld bytes\n", data_sizes);
-	    	 //printf("Efficiency: %.2f%%\n", (double)(((double)data_sizes)/((double)cur_report->size)) * (double)100.0);
-	    	 printf("Efficiency calculation currently not implemented\n"); //XXX
-	    	 printf("-----------------\n\n\n");
+	    	 printf("MIDs total "UVAST_FIELDSPEC" bytes\n", mid_sizes);
+	    	 printf("Data total: "UVAST_FIELDSPEC" bytes\n", data_sizes);
 
-	    	 //previousReportElt=lyst_prev(report_elt);
-	    	 //lyst_delete(report_elt);
-	    	 //report_elt=previousReportElt;
+	    	 if (mid_sizes + data_sizes > 0)
+             {
+                printf("Efficiency: %.2f%%\n", (double)(((double)data_sizes)/((double)mid_sizes + data_sizes)) * (double)100.0);
+	    	 }
+
+	    	 printf("----------------------------------------\n\n\n");
 	     }
 	 }
 }
@@ -1826,12 +1833,12 @@ tdc_t* netui_parse_tdc(char* dlText)
 
 	return outDl;
 }
-#if 0
-size_t netui_print_datalist(void* inBuffer,size_t size,char* outBuffer)
+
+size_t netui_print_tdc(void* inBuffer,size_t size,char* outBuffer)
 {
 	uint32_t bytesUsed;
 	uint32_t bytesUsedPerDL;
-	Lyst datalists = utils_datacol_deserialize((uint8_t*)inBuffer,size,&bytesUsed);
+	Lyst datalists = dc_deserialize((uint8_t*)inBuffer,size,&bytesUsed);
 	uint8_t* data;
 	size_t dlEltSize;
 	char* cursor = &outBuffer[0];
@@ -1841,70 +1848,121 @@ size_t netui_print_datalist(void* inBuffer,size_t size,char* outBuffer)
 	//This line also adds the appending comma between datalists.
 	for(LystElt dlElt = lyst_first(datalists) ; dlElt ; dlElt = lyst_next(dlElt),(cursor++)[0]=',')
 	{
-		AMP_DEBUG_INFO("netui_print_datalist","Getting datalist...",NULL);
-		datacol_entry_t* dataCol = (datacol_entry_t*)lyst_data(dlElt);
-		datalist_t curDl = datalist_deserialize_from_buffer(dataCol->value,dataCol->length,&bytesUsedPerDL);
+		AMP_DEBUG_INFO("netui_print_tdc","Getting tdc...",NULL);
+		blob_t* dataCol = (blob_t*)lyst_data(dlElt);
+		tdc_t* curDl = tdc_deserialize(dataCol->value,dataCol->length,&bytesUsedPerDL); //XXX: Do I have to free it?
 
 		//Alright, now we have a single DL
-		(cursor++)[0]='[';
-		unsigned int numElements = datalist_num_elements(&curDl)-1;
-		for(unsigned int x = 0 ; x<numElements ; x++,(cursor++)[0]=',')
-		{
-			datalist_type_t type = datalist_get_type(&curDl,x);
-			dlEltSize=datalist_get_size(&curDl,x);
-			if(dlEltSize==0)
-				break;
-
-			data=(uint8_t*)STAKE(dlEltSize);
-			datalist_get(&curDl,x,data,&dlEltSize,type);
-
-
-			cursor+= sprintf(cursor,"(%s) ",datalist_get_string_from_type(type));
-			//Call print function
-			switch(type)
-			{
-				case DLIST_TYPE_STRING:
-					cursor+= netui_print_string(data,size,cursor);
-				break;
-				case DLIST_TYPE_UINT32:
-					cursor+= netui_print_uint32(data,size,cursor);
-				break;
-				case DLIST_TYPE_UINT64:
-					cursor+= netui_print_uint64(data,size,cursor);
-				break;
-				case DLIST_TYPE_INT32:
-					cursor+= netui_print_int32(data,size,cursor);
-				break;
-				case DLIST_TYPE_INT64:
-					cursor+= netui_print_int64(data,size,cursor);
-				break;
-				case DLIST_TYPE_REAL32:
-					cursor+= netui_print_real32(data,size,cursor);
-				break;
-				case DLIST_TYPE_REAL64:
-					cursor+= netui_print_real64(data,size,cursor);
-				break;
-				case DLIST_TYPE_VAST:
-					cursor+= netui_print_vast(data,size,cursor);
-				break;
-				case DLIST_TYPE_UVAST:
-					cursor+= netui_print_uvast(data,size,cursor);
-				break;
-			}
-
-			//if(x<numElements-1)
-			//	(cursor++)[0]=',';
-
-			SRELEASE(data);
-		}
-		(cursor++)[0]=']';
+		netui_print_tdc_def(curDl, NULL, cursor);
 	}
+
 	(cursor++)[0]='}';
 	(cursor++)[0]='\0';
 
 	return cursor-outBuffer;
 }
-#endif
+
+size_t netui_print_tdc_def(tdc_t* tdc, def_gen_t* cur_def, char* outBuffer)
+{
+	LystElt elt = NULL;
+	LystElt def_elt = NULL;
+	uint32_t i = 0;
+	amp_type_e cur_type;
+	blob_t *cur_entry = NULL;
+	value_t *cur_val = NULL;
+	char *start = outBuffer;
+
+	if(tdc == NULL)
+	{
+		AMP_DEBUG_ERR("netui_print_tdc","Bad Args.", NULL);
+		return 0;
+	}
+
+	if(cur_def != NULL)
+	{
+		if(lyst_length(cur_def->contents) != tdc->hdr.length)
+		{
+			AMP_DEBUG_WARN("netui_print_tdc","def and TDC length mismatch: %d != %d. Ignoring.",
+					        lyst_length(cur_def->contents), tdc->hdr.length);
+			cur_def = NULL;
+		}
+	}
+
+
+	elt = lyst_first(tdc->datacol);
+	if(cur_def != NULL)
+	{
+		def_elt = lyst_first(cur_def->contents);
+	}
+
+    (outBuffer++)[0]='[';
+
+	for(i = 0; ((i < tdc->hdr.length) && elt); i++)
+	{
+		cur_type = (amp_type_e) tdc->hdr.data[i];
+
+		//printf("\n\t");
+		if(cur_def != NULL)
+		{
+			printf("Value %d (", i);
+			ui_print_mid((mid_t *) lyst_data(def_elt));
+			printf(") ");
+		}
+
+		// \todo: Check return values.
+		if((cur_entry = lyst_data(elt)) == NULL)
+		{
+			outBuffer+= netui_print_string("NULL",4,outBuffer);
+		}
+		else
+		{
+			//ui_print_val(cur_type, cur_entry->value, cur_entry->length);
+			outBuffer+= sprintf(outBuffer,"(%s) ",type_to_str(cur_type));
+
+            switch(cur_type)
+            {
+                case AMP_TYPE_STRING:
+                    outBuffer+= netui_print_string(cur_entry->value,cur_entry->length,outBuffer);
+                break;
+                case AMP_TYPE_UINT:
+                    outBuffer+= netui_print_uint32(cur_entry->value,cur_entry->length,outBuffer);
+                break;
+                case AMP_TYPE_INT:
+                    outBuffer+= netui_print_int32(cur_entry->value,cur_entry->length,outBuffer);
+                break;
+                case AMP_TYPE_REAL32:
+                    outBuffer+= netui_print_real32(cur_entry->value,cur_entry->length,outBuffer);
+                break;
+                case AMP_TYPE_REAL64:
+                    outBuffer+= netui_print_real64(cur_entry->value,cur_entry->length,outBuffer);
+                break;
+                case AMP_TYPE_VAST:
+                    outBuffer+= netui_print_vast(cur_entry->value,cur_entry->length,outBuffer);
+                break;
+                case AMP_TYPE_UVAST:
+                    outBuffer+= netui_print_uvast(cur_entry->value,cur_entry->length,outBuffer);
+                break;
+                default:
+                    AMP_DEBUG_ERR("netui_print_tdc","Type not known",NULL);
+            }
+		}
+
+		elt = lyst_next(elt);
+
+		if (elt)
+            (outBuffer++)[0]=',';
+
+		if(cur_def != NULL)
+		{
+			def_elt = lyst_next(def_elt);
+		}
+	}
+
+    (outBuffer++)[0]=']';
+
+    return (size_t)(outBuffer - start);
+}
+
 size_t netui_print_string(void* inBuffer,size_t size,char* outBuffer)
 {
 	return sprintf(outBuffer,"%s",(char*)inBuffer);

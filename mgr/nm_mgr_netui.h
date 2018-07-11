@@ -148,8 +148,7 @@ void ui_list_mids();
 void ui_list_ops();
 void ui_list_rpts();
 
-void netui_print_custom_rpt(rpt_entry_t *rpt_entry, def_gen_t *rpt_def);
-//void netui_print_predefined_rpt(mid_t *mid, tdc_t *data, uint64_t data_size, uint64_t *data_used, adm_datadef_t *adu,eid_t* eid,time_t time);
+void netui_print_entry(rpt_entry_t *entry, eid_t *receiver, time_t ts, uvast *mid_sizes, uvast *data_sizes);
 void netui_print_reports(agent_t *agent);
 
 void ui_run_tests();
@@ -176,8 +175,10 @@ void netui_get_num_reports_by_agent();
 
 tdc_t* netui_parse_tdc(char* dlText);
 
-//Variable queue/datalist printing functions
-//XXXsize_t netui_print_datalist(void* inBuffer,size_t size,char* outBuffer);
+size_t netui_print_tdc_def(tdc_t* tdc, def_gen_t* cur_def, char* outBuffer);
+
+//Variable queue/tdc printing functions
+size_t netui_print_tdc(void* inBuffer,size_t size,char* outBuffer);
 size_t netui_print_string(void* inBuffer,size_t size,char* outBuffer);
 size_t netui_print_uint32(void* inBuffer,size_t size,char* outBuffer);
 size_t netui_print_int32(void* inBuffer,size_t size,char* outBuffer);
