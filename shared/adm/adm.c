@@ -2,7 +2,14 @@
  **                           COPYRIGHT NOTICE
  **      (c) 2012 The Johns Hopkins University Applied Physics Laboratory
  **                         All rights reserved.
+ **
+ **     This material may only be used, modified, or reproduced by or for the
+ **       U.S. Government pursuant to the license rights granted under
+ **          FAR clause 52.227-14 or DFARS clauses 252.227-7013/7014
+ **
+ **     For any other permissions, please contact the Legal Office at JHU/APL.
  ******************************************************************************/
+
 /*****************************************************************************
  **
  ** File Name: adm.c
@@ -21,36 +28,30 @@
  ** Modification History:
  **  MM/DD/YY  AUTHOR         DESCRIPTION
  **  --------  ------------   ---------------------------------------------
- **  10/22/11  E. Birrane     Initial Implementation (JHU/APL)
- **  11/13/12  E. Birrane     Technical review, comment updates. (JHU/APL)
- **  08/21/16  E. Birrane     Updated to Agent ADM v0.2 (Secure DTN - NASA: NNX14CS58P)
+ **  10/22/11  E. Birrane     Initial Implementation
+ **  11/13/12  E. Birrane     Technical review, comment updates.
+ **	 04/01/14  J.P. Mayer	  Implemention of datalist-related functionality
  *****************************************************************************/
 
 #include "ion.h"
 #include "platform.h"
 
-#include "../primitives/def.h"
-#include "../primitives/lit.h"
-#include "../primitives/expr.h"
-#include "../utils/nm_types.h"
-#include "../utils/utils.h"
-
-#include "../adm/adm.h"
-
-#include "../primitives/var.h"
-#include "../adm/adm_bp.h"
-#include "../adm/adm_ltp.h"
-#include "../adm/adm_ion.h"
-#include "../adm/adm_agent.h"
-#include "../adm/adm_bpsec.h"
+#include "shared/utils/nm_types.h"
+#include "shared/utils/utils.h"
+#include "shared/primitives/variables.h"
+#include "shared/primitives/datalist.h"
+#include "shared/adm/adm.h"
+#include "shared/adm/adm_bp.h"
+#include "shared/adm/adm_ltp.h"
+#include "shared/adm/adm_ion.h"
+#include "shared/adm/adm_agent.h"
+#include "shared/adm/adm_cgr.h"
 
 Lyst gAdmData;
-Lyst gAdmComputed;
 Lyst gAdmCtrls;
 Lyst gAdmLiterals;
 Lyst gAdmOps;
-Lyst gAdmRpts;
-Lyst gAdmMacros; // Type def_gen_t
+
 
 /******************************************************************************
  *
@@ -58,13 +59,9 @@ Lyst gAdmMacros; // Type def_gen_t
  *
  * \par Registers a pre-configured ADM data definition with the local DTNMP actor.
  *
- * \retval 0  Failure - The datadef was not added.
- *         !0 Success - The datadef was added.
- *
- * \param[in] mid_str   Serialized MID value
- * \param[in] type      The type of the data definition.
+ * \param[in] name      Name of the ADM entry.
+ * \param[in] mid_str   serialized MID value
  * \param[in] num_parms # parms needed for parameterized OIDs.
- * \param[in] collect   The data collection function.
  * \param[in] to_string The to-string function
  * \param[in] get_size  The sizing function for the ADM entry.
  *
@@ -78,57 +75,67 @@ Lyst gAdmMacros; // Type def_gen_t
  * Modification History:
  *  MM/DD/YY  AUTHOR         DESCRIPTION
  *  --------  ------------   ---------------------------------------------
- *  07/04/15  E. Birrane     Added type information.
+ *  11/25/12  E. Birrane     Initial implementation.
+ *  07/27/13  E. BIrrane     Updated ADM to use Lysts.
  *****************************************************************************/
 
-int adm_add_datadef(char *mid_str,
-		            amp_type_e type,
-		     	 	int num_parms,
-  		     	 	adm_data_collect_fn collect,
-		     	 	adm_string_fn to_string,
-		     	 	adm_size_fn get_size)
+void adm_add_datadef(char *name,
+		     	 	 uint8_t *mid_str,
+		     	 	 int num_parms,
+		     	 	 adm_string_fn to_string,
+		     	 	 adm_size_fn get_size)
 {
+	uint32_t size = 0;
+	uint32_t used = 0;
 	adm_datadef_t *new_entry = NULL;
 
-	AMP_DEBUG_ENTRY("adm_add_datadef","(%llx, %d, %llx, %llx)",
-			          mid_str, num_parms, to_string, get_size);
+	DTNMP_DEBUG_ENTRY("adm_add_datadef","(%llx, %llx, %d, %llx, %llx)",
+			          name, mid_str, num_parms, to_string, get_size);
 
 	/* Step 0 - Sanity Checks. */
-	if(mid_str == NULL)
+	if((name == NULL) || (mid_str == NULL))
 	{
-		AMP_DEBUG_ERR("adm_add_datadef","Bad Args.", NULL);
-		AMP_DEBUG_EXIT("adm_add_datadef","-> 0.", NULL);
-		return 0;
+		DTNMP_DEBUG_ERR("adm_add_datadef","Bad Args.", NULL);
+		DTNMP_DEBUG_EXIT("adm_add_datadef","->.", NULL);
+		return;
 	}
 	if(gAdmData == NULL)
 	{
-		AMP_DEBUG_ERR("adm_add_datadef","Global data list not initialized.", NULL);
-		AMP_DEBUG_EXIT("adm_add_datadef","-> 0.", NULL);
-		return 0;
+		DTNMP_DEBUG_ERR("adm_add_datadef","Global data list not initialized.", NULL);
+		DTNMP_DEBUG_EXIT("adm_add_datadef","->.", NULL);
+		return;
+	}
+
+	/* Step 1 - Check name length. */
+	if(strlen(name) > ADM_MAX_NAME)
+	{
+		DTNMP_DEBUG_WARN("adm_add_datadef","Trunc. %s to %d bytes.", name, ADM_MAX_NAME)
 	}
 
 	/* Step 2 - Allocate a Data Definition. */
 	if((new_entry = (adm_datadef_t *) STAKE(sizeof(adm_datadef_t))) == NULL)
 	{
-		AMP_DEBUG_ERR("adm_add_datadef","Can't allocate new entry of size %d.",
+		DTNMP_DEBUG_ERR("adm_add_datadef","Can't allocate new entry of size %d.",
 				        sizeof(adm_datadef_t));
-		AMP_DEBUG_EXIT("adm_add_datadef","-> 0.", NULL);
-		return 0;
+		DTNMP_DEBUG_EXIT("adm_add_datadef","->.", NULL);
+		return;
 	}
 
-	new_entry->mid = mid_from_string(mid_str);
+	/* Step 3 - Copy the ADM information. */
+	strncpy((char *)new_entry->name, name, ADM_MAX_NAME);
 
-	new_entry->type = type;
+	new_entry->mid = mid_deserialize(mid_str, ADM_MID_ALLOC, &used);
+
 	new_entry->num_parms = num_parms;
-	new_entry->collect = collect;
-	new_entry->to_string = (to_string == NULL) ? adm_print_uvast : to_string;
+	new_entry->collect = NULL;
+	new_entry->to_string = (to_string == NULL) ? adm_uvast_to_queue : to_string;
 	new_entry->get_size = (get_size == NULL) ? adm_size_uvast : get_size;
 
 	/* Step 4 - Add the new entry. */
 	lyst_insert_last(gAdmData, new_entry);
 
-	AMP_DEBUG_EXIT("adm_add_datadef","-> 1.", NULL);
-	return 1;
+	DTNMP_DEBUG_EXIT("adm_add_datadef","->.", NULL);
+	return;
 }
 
 
@@ -138,7 +145,7 @@ int adm_add_datadef(char *mid_str,
  *
  * \par Registers a collection function to a data definition.
  *
- * \param[in] mid_hex   serialized MID value
+ * \param[in] mid_str   serialized MID value
  * \param[in] collect   The data collection function.
  *
  * \par Notes:
@@ -152,35 +159,35 @@ int adm_add_datadef(char *mid_str,
  *  11/25/12  E. Birrane     Initial implementation.
  *  07/27/13  E. BIrrane     Updated ADM to use Lysts.
  *****************************************************************************/
-void adm_add_datadef_collect(uint8_t *mid_hex, adm_data_collect_fn collect)
+void adm_add_datadef_collect(uint8_t *mid_str, adm_data_collect_fn collect)
 {
 	uint32_t used = 0;
 	mid_t *mid = NULL;
 	adm_datadef_t *entry = NULL;
 
-	AMP_DEBUG_ENTRY("adm_add_datadef_collect","(%lld, %lld)", mid_hex, collect);
+	DTNMP_DEBUG_ENTRY("adm_add_datadef_collect","(%lld, %lld)", mid_str, collect);
 
-	if((mid_hex == NULL) || (collect == NULL))
+	if((mid_str == NULL) || (collect == NULL))
 	{
-		AMP_DEBUG_ERR("adm_add_datadef_collect","Bad Args.", NULL);
-		AMP_DEBUG_EXIT("adm_add_datadef_collect","->.", NULL);
+		DTNMP_DEBUG_ERR("adm_add_datadef_collect","Bad Args.", NULL);
+		DTNMP_DEBUG_EXIT("adm_add_datadef_collect","->.", NULL);
 		return;
 	}
 
-	if((mid = mid_deserialize(mid_hex, ADM_MID_ALLOC, &used)) == NULL)
+	if((mid = mid_deserialize(mid_str, ADM_MID_ALLOC, &used)) == NULL)
 	{
-		char *tmp = utils_hex_to_string(mid_hex, ADM_MID_ALLOC);
-		AMP_DEBUG_ERR("adm_add_datadef_collect","Can't deserialize MID str %s.",tmp);
+		char *tmp = utils_hex_to_string(mid_str, ADM_MID_ALLOC);
+		DTNMP_DEBUG_ERR("adm_add_datadef_collect","Can't deserialize MID str %s.",tmp);
 		SRELEASE(tmp);
 
-		AMP_DEBUG_EXIT("adm_add_datadef_collect","->.", NULL);
+		DTNMP_DEBUG_EXIT("adm_add_datadef_collect","->.", NULL);
 		return;
 	}
 
 	if((entry = adm_find_datadef(mid)) == NULL)
 	{
 		char *tmp = mid_to_string(mid);
-		AMP_DEBUG_ERR("adm_add_datadef_collect","Can't find data for MID %s.", tmp);
+		DTNMP_DEBUG_ERR("adm_add_datadef_collect","Can't find data for MID %s.", tmp);
 		SRELEASE(tmp);
 	}
 	else
@@ -190,83 +197,8 @@ void adm_add_datadef_collect(uint8_t *mid_hex, adm_data_collect_fn collect)
 
 	mid_release(mid);
 
-	AMP_DEBUG_EXIT("adm_add_datadef_collect","->.", NULL);
+	DTNMP_DEBUG_EXIT("adm_add_datadef_collect","->.", NULL);
 }
-
-
-
-
-/******************************************************************************
- *
- * \par Function Name: adm_add_computeddef
- *
- * \par Registers a pre-configured ADM computed data definition with the local
- *      DTNMP actor.
- *
- * \retval 0  Failure - The computeddef was not added.
- *         !0 Success - The computeddef was added.
- *
- * \param[in] mid_str   serialized MID value
- * \param[in] type      The type of the computed data definition result.
- * \param[in] def       The MID Collection defining the computed value.
- *
- * \par Notes:
- *
- * Modification History:
- *  MM/DD/YY  AUTHOR         DESCRIPTION
- *  --------  ------------   ---------------------------------------------
- *  03/16/15  E. Birrane     Initial implementation.
- *  07/04/15  E. Birrane     Added type information.
- *  08/10/15  E. Birrane     Updated to def_gen_t.
- *  04/09/16  E. Birrane     Updated to new CD definitions.
-  *****************************************************************************/
-
-int	adm_add_computeddef(char *mid_str, amp_type_e type, expr_t *expr)
-{
-	var_t *new_entry = NULL;
-	mid_t *mid = NULL;
-
-	AMP_DEBUG_ENTRY("adm_add_computeddef", "(0x" ADDR_FIELDSPEC ",%d,0x" ADDR_FIELDSPEC ")", (uaddr) mid_str, type, (uaddr) expr);
-
-	/* Step 0 - Sanity Checks. */
-	if((mid_str == NULL) || expr == NULL)
-	{
-		AMP_DEBUG_ERR("adm_add_computeddef","Bad Args.", NULL);
-		AMP_DEBUG_EXIT("adm_add_computeddef","-> 0.", NULL);
-		return 0;
-	}
-
-	if(gAdmComputed == NULL)
-	{
-		AMP_DEBUG_ERR("adm_add_computeddef","Global data list not initialized.", NULL);
-		AMP_DEBUG_EXIT("adm_add_computeddef","-> 0.", NULL);
-		return 0;
-	}
-
-	/* Step 2 - Make the MID. */
-	if((mid = mid_from_string(mid_str)) == NULL)
-	{
-		AMP_DEBUG_ERR("adm_add_computeddef", "Cannot allocate mid.", NULL);
-		return 0;
-	}
-
-	/* Step 3: Make the data definition. */
-	value_t val;
-	val_init(&val);
-	if((new_entry = var_create(mid, type, expr, val)) == NULL)
-	{
-		AMP_DEBUG_ERR("adm_add_computeddef", "Cannot allocate def.", NULL);
-		mid_release(mid);
-		return 0;
-	}
-
-	/* Step 4 - Add the new entry. */
-	lyst_insert_last(gAdmComputed, new_entry);
-
-	AMP_DEBUG_EXIT("adm_add_computeddef","-> 1.", NULL);
-	return 1;
-}
-
 
 
 
@@ -276,70 +208,76 @@ int	adm_add_computeddef(char *mid_str, amp_type_e type, expr_t *expr)
  *
  * \par Registers a pre-configured ADM control with the local DTNMP actor.
  *
- * \retval 0  Failure - The control was not added.
- *         !0 Success - The control was added.
- *
+ * \param[in] name      Name of the ADM control.
  * \param[in] mid_str   MID value, as a string.
- * \param[in] parm      The parameter conversion function
- * \param[in] run       The control function.
+ * \param[in] num_parms # parms needed for parameterized OIDs.
+ * \param[in] control   The control collection function.
  *
  * \par Notes:
  *		1. When working with parameterized OIDs, the given MID string should
  *		   be all information excluding the parameterized portion of the OID.
  *		2. ADM names will be truncated after ADM_MAX_NAME bytes.
  *
+ * Modification History:
+ *  MM/DD/YY  AUTHOR         DESCRIPTION
+ *  --------  ------------   ---------------------------------------------
+ *  11/25/12  E. Birrane     Initial implementation.
  *****************************************************************************/
 
-int adm_add_ctrl(char *mid_str,
-				 adm_ctrl_run_fn run)
+void adm_add_ctrl(char *name,
+				  uint8_t *mid_str,
+				  int num_parms)
 {
+	uint8_t *tmp = NULL;
+	uint32_t size = 0;
+	uint32_t used = 0;
 	adm_ctrl_t *new_entry = NULL;
 
-	AMP_DEBUG_ENTRY("adm_add_ctrl","(%#llx, %#llx)",
-			          mid_str, run);
+	DTNMP_DEBUG_ENTRY("adm_add_ctrl","(%#llx, %#llx, %d)",
+			          name, mid_str, num_parms);
 
 	/* Step 0 - Sanity Checks. */
-	if(mid_str == NULL)
+	if((name == NULL) || (mid_str == NULL))
 	{
-		AMP_DEBUG_ERR("adm_add_ctrl","Bad Args.", NULL);
-		AMP_DEBUG_EXIT("adm_add_ctrl","-> 0.", NULL);
-		return 0;
+		DTNMP_DEBUG_ERR("adm_add_ctrl","Bad Args.", NULL);
+		DTNMP_DEBUG_EXIT("adm_add_ctrl","->.", NULL);
+		return;
 	}
-
 	if(gAdmCtrls == NULL)
 	{
-		AMP_DEBUG_ERR("adm_add_ctrl","Global Controls list not initialized.", NULL);
-		AMP_DEBUG_EXIT("adm_add_ctrl","-> 0.", NULL);
-		return 0;
+		DTNMP_DEBUG_ERR("adm_add_ctrl","Global Controls list not initialized.", NULL);
+		DTNMP_DEBUG_EXIT("adm_add_ctrl","->.", NULL);
+		return;
+	}
+
+	/* Step 1 - Check name length. */
+	if(strlen(name) > ADM_MAX_NAME)
+	{
+		DTNMP_DEBUG_WARN("adm_add_ctrl","Trunc. %s to %d bytes.", name, ADM_MAX_NAME)
 	}
 
 	/* Step 2 - Allocate a Data Definition. */
 	if((new_entry = (adm_ctrl_t *) STAKE(sizeof(adm_ctrl_t))) == NULL)
 	{
-		AMP_DEBUG_ERR("adm_add_ctrl","Can't allocate new entry of size %d.",
-				        sizeof(adm_ctrl_t));
-		AMP_DEBUG_EXIT("adm_add_ctrl","-> 0.", NULL);
-		return 0;
+		DTNMP_DEBUG_ERR("adm_add_ctrl","Can't allocate new entry of size %d.",
+				        sizeof(adm_datadef_t));
+		DTNMP_DEBUG_EXIT("adm_add_ctrl","->.", NULL);
+		return;
 	}
 
-	new_entry->mid = mid_from_string(mid_str);
+	/* Step 3 - Copy the ADM information. */
+	strncpy((char *)new_entry->name, name, ADM_MAX_NAME);
+	new_entry->mid = mid_deserialize(mid_str, ADM_MID_ALLOC, &used);
 
-	if(new_entry->mid == NULL)
-	{
-		SRELEASE(new_entry);
-		AMP_DEBUG_ERR("adm_add_ctrl","Can't get mid from %s.", mid_str);
-		AMP_DEBUG_EXIT("adm_add_ctrl","-> 0.", NULL);
-		return 0;
-	}
-
-	new_entry->num_parms = mid_get_num_parms(new_entry->mid);
-	new_entry->run = run;
+	//new_entry->mid_len = size;
+	new_entry->num_parms = num_parms;
+	new_entry->run = NULL;
 
 	/* Step 4 - Add the new entry. */
 	lyst_insert_last(gAdmCtrls, new_entry);
 
-	AMP_DEBUG_EXIT("adm_add_ctrl","-> 1.", NULL);
-	return 1;
+	DTNMP_DEBUG_EXIT("adm_add_ctrl","->.", NULL);
+	return;
 }
 
 
@@ -362,34 +300,34 @@ int adm_add_ctrl(char *mid_str,
  *  07/28/13  E. Birrane     Initial implementation.
  *****************************************************************************/
 
-void adm_add_ctrl_run(uint8_t *mid_str, adm_ctrl_run_fn run)
+void adm_add_ctrl_run(uint8_t *mid_str, adm_ctrl_fn run)
 {
 	uint32_t used = 0;
 	mid_t *mid = NULL;
 	adm_ctrl_t *entry = NULL;
 
-	AMP_DEBUG_ENTRY("adm_add_ctrl_run","(%lld, %lld)", mid_str, run);
+	DTNMP_DEBUG_ENTRY("adm_add_ctrl_run","(%lld, %lld)", mid_str, run);
 
 	if((mid_str == NULL) || (run == NULL))
 	{
-		AMP_DEBUG_ERR("adm_add_ctrl_run","Bad Args.", NULL);
-		AMP_DEBUG_EXIT("adm_add_ctrl_run","->.",NULL);
+		DTNMP_DEBUG_ERR("adm_add_ctrl_run","Bad Args.", NULL);
+		DTNMP_DEBUG_EXIT("adm_add_ctrl_run","->.",NULL);
 		return;
 	}
 
 	if((mid = mid_deserialize(mid_str, ADM_MID_ALLOC, &used)) == NULL)
 	{
 		char *tmp = utils_hex_to_string(mid_str, ADM_MID_ALLOC);
-		AMP_DEBUG_ERR("adm_add_ctrl_run","Can't deserialized MID %s", tmp);
+		DTNMP_DEBUG_ERR("adm_add_ctrl_run","Can't deserialized MID %s", tmp);
 		SRELEASE(tmp);
-		AMP_DEBUG_EXIT("adm_add_ctrl_run","->.",NULL);
+		DTNMP_DEBUG_EXIT("adm_add_ctrl_run","->.",NULL);
 		return;
 	}
 
 	if((entry = adm_find_ctrl(mid)) == NULL)
 	{
 		char *tmp = mid_to_string(mid);
-		AMP_DEBUG_ERR("adm_add_ctrl_run","Can't find control for MID %s", tmp);
+		DTNMP_DEBUG_ERR("adm_add_ctrl_run","Can't find control for MID %s", tmp);
 		SRELEASE(tmp);
 	}
 	else
@@ -399,247 +337,7 @@ void adm_add_ctrl_run(uint8_t *mid_str, adm_ctrl_run_fn run)
 
 	mid_release(mid);
 
-	AMP_DEBUG_EXIT("adm_add_ctrl_run","->.",NULL);
-}
-
-int adm_add_lit(char *mid_str, value_t result, lit_val_fn calc)
-{
-	lit_t *new_entry = NULL;
-
-	AMP_DEBUG_ENTRY("adm_add_lit","(0x%lx, (%d,%d), 0x%lx)",
-			          (unsigned long) mid_str, result.type, result.value.as_int,
-			          (unsigned long) calc);
-
-	/* Step 0 - Sanity Checks. */
-	if(mid_str == NULL)
-	{
-		AMP_DEBUG_ERR("adm_add_lit","Bad Args.", NULL);
-		AMP_DEBUG_EXIT("adm_add_lit","-> 0.", NULL);
-		return 0;
-	}
-
-	if(gAdmLiterals == NULL)
-	{
-		AMP_DEBUG_ERR("adm_add_lit","Global Literals list not initialized.", NULL);
-		AMP_DEBUG_EXIT("adm_add_lit","-> 0.", NULL);
-		return 0;
-	}
-
-	/* Step 1 - Build the literal definition. */
-	mid_t *id = mid_from_string(mid_str);
-
-	if(id == NULL)
-	{
-		AMP_DEBUG_ERR("adm_add_lit","Can't make mid from %s.", mid_str);
-		AMP_DEBUG_EXIT("adm_add_lit","-> 0.", NULL);
-		return 0;
-	}
-
-	new_entry = lit_create(id, result, calc);
-
-	if(new_entry == NULL)
-	{
-		AMP_DEBUG_ERR("adm_add_lit","Can't allocate new entry of size %d.",
-				        sizeof(lit_t));
-		AMP_DEBUG_EXIT("adm_add_lit","-> 0.", NULL);
-		return 0;
-	}
-
-	/* Step 2 - Add the new entry. */
-	lyst_insert_last(gAdmLiterals, new_entry);
-
-	AMP_DEBUG_EXIT("adm_add_lit","-> 1.", NULL);
-	return 1;
-}
-
-int adm_add_macro(char *mid_str, Lyst midcol)
-{
-	int success = 0;
-	mid_t *mid = NULL;
-	def_gen_t *new_entry = NULL;
-
-	AMP_DEBUG_ENTRY("adm_add_macro","(%s, 0x%lx)",
-			          mid_str, (unsigned long) midcol);
-
-	/* Step 0 - Sanity Checks. */
-	if((mid_str == NULL) || (midcol == NULL))
-	{
-		AMP_DEBUG_ERR("adm_add_macro","Bad Args.", NULL);
-		AMP_DEBUG_EXIT("adm_add_macro","-> 0.", NULL);
-		return success;
-	}
-
-	if(gAdmMacros == NULL)
-	{
-		AMP_DEBUG_ERR("adm_add_macro","Global Macros list not initialized.", NULL);
-		AMP_DEBUG_EXIT("adm_add_macro","-> 0.", NULL);
-		return success;
-	}
-
-	/* Step 1 - Build the MID. */
-	mid = mid_from_string(mid_str);
-
-	if(mid == NULL)
-	{
-		AMP_DEBUG_ERR("adm_add_macro","Can't make mid from %s.", mid_str);
-		AMP_DEBUG_EXIT("adm_add_macro","-> 0.", NULL);
-		return success;
-	}
-
-	Lyst newdefs = midcol_copy(midcol);
-
-	/* Step 2 - Build the definition to hold the macro. */
-	if((new_entry = def_create_gen(mid, AMP_TYPE_MC, newdefs)) == NULL)
-	{
-		SRELEASE(mid);
-		midcol_destroy(&newdefs);
-
-		AMP_DEBUG_ERR("adm_add_macro","Can't allocate new macro entry.", NULL);
-		AMP_DEBUG_EXIT("adm_add_macro","-> 0.", NULL);
-		return success;
-	}
-
-	/* Step 3 - Add the new entry. */
-	lyst_insert_last(gAdmMacros, new_entry);
-	success = 1;
-
-	AMP_DEBUG_EXIT("adm_add_macro","-> 1.", NULL);
-	return success;
-}
-
-
-
-/******************************************************************************
- *
- * \par Function Name: adm_add_op
- *
- * \par Registers a pre-configured ADM operator with the local DTNMP actor.
- *
- * \retval 0 - Failure - The op was not added.
- *        !0 - Success - The op was added.
- *
- * \param[in] mid_str   MID value, as a string.
- * \param[in] num_parms # parms needed for parameterized OIDs.
- * \param[in] apply     Function for applying the operator
- *
- *****************************************************************************/
-
-int adm_add_op(char *mid_str, uint8_t num_parms, adm_op_fn apply)
-{
-	adm_op_t *new_entry = NULL;
-
-	AMP_DEBUG_ENTRY("adm_add_op","(%#llx, %d, %#llx)",
-			          mid_str, num_parms, apply);
-
-	/* Step 0 - Sanity Checks. */
-	if(mid_str == NULL)
-	{
-		AMP_DEBUG_ERR("adm_add_op","Bad Args.", NULL);
-		AMP_DEBUG_EXIT("adm_add_op","-> 0.", NULL);
-		return 0;
-	}
-
-#ifdef AGENT_ROLE
-	if(apply == NULL)
-	{
-		AMP_DEBUG_ERR("adm_add_op","Bad Apply Function.", NULL);
-		AMP_DEBUG_EXIT("adm_add_op","-> 0.", NULL);
-		return 0;
-	}
-#endif
-
-	if(gAdmOps == NULL)
-	{
-		AMP_DEBUG_ERR("adm_add_op","Global Operators list not initialized.", NULL);
-		AMP_DEBUG_EXIT("adm_add_op","-> 0.", NULL);
-		return 0;
-	}
-
-	/* Step 1 - Allocate an Operator Definition. */
-	if((new_entry = (adm_op_t *) STAKE(sizeof(adm_op_t))) == NULL)
-	{
-		AMP_DEBUG_ERR("adm_add_op","Can't allocate new entry of size %d.",
-				        sizeof(adm_op_t));
-		AMP_DEBUG_EXIT("adm_add_op","-> 0.", NULL);
-		return 0;
-	}
-
-	new_entry->mid = mid_from_string(mid_str);
-
-	/* Step 2 - Copy the ADM information. */
-	if(new_entry->mid == NULL)
-	{
-		SRELEASE(new_entry);
-		AMP_DEBUG_ERR("adm_add_op","Can't make MID from %s.", mid_str);
-		AMP_DEBUG_EXIT("adm_add_op","-> 0.", NULL);
-		return 0;
-	}
-
-
-	new_entry->num_parms = num_parms;
-	new_entry->apply = apply;
-
-	/* Step 4 - Add the new entry. */
-	lyst_insert_last(gAdmOps, new_entry);
-
-	AMP_DEBUG_EXIT("adm_add_op","-> 1.", NULL);
-	return 1;
-}
-
-
-int adm_add_rpt(char *mid_str, Lyst midcol)
-{
-	int success = 0;
-	mid_t *mid = NULL;
-	def_gen_t *new_entry = NULL;
-
-	AMP_DEBUG_ENTRY("adm_add_rpt","(%s, 0x%lx)",
-			          mid_str, (unsigned long) midcol);
-
-	/* Step 0 - Sanity Checks. */
-	if((mid_str == NULL) || (midcol == NULL))
-	{
-		AMP_DEBUG_ERR("adm_add_rpt","Bad Args.", NULL);
-		AMP_DEBUG_EXIT("adm_add_rpt","-> 0.", NULL);
-		return success;
-	}
-
-	if(gAdmRpts == NULL)
-	{
-		AMP_DEBUG_ERR("adm_add_rpt","Global Reports list not initialized.", NULL);
-		AMP_DEBUG_EXIT("adm_add_rpt","-> 0.", NULL);
-		return success;
-	}
-
-	/* Step 1 - Build the MID. */
-	mid = mid_from_string(mid_str);
-
-	if(mid == NULL)
-	{
-		AMP_DEBUG_ERR("adm_add_rpt","Can't make mid from %s.", mid_str);
-		AMP_DEBUG_EXIT("adm_add_rpt","-> 0.", NULL);
-		return success;
-	}
-
-	Lyst newdefs = midcol_copy(midcol);
-
-	/* Step 2 - Build the definition to hold the macro. */
-	if((new_entry = def_create_gen(mid, AMP_TYPE_MC, newdefs)) == NULL)
-	{
-		SRELEASE(mid);
-		midcol_destroy(&newdefs);
-
-		AMP_DEBUG_ERR("adm_add_rpt","Can't allocate new macro entry.", NULL);
-		AMP_DEBUG_EXIT("adm_add_rpt","-> 0.", NULL);
-		return success;
-	}
-
-	/* Step 3 - Add the new entry. */
-	lyst_insert_last(gAdmRpts, new_entry);
-	success = 1;
-
-	AMP_DEBUG_EXIT("adm_add_rpt","-> 1.", NULL);
-	return success;
+	DTNMP_DEBUG_EXIT("adm_add_ctrl_run","->.",NULL);
 }
 
 
@@ -673,23 +371,23 @@ void adm_build_mid_str(uint8_t flag, char *nn, int nn_len, int offset, uint8_t *
 	uint8_t *tmp = NULL;
 	int size = 0;
 
-	AMP_DEBUG_ENTRY("adm_build_mid_str", "(%d, %s, %d, %d)",
+	DTNMP_DEBUG_ENTRY("adm_build_mid_str", "(%d, %s, %d, %d)",
 			          flag, nn, nn_len, offset);
 
 
 	encodeSdnv(&len, nn_len + 1);
 	encodeSdnv(&off, offset);
-	tmp = utils_string_to_hex(nn, &nn_size);
+	tmp = utils_string_to_hex((unsigned char*)nn, &nn_size);
 
 	size = 1 + nn_size + len.length + off.length + 1;
 
 	if(size > ADM_MID_ALLOC)
 	{
-		AMP_DEBUG_ERR("adm_build_mid_str",
+		DTNMP_DEBUG_ERR("adm_build_mid_str",
 						"Size %d bigger than max MID size of %d.",
 						size,
 						ADM_MID_ALLOC);
-		AMP_DEBUG_EXIT("adm_build_mid_str","->.", NULL);
+		DTNMP_DEBUG_EXIT("adm_build_mid_str","->.", NULL);
 		SRELEASE(tmp);
 		return;
 	}
@@ -710,7 +408,7 @@ void adm_build_mid_str(uint8_t flag, char *nn, int nn_len, int offset, uint8_t *
 
 	memset(cursor, 0, 1); // NULL terminator.
 
-	AMP_DEBUG_EXIT("adm_build_mid_str","->%s", mid_str);
+	DTNMP_DEBUG_EXIT("adm_build_mid_str","->%s", mid_str);
 	SRELEASE(tmp);
 	return;
 }
@@ -741,25 +439,25 @@ void adm_build_mid_str(uint8_t flag, char *nn, int nn_len, int offset, uint8_t *
  *
  *****************************************************************************/
 
-uint8_t *adm_copy_integer(uint8_t *value, uint8_t size, uint32_t *length)
+uint8_t *adm_copy_integer(uint8_t *value, uint8_t size, uint64_t *length)
 {
 	uint8_t *result = NULL;
 
-	AMP_DEBUG_ENTRY("adm_copy_integer","(%#llx, %d, %#llx)", value, size, length);
+	DTNMP_DEBUG_ENTRY("adm_copy_integer","(%#llx, %d, %#llx)", value, size, length);
 
 	/* Step 0 - Sanity Check. */
 	if((value == NULL) || (size <= 0) || (length == NULL))
 	{
-		AMP_DEBUG_ERR("adm_copy_integer","Bad Args.", NULL);
-		AMP_DEBUG_EXIT("adm_copy_integer","->NULL.", NULL);
+		DTNMP_DEBUG_ERR("adm_copy_integer","Bad Args.", NULL);
+		DTNMP_DEBUG_EXIT("adm_copy_integer","->NULL.", NULL);
 		return NULL;
 	}
 
 	/* Step 1 - Alloc new space. */
 	if((result = (uint8_t *) STAKE(size)) == NULL)
 	{
-		AMP_DEBUG_ERR("adm_copy_integer","Can't alloc %d bytes.", size);
-		AMP_DEBUG_EXIT("adm_copy_integer","->NULL.", NULL);
+		DTNMP_DEBUG_ERR("adm_copy_integer","Can't alloc %d bytes.", size);
+		DTNMP_DEBUG_EXIT("adm_copy_integer","->NULL.", NULL);
 		return NULL;
 	}
 
@@ -768,22 +466,22 @@ uint8_t *adm_copy_integer(uint8_t *value, uint8_t size, uint32_t *length)
 	memcpy(result, value, size);
 
 	/* Step 3 - Return. */
-	AMP_DEBUG_EXIT("adm_copy_integer","->%#llx", result);
+	DTNMP_DEBUG_EXIT("adm_copy_integer","->%#llx", result);
 	return (uint8_t*)result;
 }
 
-uint8_t* adm_copy_string(char *value, uint32_t *length)
+uint8_t* adm_copy_string(char *value, uint64_t *length)
 {
 	uint8_t *result = NULL;
 	uint32_t size = 0;
 
-	AMP_DEBUG_ENTRY("adm_copy_string","(%#llx, %d, %#llx)", value, size, length);
+	DTNMP_DEBUG_ENTRY("adm_copy_string","(%#llx, %d, %#llx)", value, size, length);
 
 	/* Step 0 - Sanity Check. */
-	if(value == NULL)
+	if((value == NULL) || (length == NULL))
 	{
-		AMP_DEBUG_ERR("adm_copy_string","Bad Args.", NULL);
-		AMP_DEBUG_EXIT("adm_copy_string","->NULL.", NULL);
+		DTNMP_DEBUG_ERR("adm_copy_string","Bad Args.", NULL);
+		DTNMP_DEBUG_EXIT("adm_copy_string","->NULL.", NULL);
 		return NULL;
 	}
 
@@ -791,20 +489,17 @@ uint8_t* adm_copy_string(char *value, uint32_t *length)
 	/* Step 1 - Alloc new space. */
 	if((result = (uint8_t *) STAKE(size)) == NULL)
 	{
-		AMP_DEBUG_ERR("adm_copy_string","Can't alloc %d bytes.", size);
-		AMP_DEBUG_EXIT("adm_copy_string","->NULL.", NULL);
+		DTNMP_DEBUG_ERR("adm_copy_string","Can't alloc %d bytes.", size);
+		DTNMP_DEBUG_EXIT("adm_copy_string","->NULL.", NULL);
 		return NULL;
 	}
 
 	/* Step 2 - Copy data in. */
-	if(length != NULL)
-	{
-		*length = size;
-	}
+	*length = size;
 	memcpy(result, value, size);
 
 	/* Step 3 - Return. */
-	AMP_DEBUG_EXIT("adm_copy_string","->%s", (char *)result);
+	DTNMP_DEBUG_EXIT("adm_copy_string","->%s", (char *)result);
 	return (uint8_t*)result;
 }
 
@@ -823,15 +518,6 @@ void adm_destroy()
    lyst_destroy(gAdmData);
    gAdmData = NULL;
 
-   for (elt = lyst_first(gAdmComputed); elt; elt = lyst_next(elt))
-   {
-	   var_t *cur = (var_t *) lyst_data(elt);
-	   var_release(cur);
-   }
-   lyst_destroy(gAdmComputed);
-   gAdmComputed = NULL;
-
-
    for (elt = lyst_first(gAdmCtrls); elt; elt = lyst_next(elt))
    {
 	   adm_ctrl_t *cur = (adm_ctrl_t *) lyst_data(elt);
@@ -841,532 +527,13 @@ void adm_destroy()
    lyst_destroy(gAdmCtrls);
    gAdmCtrls = NULL;
 
-   for (elt = lyst_first(gAdmRpts); elt; elt = lyst_next(elt))
-   {
-	   def_gen_t *cur = (def_gen_t *) lyst_data(elt);
-
-	   def_release_gen(cur);
-   }
-
-   lyst_destroy(gAdmRpts);
-   gAdmRpts = NULL;
-
-
-   for (elt = lyst_first(gAdmMacros); elt; elt = lyst_next(elt))
-   {
-	   def_gen_t *cur = (def_gen_t *) lyst_data(elt);
-	   def_release_gen(cur);
-   }
-
-   lyst_destroy(gAdmMacros);
-   gAdmMacros = NULL;
-
-
-   for (elt = lyst_first(gAdmLiterals); elt; elt = lyst_next(elt))
-   {
-	   lit_t *cur = (lit_t *) lyst_data(elt);
-	   lit_release(cur);
-   }
    lyst_destroy(gAdmLiterals);
    gAdmLiterals = NULL;
-
-
-   for (elt = lyst_first(gAdmOps); elt; elt = lyst_next(elt))
-   {
-	   adm_op_t *cur = (adm_op_t *) lyst_data(elt);
-	   mid_release(cur->mid);
-	   SRELEASE(cur);
-   }
 
    lyst_destroy(gAdmOps);
    gAdmOps = NULL;
 
 }
-
-
-
-blob_t* adm_extract_blob(tdc_t params, uint32_t idx, int8_t *success)
-{
-	blob_t *entry = NULL;
-	blob_t *result = NULL;
-	amp_type_e type = AMP_TYPE_UNK;
-	uint32_t bytes = 0;
-
-	CHKNULL(success);
-
-	*success = 0;
-
-	if((type = tdc_get_type(&params, idx)) != AMP_TYPE_BLOB)
-	{
-		AMP_DEBUG_ERR("adm_extract_blob","Parm %d has wrong type %d", idx, type);
-		return NULL;
-	}
-
-	if((entry = tdc_get_colentry(&params, idx)) == NULL)
-	{
-		AMP_DEBUG_ERR("adm_extract_blob","Can't get item %d", idx);
-		return NULL;
-	}
-
-	if((result = blob_deserialize(entry->value, entry->length, &bytes)) == NULL)
-	{
-		AMP_DEBUG_ERR("adm_extract_blob","Can't copy entry.", NULL);
-		return NULL;
-	}
-
-	*success = 1;
-	return result;
-}
-
-uint8_t adm_extract_byte(tdc_t params, uint32_t idx, int8_t *success)
-{
-	blob_t *entry = NULL;
-	amp_type_e type = AMP_TYPE_UNK;
-	uint8_t result = 0;
-
-	CHKZERO(success);
-	*success = 0;
-
-	if((type = tdc_get_type(&params, idx)) != AMP_TYPE_BYTE)
-	{
-		AMP_DEBUG_ERR("adm_extract_byte","Parm %d has wrong type %d", idx, type);
-		return 0;
-	}
-
-	if((entry = tdc_get_colentry(&params, idx)) == NULL)
-	{
-		AMP_DEBUG_ERR("adm_extract_byte","Can't get item %d", idx);
-		return 0;
-	}
-
-	if(entry->length != sizeof(result))
-	{
-		AMP_DEBUG_ERR("adm_extract_byte","Expected length %d and got %d", sizeof(result),entry->length);
-		return 0;
-	}
-
-	result = (uint8_t) entry->value[0];
-
-	*success = 1;
-	return result;
-}
-
-
-Lyst adm_extract_dc(tdc_t params, uint32_t idx, int8_t *success)
-{
-	blob_t *entry = NULL;
-	uint32_t bytes = 0;
-	amp_type_e type = AMP_TYPE_UNK;
-	Lyst result = NULL;
-
-	CHKNULL(success);
-	*success = 0;
-
-	if((type = tdc_get_type(&params, idx)) != AMP_TYPE_DC)
-	{
-		AMP_DEBUG_ERR("adm_extract_dc","Parm %d has wrong type %d", idx, type);
-		return NULL;
-	}
-
-	if((entry = tdc_get_colentry(&params, idx)) == NULL)
-	{
-		AMP_DEBUG_ERR("adm_extract_dc","Can't get item %d", idx);
-		return NULL;
-	}
-
-	if((result = dc_deserialize(entry->value, entry->length, &bytes)) == NULL)
-	{
-		AMP_DEBUG_ERR("adm_extract_dc","Can't get DC.", NULL);
-		return NULL;
-	}
-
-	if(bytes != entry->length)
-	{
-		AMP_DEBUG_ERR("adm_extract_dc","mismatched deserialize (%d != %d)", bytes, entry->length);
-		dc_destroy(&result);
-		return NULL;
-	}
-
-	*success = 1;
-	return result;
-}
-
-
-
-expr_t *adm_extract_expr(tdc_t params, uint32_t idx, int8_t *success)
-{
-	blob_t *entry = NULL;
-	uint32_t bytes = 0;
-	expr_t *result = NULL;
-	amp_type_e type = AMP_TYPE_UNK;
-
-	CHKNULL(success);
-	*success = 0;
-
-	if((type = tdc_get_type(&params, idx)) != AMP_TYPE_EXPR)
-	{
-		AMP_DEBUG_ERR("adm_extract_expr","Parm %d has wrong type %d", idx, type);
-		return NULL;
-	}
-
-	if((entry = tdc_get_colentry(&params, idx)) == NULL)
-	{
-		AMP_DEBUG_ERR("adm_extract_expr","Can't get item %d", idx);
-		return 0;
-	}
-
-	result = expr_deserialize(entry->value, entry->length, &bytes);
-
-	if(bytes != entry->length)
-	{
-		AMP_DEBUG_ERR("adm_extract_expr","mismatched deserialize (%d != %d)", bytes, entry->length);
-		/*	TODO  Need to destroy *result at this point.	*/
-		return 0;
-	}
-
-	*success = 1;
-	return result;
-}
-
-
-int32_t adm_extract_int(tdc_t params, uint32_t idx, int8_t *success)
-{
-	blob_t *entry = NULL;
-	uint32_t bytes = 0;
-	int32_t result = 0;
-	amp_type_e type = AMP_TYPE_UNK;
-
-	CHKZERO(success);
-	*success = 0;
-
-	if((type = tdc_get_type(&params, idx)) != AMP_TYPE_INT)
-	{
-		AMP_DEBUG_ERR("adm_extract_int","Parm %d has wrong type %d", idx, type);
-		return 0;
-	}
-
-	if((entry = tdc_get_colentry(&params, idx)) == NULL)
-	{
-		AMP_DEBUG_ERR("adm_extract_int","Can't get item %d", idx);
-		return 0;
-	}
-
-	result = utils_deserialize_int(entry->value, entry->length, &bytes);
-
-	if(bytes != entry->length)
-	{
-		AMP_DEBUG_ERR("adm_extract_int","mismatched deserialize (%d != %d)", bytes, entry->length);
-		return 0;
-	}
-
-	*success = 1;
-	return result;
-}
-
-Lyst adm_extract_mc(tdc_t params, uint32_t idx, int8_t* success)
-{
-	blob_t *entry = NULL;
-	uint32_t bytes = 0;
-	Lyst result = NULL;
-	amp_type_e type = AMP_TYPE_UNK;
-
-	CHKNULL(success);
-	*success = 0;
-
-	if((type = tdc_get_type(&params, idx)) != AMP_TYPE_MC)
-	{
-		AMP_DEBUG_ERR("adm_extract_mc","Parm %d has wrong type %d", idx, type);
-		return NULL;
-	}
-
-	if((entry = tdc_get_colentry(&params, idx)) == NULL)
-	{
-		AMP_DEBUG_ERR("adm_extract_mc","Can't get item %d", idx);
-		return NULL;
-	}
-
-	if((result = midcol_deserialize(entry->value, entry->length, &bytes)) == NULL)
-	{
-		AMP_DEBUG_ERR("adm_extract_mc","Can't get def.", NULL);
-		return NULL;
-	}
-
-	if(bytes != entry->length)
-	{
-		AMP_DEBUG_ERR("adm_extract_mc","mismatched deserialize (%d != %d)", bytes, entry->length);
-		midcol_destroy(&result);
-		return NULL;
-	}
-
-	*success = 1;
-	return result;
-}
-
-mid_t* adm_extract_mid(tdc_t params, uint32_t idx, int8_t* success)
-{
-	blob_t *entry = NULL;
-	uint32_t bytes = 0;
-	mid_t *result = NULL;
-	amp_type_e type = AMP_TYPE_UNK;
-
-	CHKNULL(success);
-	*success = 0;
-
-	if((type = tdc_get_type(&params, idx)) != AMP_TYPE_MID)
-	{
-		AMP_DEBUG_ERR("adm_extract_mid","Parm %d has wrong type %d", idx, type);
-		return NULL;
-	}
-
-	if((entry = tdc_get_colentry(&params, idx)) == NULL)
-	{
-		AMP_DEBUG_ERR("adm_extract_mid","Can't get item %d", idx);
-		return NULL;
-	}
-
-	if((result = mid_deserialize(entry->value, entry->length, &bytes)) == NULL)
-	{
-		AMP_DEBUG_ERR("adm_extract_mid","Can't get def.", NULL);
-		return NULL;
-	}
-
-	if(bytes != entry->length)
-	{
-		AMP_DEBUG_ERR("adm_extract_mid","mismatched deserialize (%d != %d)", bytes, entry->length);
-		mid_release(result);
-		return NULL;
-	}
-
-	*success = 1;
-	return result;
-
-}
-
-
-float adm_extract_real32(tdc_t params, uint32_t idx, int8_t* success)
-{
-	blob_t *entry = NULL;
-	uint32_t bytes = 0;
-	float result = 0;
-	amp_type_e type = AMP_TYPE_UNK;
-
-	CHKZERO(success);
-	*success = 0;
-
-	if((type = tdc_get_type(&params, idx)) != AMP_TYPE_REAL32)
-	{
-		AMP_DEBUG_ERR("adm_extract_real32","Parm %d has wrong type %d", idx, type);
-		return 0;
-	}
-
-	if((entry = tdc_get_colentry(&params, idx)) == NULL)
-	{
-		AMP_DEBUG_ERR("adm_extract_real32","Can't get item %d", idx);
-		return 0;
-	}
-
-	result = utils_deserialize_real32(entry->value, entry->length, &bytes);
-
-	if(bytes != entry->length)
-	{
-		AMP_DEBUG_ERR("adm_extract_real32","mismatched deserialize (%d != %d)", bytes, entry->length);
-		return 0;
-	}
-
-	*success = 1;
-	return result;
-}
-
-
-double adm_extract_real64(tdc_t params, uint32_t idx, int8_t* success)
-{
-	blob_t *entry = NULL;
-	uint32_t bytes = 0;
-	double result = 0;
-	amp_type_e type = AMP_TYPE_UNK;
-
-	CHKZERO(success);
-	*success = 0;
-
-	if((type = tdc_get_type(&params, idx)) != AMP_TYPE_REAL64)
-	{
-		AMP_DEBUG_ERR("adm_extract_real64","Parm %d has wrong type %d", idx, type);
-		return 0;
-	}
-
-	if((entry = tdc_get_colentry(&params, idx)) == NULL)
-	{
-		AMP_DEBUG_ERR("adm_extract_real64","Can't get item %d", idx);
-		return 0;
-	}
-
-	result = utils_deserialize_real64(entry->value, entry->length, &bytes);
-
-	if(bytes != entry->length)
-	{
-		AMP_DEBUG_ERR("adm_extract_real64","mismatched deserialize (%d != %d)", bytes, entry->length);
-		return 0;
-	}
-
-	*success = 1;
-	return result;
-}
-
-
-uvast adm_extract_sdnv(tdc_t params, uint32_t idx, int8_t* success)
-{
-	blob_t *entry = NULL;
-	uint32_t bytes = 0;
-	uvast result = 0;
-	amp_type_e type = AMP_TYPE_UNK;
-
-	CHKZERO(success);
-	*success = 0;
-
-	type = tdc_get_type(&params, idx);
-
-	/* Allow timestamps here, because timestamps are encoded in SDNVs */
-	if((type != AMP_TYPE_SDNV) && (type != AMP_TYPE_TS))
-	{
-		AMP_DEBUG_ERR("adm_extract_sdnv","Parm %d has wrong type %d", idx, type);
-		return 0;
-	}
-
-	if((entry = tdc_get_colentry(&params, idx)) == NULL)
-	{
-		AMP_DEBUG_ERR("adm_extract_sdnv","Can't get item %d", idx);
-		return 0;
-	}
-
-
-	bytes = utils_grab_sdnv((unsigned char *) entry->value, entry->length, &result);
-
-	if(bytes != entry->length)
-	{
-		AMP_DEBUG_ERR("adm_extract_sdnv","mismatched deserialize (%d != %d)", bytes, entry->length);
-		return 0;
-	}
-
-	*success = 1;
-	return result;
-}
-
-char* adm_extract_string(tdc_t params, uint32_t idx, int8_t* success)
-{
-	blob_t *entry = NULL;
-	char *result = NULL;
-	amp_type_e type = AMP_TYPE_UNK;
-
-	CHKNULL(success);
-	*success = 0;
-
-	if((type = tdc_get_type(&params, idx)) != AMP_TYPE_STRING)
-	{
-		AMP_DEBUG_ERR("adm_extract_string","Parm %d has wrong type %d", idx, type);
-		return NULL;
-	}
-
-	if((entry = tdc_get_colentry(&params, idx)) == NULL)
-	{
-		AMP_DEBUG_ERR("adm_extract_string","Can't get item %d", idx);
-		return 0;
-	}
-
-	if((result = (char *) STAKE(entry->length + 1)) == NULL)
-	{
-		AMP_DEBUG_ERR("adm_extract_string","Can'tallocate %d bytes.", entry->length + 1);
-		return NULL;
-	}
-
-	memcpy(result, entry->value, entry->length);
-	result[entry->length] = '\0';
-
-	*success = 1;
-	return result;
-}
-
-
-uint32_t adm_extract_uint(tdc_t params, uint32_t idx, int8_t* success)
-{
-	return (uint32_t) adm_extract_int(params, idx, success);
-}
-
-
-uvast adm_extract_uvast(tdc_t params, uint32_t idx, int8_t* success)
-{
-	return (uvast) adm_extract_vast(params, idx, success);
-}
-
-
-vast adm_extract_vast(tdc_t params, uint32_t idx, int8_t* success)
-{
-	blob_t *entry = NULL;
-	uint32_t bytes = 0;
-	vast result = 0;
-	amp_type_e type = AMP_TYPE_UNK;
-
-	CHKZERO(success);
-	*success = 0;
-
-	if((type = tdc_get_type(&params, idx)) != AMP_TYPE_VAST)
-	{
-		AMP_DEBUG_ERR("adm_extract_vast","Parm %d has wrong type %d", idx, type);
-		return 0;
-	}
-
-	if((entry = tdc_get_colentry(&params, idx)) == NULL)
-	{
-		AMP_DEBUG_ERR("adm_extract_vast","Can't get item %d", idx);
-		return 0;
-	}
-
-	result = utils_deserialize_vast(entry->value, entry->length, &bytes);
-
-	if(bytes != entry->length)
-	{
-		AMP_DEBUG_ERR("adm_extract_vast","mismatched deserialize (%d != %d)", bytes, entry->length);
-		return 0;
-	}
-
-	*success = 1;
-	return result;
-}
-
-
-var_t* adm_find_computeddef(mid_t *mid)
-{
-	LystElt elt = 0;
-	var_t *cur = NULL;
-
-	AMP_DEBUG_ENTRY("adm_find_computeddef","(%llx)", mid);
-
-	/* Step 0 - Sanity Check. */
-	if(mid == NULL)
-	{
-		AMP_DEBUG_ERR("adm_find_computeddef", "Bad Args.", NULL);
-		AMP_DEBUG_EXIT("adm_find_computeddef", "->NULL.", NULL);
-		return NULL;
-	}
-
-	/* Step 1 - Go lookin'. */
-	for(elt = lyst_first(gAdmComputed); elt; elt = lyst_next(elt))
-	{
-		cur = (var_t*) lyst_data(elt);
-
-		/* Step 1.1 - Determine if we need to account for parameters. */
-		if (mid_compare(mid, cur->id, 0) == 0)
-		{
-			break;
-		}
-		cur = NULL;
-	}
-
-	/* Step 2 - Return what we found, or NULL. */
-
-	AMP_DEBUG_EXIT("adm_find_computeddef", "->%llx.", cur);
-	return cur;
-}
-
 
 /******************************************************************************
  *
@@ -1399,13 +566,13 @@ adm_datadef_t *adm_find_datadef(mid_t *mid)
 	LystElt elt = 0;
 	adm_datadef_t *cur = NULL;
 
-	AMP_DEBUG_ENTRY("adm_find_datadef","(%llx)", mid);
+	DTNMP_DEBUG_ENTRY("adm_find_datadef","(%llx)", mid);
 
 	/* Step 0 - Sanity Check. */
 	if(mid == NULL)
 	{
-		AMP_DEBUG_ERR("adm_find_datadef", "Bad Args.", NULL);
-		AMP_DEBUG_EXIT("adm_find_datadef", "->NULL.", NULL);
+		DTNMP_DEBUG_ERR("adm_find_datadef", "Bad Args.", NULL);
+		DTNMP_DEBUG_EXIT("adm_find_datadef", "->NULL.", NULL);
 		return NULL;
 	}
 
@@ -1420,12 +587,38 @@ adm_datadef_t *adm_find_datadef(mid_t *mid)
 			break;
 		}
 
+/**
+
+		if(cur->num_parms == 0)
+		{
+			/ * Step 1.1.1 - If no params, straight compare * /
+			if((mid->raw_size == cur->mid_len) &&
+				(memcmp(mid->raw, cur->mid, mid->raw_size) == 0))
+			{
+				break;
+			}
+		}
+		else
+		{
+			uvast tmp;
+			unsigned char *cursor = (unsigned char*) &(cur->mid[1]);
+			/ * Grab size less paramaters. Which is SDNV at [1]. * /
+			/ * \todo: We need a more refined compare here.  For example, the
+			 *        code below will not work if tag values are used.
+			 * /
+			unsigned long byte = decodeSdnv(&tmp, cursor);
+			if(memcmp(mid->raw, cur->mid, tmp + byte + 1) == 0)
+			{
+				break;
+			}
+		}
+	*/
 		cur = NULL;
 	}
 
 	/* Step 2 - Return what we found, or NULL. */
 
-	AMP_DEBUG_EXIT("adm_find_datadef", "->%llx.", cur);
+	DTNMP_DEBUG_EXIT("adm_find_datadef", "->%llx.", cur);
 	return cur;
 }
 
@@ -1450,24 +643,24 @@ adm_datadef_t *adm_find_datadef(mid_t *mid)
  *  MM/DD/YY  AUTHOR         DESCRIPTION
  *  --------  ------------   ---------------------------------------------
  *  07/27/13  E. Birrane     Initial implementation.
- ***************************************************************************** /
+ *****************************************************************************/
 
 adm_datadef_t* adm_find_datadef_by_name(char *name)
 {
 	LystElt elt = 0;
 	adm_datadef_t *cur = NULL;
 
-	AMP_DEBUG_ENTRY("adm_find_datadef_by_name","(%s)", name);
+	DTNMP_DEBUG_ENTRY("adm_find_datadef_by_name","(%s)", name);
 
-	/ * Step 0 - Sanity Check. * /
+	/* Step 0 - Sanity Check. */
 	if(name == NULL)
 	{
-		AMP_DEBUG_ERR("adm_find_datadef_by_name", "Bad Args.", NULL);
-		AMP_DEBUG_EXIT("adm_find_datadef_by_name", "->NULL.", NULL);
+		DTNMP_DEBUG_ERR("adm_find_datadef_by_name", "Bad Args.", NULL);
+		DTNMP_DEBUG_EXIT("adm_find_datadef_by_name", "->NULL.", NULL);
 		return NULL;
 	}
 
-	/ * Step 1 - Go lookin'. * /
+	/* Step 1 - Go lookin'. */
 	for(elt = lyst_first(gAdmData); elt; elt = lyst_next(elt))
 	{
 		cur = (adm_datadef_t*) lyst_data(elt);
@@ -1480,12 +673,11 @@ adm_datadef_t* adm_find_datadef_by_name(char *name)
 		cur = NULL;
 	}
 
-	/ * Step 2 - Return what we found, or NULL. * /
+	/* Step 2 - Return what we found, or NULL. */
 
-	AMP_DEBUG_EXIT("adm_find_datadef_by_name", "->%llx.", cur);
+	DTNMP_DEBUG_EXIT("adm_find_datadef_by_name", "->%llx.", cur);
 	return cur;
 }
-************/
 
 adm_datadef_t* adm_find_datadef_by_idx(int idx)
 {
@@ -1493,7 +685,7 @@ adm_datadef_t* adm_find_datadef_by_idx(int idx)
 	int i = 0;
 	adm_datadef_t *cur = NULL;
 
-	AMP_DEBUG_ENTRY("adm_find_datadef_by_name","(%d)", idx);
+	DTNMP_DEBUG_ENTRY("adm_find_datadef_by_name","(%d)", idx);
 
 	/* Step 1 - Go lookin'. */
 	for(elt = lyst_first(gAdmData); elt; elt = lyst_next(elt))
@@ -1509,11 +701,20 @@ adm_datadef_t* adm_find_datadef_by_idx(int idx)
 
 	/* Step 2 - Return what we found, or NULL. */
 
-	AMP_DEBUG_EXIT("adm_find_datadef_by_name", "->%llx.", cur);
+	DTNMP_DEBUG_EXIT("adm_find_datadef_by_name", "->%llx.", cur);
 	return cur;
 }
 
-
+/*
+adm_datadef_t* adm_find_datadef_by_name_or_idx(char* name)
+{
+	//Determine if first character is a number
+	if((name[0]>=48)&(name[0]<=57))
+		adm_find_dataref_by_idx(atoi(name));
+	else
+		adm_find_dataref_by_name(name);
+}
+*/
 /******************************************************************************
  *
  * \par Function Name: adm_find_ctrl
@@ -1545,13 +746,13 @@ adm_ctrl_t*  adm_find_ctrl(mid_t *mid)
 	LystElt elt = 0;
 	adm_ctrl_t *cur = NULL;
 
-	AMP_DEBUG_ENTRY("adm_find_ctrl","(%#llx)", mid);
+	DTNMP_DEBUG_ENTRY("adm_find_ctrl","(%#llx)", mid);
 
 	/* Step 0 - Sanity Check. */
 	if(mid == NULL)
 	{
-		AMP_DEBUG_ERR("adm_find_ctrl", "Bad Args.", NULL);
-		AMP_DEBUG_EXIT("adm_find_ctrl", "->NULL.", NULL);
+		DTNMP_DEBUG_ERR("adm_find_ctrl", "Bad Args.", NULL);
+		DTNMP_DEBUG_EXIT("adm_find_ctrl", "->NULL.", NULL);
 		return NULL;
 	}
 
@@ -1600,7 +801,7 @@ adm_ctrl_t*  adm_find_ctrl(mid_t *mid)
 
 	/* Step 2 - Return what we found, or NULL. */
 
-	AMP_DEBUG_EXIT("adm_find_ctrl", "->%llx.", cur);
+	DTNMP_DEBUG_EXIT("adm_find_ctrl", "->%llx.", cur);
 
 	return cur;
 }
@@ -1626,24 +827,24 @@ adm_ctrl_t*  adm_find_ctrl(mid_t *mid)
  *  MM/DD/YY  AUTHOR         DESCRIPTION
  *  --------  ------------   ---------------------------------------------
  *  07/27/13  E. Birrane     Initial implementation.
- ***************************************************************************** /
+ *****************************************************************************/
 
 adm_ctrl_t* adm_find_ctrl_by_name(char *name)
 {
 	LystElt elt = 0;
 	adm_ctrl_t *cur = NULL;
 
-	AMP_DEBUG_ENTRY("adm_find_ctrl_by_name","(%s)", name);
+	DTNMP_DEBUG_ENTRY("adm_find_ctrl_by_name","(%s)", name);
 
-	/ * Step 0 - Sanity Check. * /
+	/* Step 0 - Sanity Check. */
 	if(name == NULL)
 	{
-		AMP_DEBUG_ERR("adm_find_ctrl_by_name", "Bad Args.", NULL);
-		AMP_DEBUG_EXIT("adm_find_ctrl_by_name", "->NULL.", NULL);
+		DTNMP_DEBUG_ERR("adm_find_ctrl_by_name", "Bad Args.", NULL);
+		DTNMP_DEBUG_EXIT("adm_find_ctrl_by_name", "->NULL.", NULL);
 		return NULL;
 	}
 
-	/ * Step 1 - Go lookin'. * /
+	/* Step 1 - Go lookin'. */
 	for(elt = lyst_first(gAdmData); elt; elt = lyst_next(elt))
 	{
 		cur = (adm_ctrl_t*) lyst_data(elt);
@@ -1656,11 +857,11 @@ adm_ctrl_t* adm_find_ctrl_by_name(char *name)
 		cur = NULL;
 	}
 
-	/ * Step 2 - Return what we found, or NULL. * /
-	AMP_DEBUG_EXIT("adm_find_ctrl_by_name", "->%llx.", cur);
+	/* Step 2 - Return what we found, or NULL. */
+	DTNMP_DEBUG_EXIT("adm_find_ctrl_by_name", "->%llx.", cur);
 	return cur;
 }
-*****/
+
 
 
 adm_ctrl_t* adm_find_ctrl_by_idx(int idx)
@@ -1669,7 +870,7 @@ adm_ctrl_t* adm_find_ctrl_by_idx(int idx)
 	int i = 0;
 	adm_ctrl_t *cur = NULL;
 
-	AMP_DEBUG_ENTRY("adm_find_ctrl_by_idx","(%d)", idx);
+	DTNMP_DEBUG_ENTRY("adm_find_ctrl_by_idx","(%d)", idx);
 
 	/* Step 1 - Go lookin'. */
 	for(elt = lyst_first(gAdmCtrls); elt; elt = lyst_next(elt))
@@ -1685,116 +886,7 @@ adm_ctrl_t* adm_find_ctrl_by_idx(int idx)
 
 	/* Step 2 - Return what we found, or NULL. */
 
-	AMP_DEBUG_EXIT("adm_find_ctrl_by_idx", "->%llx.", cur);
-	return cur;
-}
-
-
-
-/******************************************************************************
- *
- * \par Function Name: adm_find_lit
- *
- * \par Find an ADM literal that corresponds to a received MID.
- *
- * \retval NULL Failure
- *         !NULL The found ADM literal
- *
- * \param[in]  mid  The MID whose ADM-match is being queried.
- *
- * \par Notes:
- *		1. The returned entry is a direct pointer to the official ADM lit,
- *		   it must be treated as read-only.
- *
- * Modification History:
- *  MM/DD/YY  AUTHOR         DESCRIPTION
- *  --------  ------------   ---------------------------------------------
- *  04/25/15  E. Birrane     Initial implementation.
- *****************************************************************************/
-
-lit_t*	   adm_find_lit(mid_t *mid)
-{
-	LystElt elt = 0;
-	lit_t *cur = NULL;
-
-	AMP_DEBUG_ENTRY("adm_find_lit","(%#llx)", (unsigned long) mid);
-
-	/* Step 0 - Sanity Check. */
-	if(mid == NULL)
-	{
-		AMP_DEBUG_ERR("adm_find_lit", "Bad Args.", NULL);
-		AMP_DEBUG_EXIT("adm_find_lit", "->NULL.", NULL);
-		return NULL;
-	}
-
-	for(elt = lyst_first(gAdmLiterals); elt; elt = lyst_next(elt))
-	{
-		cur = (lit_t *) lyst_data(elt);
-
-		if (mid_compare(mid, cur->id, 0) == 0)
-		{
-			break;
-		}
-	}
-
-	/* Step 2 - Return what we found, or NULL. */
-
-	AMP_DEBUG_EXIT("adm_find_lit", "->%llx.", (unsigned long) cur);
-
-	return cur;
-}
-
-
-/******************************************************************************
- *
- * \par Function Name: adm_find_op
- *
- * \par Find an ADM operator that corresponds to a received MID.
- *
- * \retval NULL Failure
- *         !NULL The found ADM operator
- *
- * \param[in]  mid  The MID whose ADM-match is being queried.
- *
- * \par Notes:
- *		1. The returned entry is a direct pointer to the official ADM op,
- *		   it must be treated as read-only.
- *
- * Modification History:
- *  MM/DD/YY  AUTHOR         DESCRIPTION
- *  --------  ------------   ---------------------------------------------
- *  04/25/15  E. Birrane     Initial implementation.
- *****************************************************************************/
-
-adm_op_t*  adm_find_op(mid_t *mid)
-{
-	LystElt elt = 0;
-	adm_op_t *cur = NULL;
-
-	AMP_DEBUG_ENTRY("adm_find_op","(%#llx)", (unsigned long) mid);
-
-	/* Step 0 - Sanity Check. */
-	if(mid == NULL)
-	{
-		AMP_DEBUG_ERR("adm_find_op", "Bad Args.", NULL);
-		AMP_DEBUG_EXIT("adm_find_op", "->NULL.", NULL);
-		return NULL;
-	}
-
-	for(elt = lyst_first(gAdmOps); elt; elt = lyst_next(elt))
-	{
-		cur = (adm_op_t *) lyst_data(elt);
-
-		if (mid_compare(mid, cur->mid, 0) == 0)
-		{
-			break;
-		}
-	}
-
-	/* Step 2 - Return what we found, or NULL. */
-
-	AMP_DEBUG_EXIT("adm_find_op", "->%llx.", (unsigned long) cur);
-
+	DTNMP_DEBUG_EXIT("adm_find_ctrl_by_idx", "->%llx.", cur);
 	return cur;
 }
 
@@ -1815,20 +907,14 @@ adm_op_t*  adm_find_op(mid_t *mid)
 
 void adm_init()
 {
-	AMP_DEBUG_ENTRY("adm_init","()", NULL);
+	DTNMP_DEBUG_ENTRY("adm_init","()", NULL);
 
 	gAdmData = lyst_create();
-	gAdmComputed = lyst_create();
 	gAdmCtrls = lyst_create();
 	gAdmLiterals = lyst_create();
 	gAdmOps = lyst_create();
-	gAdmRpts = lyst_create();
-	gAdmMacros = lyst_create();
 
 	adm_bp_init();
-
-	adm_agent_init();
-
 
 #ifdef _HAVE_LTP_ADM_
 	adm_ltp_init();
@@ -1838,15 +924,62 @@ void adm_init()
 	adm_ion_init();
 #endif /* _HAVE_ION_ADM_ */
 
-#ifdef _HAVE_BPSEC_ADM_
-	adm_bpsec_init();
+	adm_agent_init();
+
+#ifdef _HAVE_CGR_ADM_
+	adm_cgr_init();
 #endif
+	//initBpAdm();
+	//initLtpAdm();
+	//initIonAdm();
 
 
-	AMP_DEBUG_EXIT("adm_init","->.", NULL);
+	DTNMP_DEBUG_EXIT("adm_init","->.", NULL);
 }
 
+variableQueueEntry* adm_string_to_queue(uint8_t* buffer, uint64_t buffer_len, uint64_t data_len, uint32_t *str_len,char* admName)
+{
+	char *result = NULL;
+	uint32_t len = 0;
 
+	DTNMP_DEBUG_ENTRY("adm_print_string","(%#llx, %ull, %ull, %#llx)", buffer, buffer_len, data_len, str_len);
+
+	/* Step 0 - Sanity Checks. */
+	if((buffer == NULL) || (str_len == NULL))
+	{
+		DTNMP_DEBUG_ERR("adm_print_string", "Bad Args.", NULL);
+		DTNMP_DEBUG_EXIT("adm_print_string", "->NULL.", NULL);
+		return NULL;
+	}
+
+	/* Step 1 - Data at head of buffer should be a string. Grab len & check. */
+	len = strlen((char*) buffer);
+
+	if((len < 0) || (len > buffer_len) || (len != data_len))
+	{
+		DTNMP_DEBUG_ERR("adm_print_string", "Bad len %d. Expected %d.",
+				        len, data_len);
+		DTNMP_DEBUG_EXIT("adm_print_string", "->NULL.", NULL);
+		return NULL;
+	}
+
+	/*Step 2: add to queue - THIS IS A HACK */
+	*str_len = len + 1;
+	if((result = (char *) STAKE(*str_len)) == NULL)
+	{
+		DTNMP_DEBUG_ERR("adm_print_string", "Can't alloc %d bytes",
+				        *str_len);
+		DTNMP_DEBUG_EXIT("adm_print_string", "->NULL.", NULL);
+		return NULL;
+	}
+
+	/* Step 3 - Copy over. */
+	sprintf(result,"%s", (char*) buffer);
+	variableQueueEntry* temp = (variableQueueEntry*)STAKE(sizeof(variableQueueEntry));
+	*temp = AddVariable(admName,TYPE_STRING,result,NULL,buffer_len);
+
+	return temp;
+}
 
 /******************************************************************************
  *
@@ -1873,29 +1006,31 @@ void adm_init()
  *  --------  ------------   ---------------------------------------------
  *  11/25/12  E. Birrane     Initial implementation.
  *****************************************************************************/
+
+
 char *adm_print_string(uint8_t* buffer, uint64_t buffer_len, uint64_t data_len, uint32_t *str_len)
 {
 	char *result = NULL;
 	uint32_t len = 0;
 
-	AMP_DEBUG_ENTRY("adm_print_string","(%#llx, %ull, %ull, %#llx)", buffer, buffer_len, data_len, str_len);
+	DTNMP_DEBUG_ENTRY("adm_print_string","(%#llx, %ull, %ull, %#llx)", buffer, buffer_len, data_len, str_len);
 
 	/* Step 0 - Sanity Checks. */
 	if((buffer == NULL) || (str_len == NULL))
 	{
-		AMP_DEBUG_ERR("adm_print_string", "Bad Args.", NULL);
-		AMP_DEBUG_EXIT("adm_print_string", "->NULL.", NULL);
+		DTNMP_DEBUG_ERR("adm_print_string", "Bad Args.", NULL);
+		DTNMP_DEBUG_EXIT("adm_print_string", "->NULL.", NULL);
 		return NULL;
 	}
 
 	/* Step 1 - Data at head of buffer should be a string. Grab len & check. */
 	len = strlen((char*) buffer);
 
-	if((len > buffer_len) || (len != data_len))
+	if((len < 0) || (len > buffer_len) || (len != data_len))
 	{
-		AMP_DEBUG_ERR("adm_print_string", "Bad len %d. Expected %d.",
+		DTNMP_DEBUG_ERR("adm_print_string", "Bad len %d. Expected %d.",
 				        len, data_len);
-		AMP_DEBUG_EXIT("adm_print_string", "->NULL.", NULL);
+		DTNMP_DEBUG_EXIT("adm_print_string", "->NULL.", NULL);
 		return NULL;
 	}
 
@@ -1903,16 +1038,16 @@ char *adm_print_string(uint8_t* buffer, uint64_t buffer_len, uint64_t data_len, 
 	*str_len = len + 1;
 	if((result = (char *) STAKE(*str_len)) == NULL)
 	{
-		AMP_DEBUG_ERR("adm_print_string", "Can't alloc %d bytes",
+		DTNMP_DEBUG_ERR("adm_print_string", "Can't alloc %d bytes",
 				        *str_len);
-		AMP_DEBUG_EXIT("adm_print_string", "->NULL.", NULL);
+		DTNMP_DEBUG_EXIT("adm_print_string", "->NULL.", NULL);
 		return NULL;
 	}
 
 	/* Step 3 - Copy over. */
 	sprintf(result,"%s", (char*) buffer);
 
-	AMP_DEBUG_EXIT("adm_print_string", "->%s.", result);
+	DTNMP_DEBUG_EXIT("adm_print_string", "->%s.", result);
 
 	return result;
 }
@@ -1951,13 +1086,13 @@ char *adm_print_string_list(uint8_t* buffer, uint64_t buffer_len, uint64_t data_
 	uvast num = 0;
 	int len = 0;
 
-	AMP_DEBUG_ENTRY("adm_print_string_list", "(%#llx, %ull, %ull, %#llx)", buffer, buffer_len, data_len, str_len);
+	DTNMP_DEBUG_ENTRY("adm_print_string_list", "(%#llx, %ull, %ull, %#llx)", buffer, buffer_len, data_len, str_len);
 
 	/* Step 0 - Sanity Checks. */
 	if((buffer == NULL) || (str_len == NULL))
 	{
-		AMP_DEBUG_ERR("adm_print_string_list", "Bad Args.", NULL);
-		AMP_DEBUG_EXIT("adm_print_string_list", "->NULL.", NULL);
+		DTNMP_DEBUG_ERR("adm_print_string_list", "Bad Args.", NULL);
+		DTNMP_DEBUG_EXIT("adm_print_string_list", "->NULL.", NULL);
 		return NULL;
 	}
 
@@ -1974,10 +1109,10 @@ char *adm_print_string_list(uint8_t* buffer, uint64_t buffer_len, uint64_t data_
 	/* Step 2 - Allocate the result. */
 	if((result = (char *) STAKE(*str_len)) == NULL)
 	{
-		AMP_DEBUG_ERR("adm_print_string_list","Can't alloc %d bytes", *str_len);
+		DTNMP_DEBUG_ERR("adm_print_string_list","Can't alloc %d bytes", *str_len);
 
 		*str_len = 0;
-		AMP_DEBUG_EXIT("adm_print_string_list", "->NULL.", NULL);
+		DTNMP_DEBUG_EXIT("adm_print_string_list", "->NULL.", NULL);
 		return NULL;
 	}
 
@@ -1994,7 +1129,7 @@ char *adm_print_string_list(uint8_t* buffer, uint64_t buffer_len, uint64_t data_
 		buf_ptr += strlen((char*)buf_ptr) + 1;
 	}
 
-	AMP_DEBUG_EXIT("adm_print_string_list", "->%#llx.", result);
+	DTNMP_DEBUG_EXIT("adm_print_string_list", "->%#llx.", result);
 	return result;
 }
 
@@ -2030,24 +1165,24 @@ char *adm_print_unsigned_long(uint8_t* buffer, uint64_t buffer_len,
   char *result;
   uint64_t temp = 0;
 
-  AMP_DEBUG_ENTRY("adm_print_unsigned_long", "(%#llx, %ull, %ull, %#llx)", buffer, buffer_len, data_len, str_len);
+  DTNMP_DEBUG_ENTRY("adm_print_unsigned_long", "(%#llx, %ull, %ull, %#llx)", buffer, buffer_len, data_len, str_len);
 
   /* Step 0 - Sanity Checks. */
   if((buffer == NULL) || (str_len == NULL))
   {
-	  AMP_DEBUG_ERR("adm_print_unsigned_long", "Bad Args.", NULL);
-	  AMP_DEBUG_EXIT("adm_print_unsigned_long", "->NULL.", NULL);
+	  DTNMP_DEBUG_ERR("adm_print_unsigned_long", "Bad Args.", NULL);
+	  DTNMP_DEBUG_EXIT("adm_print_unsigned_long", "->NULL.", NULL);
 	  return NULL;
   }
 
   /* Step 1 - Make sure we have buffer space. */
   if(data_len > buffer_len)
   {
-	 AMP_DEBUG_ERR("adm_print_unsigned_long","Data Len %d > buf len %d.",
+	 DTNMP_DEBUG_ERR("adm_print_unsigned_long","Data Len %d > buf len %d.",
 			         data_len, buffer_len);
 	 *str_len = 0;
 
-	 AMP_DEBUG_EXIT("adm_print_unsigned_long", "->NULL.", NULL);
+	 DTNMP_DEBUG_EXIT("adm_print_unsigned_long", "->NULL.", NULL);
 	 return NULL;
   }
 
@@ -2057,11 +1192,11 @@ char *adm_print_unsigned_long(uint8_t* buffer, uint64_t buffer_len,
 
   if((result = (char *) STAKE(*str_len)) == NULL)
   {
-		 AMP_DEBUG_ERR("adm_print_unsigned_long","Can't alloc %d bytes.",
+		 DTNMP_DEBUG_ERR("adm_print_unsigned_long","Can't alloc %d bytes.",
 				         *str_len);
 		 *str_len = 0;
 
-		 AMP_DEBUG_EXIT("adm_print_unsigned_long", "->NULL.", NULL);
+		 DTNMP_DEBUG_EXIT("adm_print_unsigned_long", "->NULL.", NULL);
 		 return NULL;
   }
 
@@ -2069,7 +1204,7 @@ char *adm_print_unsigned_long(uint8_t* buffer, uint64_t buffer_len,
   memcpy(&temp, buffer, data_len);
   isprintf(result,*str_len,"%ld", temp);
 
-  AMP_DEBUG_EXIT("adm_print_unsigned_long", "->%#llx.", result);
+  DTNMP_DEBUG_EXIT("adm_print_unsigned_long", "->%#llx.", result);
   return result;
 }
 
@@ -2107,13 +1242,13 @@ char *adm_print_unsigned_long_list(uint8_t* buffer, uint64_t buffer_len, uint64_
 	unsigned long val = 0;
 	int len = 0;
 
-	AMP_DEBUG_ENTRY("adm_print_unsigned_long_list", "(%#llx, %ull, %ull, %#llx)", buffer, buffer_len, data_len, str_len);
+	DTNMP_DEBUG_ENTRY("adm_print_unsigned_long_list", "(%#llx, %ull, %ull, %#llx)", buffer, buffer_len, data_len, str_len);
 
 	/* Step 0 - Sanity Checks. */
 	if((buffer == NULL) || (str_len == NULL))
 	{
-		AMP_DEBUG_ERR("adm_print_unsigned_long_list", "Bad Args.", NULL);
-		AMP_DEBUG_EXIT("adm_print_unsigned_long_list", "->NULL.", NULL);
+		DTNMP_DEBUG_ERR("adm_print_unsigned_long_list", "Bad Args.", NULL);
+		DTNMP_DEBUG_EXIT("adm_print_unsigned_long_list", "->NULL.", NULL);
 		return NULL;
 	}
 
@@ -2130,10 +1265,10 @@ char *adm_print_unsigned_long_list(uint8_t* buffer, uint64_t buffer_len, uint64_
 
 	if((result = (char *) STAKE(*str_len)) == NULL)
 	{
-		AMP_DEBUG_ERR("adm_print_unsigned_long_list", "Can't alloc %d bytes.",
+		DTNMP_DEBUG_ERR("adm_print_unsigned_long_list", "Can't alloc %d bytes.",
 				        *str_len);
 		*str_len = 0;
-		AMP_DEBUG_EXIT("adm_print_unsigned_long_list", "->NULL.", NULL);
+		DTNMP_DEBUG_EXIT("adm_print_unsigned_long_list", "->NULL.", NULL);
 		return NULL;
 	}
 
@@ -2147,10 +1282,10 @@ char *adm_print_unsigned_long_list(uint8_t* buffer, uint64_t buffer_len, uint64_
 	{
 		memcpy(&val, buf_ptr, sizeof(val));
 		buf_ptr += sizeof(val);
-		cursor += sprintf(cursor, "%lu, ",val);
+		cursor += sprintf(cursor, "%ld, ",val);
 	}
 
-	AMP_DEBUG_EXIT("adm_print_unsigned_long_list", "->%#llx.", result);
+	DTNMP_DEBUG_EXIT("adm_print_unsigned_long_list", "->%#llx.", result);
 	return result;
 }
 
@@ -2185,24 +1320,24 @@ char *adm_print_uvast(uint8_t* buffer, uint64_t buffer_len,
   char *result;
   uint64_t temp = 0;
 
-  AMP_DEBUG_ENTRY("adm_print_uvast", "(%#llx, %ull, %ull, %#llx)", buffer, buffer_len, data_len, str_len);
+  DTNMP_DEBUG_ENTRY("adm_print_uvast", "(%#llx, %ull, %ull, %#llx)", buffer, buffer_len, data_len, str_len);
 
   /* Step 0 - Sanity Checks. */
   if((buffer == NULL) || (str_len == NULL))
   {
-	  AMP_DEBUG_ERR("adm_print_uvast", "Bad Args.", NULL);
-	  AMP_DEBUG_EXIT("adm_print_uvast", "->NULL.", NULL);
+	  DTNMP_DEBUG_ERR("adm_print_uvast", "Bad Args.", NULL);
+	  DTNMP_DEBUG_EXIT("adm_print_uvast", "->NULL.", NULL);
 	  return NULL;
   }
 
   /* Step 1 - Make sure we have buffer space. */
   if(data_len > buffer_len)
   {
-	 AMP_DEBUG_ERR("adm_print_uvast","Data Len %d > buf len %d.",
+	 DTNMP_DEBUG_ERR("adm_print_uvast","Data Len %d > buf len %d.",
 			         data_len, buffer_len);
 	 *str_len = 0;
 
-	 AMP_DEBUG_EXIT("adm_print_uvast", "->NULL.", NULL);
+	 DTNMP_DEBUG_EXIT("adm_print_uvast", "->NULL.", NULL);
 	 return NULL;
   }
 
@@ -2212,11 +1347,11 @@ char *adm_print_uvast(uint8_t* buffer, uint64_t buffer_len,
 
   if((result = (char *) STAKE(*str_len)) == NULL)
   {
-		 AMP_DEBUG_ERR("adm_print_uvast","Can't alloc %d bytes.",
+		 DTNMP_DEBUG_ERR("adm_print_uvast","Can't alloc %d bytes.",
 				         *str_len);
 		 *str_len = 0;
 
-		 AMP_DEBUG_EXIT("adm_print_uvast", "->NULL.", NULL);
+		 DTNMP_DEBUG_EXIT("adm_print_uvast", "->NULL.", NULL);
 		 return NULL;
   }
 
@@ -2224,7 +1359,7 @@ char *adm_print_uvast(uint8_t* buffer, uint64_t buffer_len,
   memcpy(&temp, buffer, data_len);
   isprintf(result,*str_len,UVAST_FIELDSPEC, temp);
 
-  AMP_DEBUG_EXIT("adm_print_uvast", "->%#llx.", result);
+  DTNMP_DEBUG_EXIT("adm_print_uvast", "->%#llx.", result);
   return result;
 }
 
@@ -2252,25 +1387,25 @@ uint32_t adm_size_string(uint8_t* buffer, uint64_t buffer_len)
 {
 	uint32_t len = 0;
 
-	AMP_DEBUG_ENTRY("adm_size_string","(%#llx, %ull)", buffer, buffer_len);
+	DTNMP_DEBUG_ENTRY("adm_size_string","(%#llx, %ull)", buffer, buffer_len);
 
 	/* Step 0 - Sanity Check. */
 	if(buffer == NULL)
 	{
-		AMP_DEBUG_ERR("adm_size_string","Bad Args.", NULL);
-		AMP_DEBUG_EXIT("adm_size_string","->0.", NULL);
+		DTNMP_DEBUG_ERR("adm_size_string","Bad Args.", NULL);
+		DTNMP_DEBUG_EXIT("adm_size_string","->0.", NULL);
 		return 0;
 	}
 
 	len = strlen((char*) buffer);
 	if(len > buffer_len)
 	{
-		AMP_DEBUG_ERR("adm_size_string","Bad len: %ul > %ull.", len, buffer_len);
-		AMP_DEBUG_EXIT("adm_size_string","->0.", NULL);
+		DTNMP_DEBUG_ERR("adm_size_string","Bad len: %ul > %ull.", len, buffer_len);
+		DTNMP_DEBUG_EXIT("adm_size_string","->0.", NULL);
 		return 0;
 	}
 
-	AMP_DEBUG_EXIT("adm_size_string","->%ul", len);
+	DTNMP_DEBUG_EXIT("adm_size_string","->%ul", len);
 	return len;
 }
 
@@ -2300,14 +1435,15 @@ uint32_t adm_size_string_list(uint8_t* buffer, uint64_t buffer_len)
 	uint32_t result = 0;
 	uvast num = 0;
 	uint8_t *cursor = NULL;
+	int tmp = 0;
 
-	AMP_DEBUG_ENTRY("adm_size_string_list","(%#llx, %ull)", buffer, buffer_len);
+	DTNMP_DEBUG_ENTRY("adm_size_string_list","(%#llx, %ull)", buffer, buffer_len);
 
 	/* Step 0 - Sanity Check. */
 	if(buffer == NULL)
 	{
-		AMP_DEBUG_ERR("adm_size_string_list","Bad Args.", NULL);
-		AMP_DEBUG_EXIT("adm_size_string_list","->0.", NULL);
+		DTNMP_DEBUG_ERR("adm_size_string_list","Bad Args.", NULL);
+		DTNMP_DEBUG_EXIT("adm_size_string_list","->0.", NULL);
 		return 0;
 	}
 
@@ -2319,12 +1455,12 @@ uint32_t adm_size_string_list(uint8_t* buffer, uint64_t buffer_len)
 	int i;
 	for(i = 0; i < num; i++)
 	{
-		int tmp = strlen((char *)cursor) + 1;
+		tmp = strlen((char *)cursor) + 1;
 		result += tmp;
 		cursor += tmp;
 	}
 
-	AMP_DEBUG_EXIT("adm_size_string_list", "->%ul", result);
+	DTNMP_DEBUG_EXIT("adm_size_string_list", "->%ul", result);
 	return result;
 }
 
@@ -2350,18 +1486,19 @@ uint32_t adm_size_string_list(uint8_t* buffer, uint64_t buffer_len)
  *****************************************************************************/
 uint32_t adm_size_unsigned_long(uint8_t* buffer, uint64_t buffer_len)
 {
+	uint32_t len = 0;
 
-	AMP_DEBUG_ENTRY("adm_size_unsigned_long","(%#llx, %ull)", buffer, buffer_len);
+	DTNMP_DEBUG_ENTRY("adm_size_unsigned_long","(%#llx, %ull)", buffer, buffer_len);
 
 	/* Step 0 - Sanity Check. */
 	if(buffer == NULL)
 	{
-		AMP_DEBUG_ERR("adm_size_unsigned_long","Bad Args.", NULL);
-		AMP_DEBUG_EXIT("adm_size_unsigned_long","->0.", NULL);
+		DTNMP_DEBUG_ERR("adm_size_unsigned_long","Bad Args.", NULL);
+		DTNMP_DEBUG_EXIT("adm_size_unsigned_long","->0.", NULL);
 		return 0;
 	}
 
-	AMP_DEBUG_EXIT("adm_size_string","->%ul", sizeof(unsigned long));
+	DTNMP_DEBUG_EXIT("adm_size_string","->%ul", sizeof(unsigned long));
 	return sizeof(unsigned long);
 }
 
@@ -2390,13 +1527,13 @@ uint32_t adm_size_unsigned_long_list(uint8_t* buffer, uint64_t buffer_len)
 	uint32_t result = 0;
 	uvast num = 0;
 
-	AMP_DEBUG_ENTRY("adm_size_unsigned_long","(%#llx, %ull)", buffer, buffer_len);
+	DTNMP_DEBUG_ENTRY("adm_size_unsigned_long","(%#llx, %ull)", buffer, buffer_len);
 
 	/* Step 0 - Sanity Check. */
 	if(buffer == NULL)
 	{
-		AMP_DEBUG_ERR("adm_size_unsigned_long","Bad Args.", NULL);
-		AMP_DEBUG_EXIT("adm_size_unsigned_long","->0.", NULL);
+		DTNMP_DEBUG_ERR("adm_size_unsigned_long","Bad Args.", NULL);
+		DTNMP_DEBUG_EXIT("adm_size_unsigned_long","->0.", NULL);
 		return 0;
 	}
 
@@ -2406,7 +1543,7 @@ uint32_t adm_size_unsigned_long_list(uint8_t* buffer, uint64_t buffer_len)
 	result = decodeSdnv(&num, buffer);
 	result += (num * sizeof(unsigned long));
 
-	AMP_DEBUG_EXIT("adm_size_string","->%ul", result);
+	DTNMP_DEBUG_EXIT("adm_size_string","->%ul", result);
 	return result;
 }
 
@@ -2432,18 +1569,78 @@ uint32_t adm_size_unsigned_long_list(uint8_t* buffer, uint64_t buffer_len)
  *****************************************************************************/
 uint32_t adm_size_uvast(uint8_t* buffer, uint64_t buffer_len)
 {
-	AMP_DEBUG_ENTRY("adm_size_uvast","(%#llx, %ull)", buffer, buffer_len);
+	uint32_t len = 0;
+
+	DTNMP_DEBUG_ENTRY("adm_size_uvast","(%#llx, %ull)", buffer, buffer_len);
 
 	/* Step 0 - Sanity Check. */
 	if(buffer == NULL)
 	{
-		AMP_DEBUG_ERR("adm_size_uvast","Bad Args.", NULL);
-		AMP_DEBUG_EXIT("adm_size_uvast","->0.", NULL);
+		DTNMP_DEBUG_ERR("adm_size_uvast","Bad Args.", NULL);
+		DTNMP_DEBUG_EXIT("adm_size_uvast","->0.", NULL);
 		return 0;
 	}
 
-	AMP_DEBUG_EXIT("adm_size_uvast","->%ul", sizeof(uvast));
+	DTNMP_DEBUG_EXIT("adm_size_uvast","->%ul", sizeof(uvast));
 	return sizeof(uvast);
 }
 
+variableQueueEntry* adm_uvast_to_queue(uint8_t* buffer, uint64_t buffer_len, uint64_t data_len, uint32_t *str_len,char* admName)
+{
+	DTNMP_DEBUG_INFO("adm_uvast_to_queue","name = %s, length=%d",admName,strlen(admName))
+	variableQueueEntry* temp = (variableQueueEntry*)STAKE(sizeof(variableQueueEntry));
+	*temp = AddVariable(admName,TYPE_UINT32,buffer);
+	return temp;
+}
 
+/******************************************************************************
+ *
+ * \par Function Name: adm_datalists_to_queue
+ *
+ * \par Move the entire datalist to a variable queue entry, for further transmission
+ *
+ * \retval The variable
+ *
+ * \param[in]  buffer      The start of the ADM entry value.
+ * \param[in]  buffer_len  Length of the given buffer.
+ * \param[in]  data_len    unused
+ * \param[out] str_len     unused
+ * \par Notes:
+ *
+ * Modification History:
+ *  MM/DD/YY  AUTHOR         DESCRIPTION
+ *  --------  ------------   ---------------------------------------------
+ *  08/16/13  JPM     Initial implementation.
+ *****************************************************************************/
+variableQueueEntry* adm_datalists_to_queue(uint8_t* buffer, uint64_t buffer_len, uint64_t data_len, uint32_t *str_len,char* admName)
+{
+	variableQueueEntry* temp = (variableQueueEntry*)STAKE(sizeof(variableQueueEntry));
+	*temp = AddVariable(admName,TYPE_DATALIST,buffer,NULL,buffer_len);
+
+	return temp;
+}
+
+
+/******************************************************************************
+ *
+ * \par Function Name: adm_size_datalist
+ *
+ * \par Calculates size of a datalist, as an ADM sizing callback.
+ *
+ * \retval Size of the ADM value entry.
+ *
+ * \param[in]  buffer      The start of the ADM entry value.
+ * \param[in]  buffer_len  Length of the given buffer.
+ *
+ * \par Notes:
+ *
+ * Modification History:
+ *  MM/DD/YY  AUTHOR         DESCRIPTION
+ *  --------  ------------   ---------------------------------------------
+ *  04/09/15  J.P.Mayer      Initial implementation.
+ *****************************************************************************/
+
+uint32_t adm_size_datalists(uint8_t* buffer, uint64_t buffer_len)
+{
+
+}

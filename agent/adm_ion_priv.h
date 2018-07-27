@@ -2,6 +2,12 @@
  **                           COPYRIGHT NOTICE
  **      (c) 2012 The Johns Hopkins University Applied Physics Laboratory
  **                         All rights reserved.
+ **
+ **     This material may only be used, modified, or reproduced by or for the
+ **       U.S. Government pursuant to the license rights granted under
+ **          FAR clause 52.227-14 or DFARS clauses 252.227-7013/7014
+ **
+ **     For any other permissions, please contact the Legal Office at JHU/APL.
  ******************************************************************************/
 #ifdef _HAVE_ION_ADM_
 /*****************************************************************************
@@ -27,9 +33,11 @@
 #include "bpnm.h"
 #include "icinm.h"
 
-#include "../shared/adm/adm_ion.h"
-#include "../shared/utils/expr.h"
+#include "shared/adm/adm_ion.h"
+#include "shared/utils/expr.h"
 
+#define D_ION_ADM_PROTONAME_SIZE 128
+#define D_ION_ADM_IPNAME_SIZE 128
 void agent_adm_init_ion();
 
 
@@ -76,9 +84,18 @@ expr_result_t ion_node_get_all(Lyst params);
 expr_result_t ion_node_get_inducts(Lyst params);
 expr_result_t ion_node_get_outducts(Lyst params);
 
+expr_result_t ion_node_get_groups(Lyst params);
+expr_result_t ion_node_get_plans(Lyst params);
+expr_result_t ion_node_get_outducts(Lyst params);
 /* ION Controls */
 uint32_t ion_ctrl_induct_reset(Lyst params);
 uint32_t ion_ctrl_outduct_reset(Lyst params);
+uint32_t ion_ctrl_plan_add(Lyst params);
+uint32_t ion_ctrl_plan_remove(Lyst params);
+uint32_t ion_ctrl_group_add(Lyst params);
+uint32_t ion_ctrl_group_remove(Lyst params);
+uint32_t ion_ctrl_outduct_add(Lyst params);
+uint32_t ion_ctrl_outduct_remove(Lyst params);
 
 #endif //ADM_ION_PRIV_H_
 

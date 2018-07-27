@@ -2,6 +2,12 @@
  **                           COPYRIGHT NOTICE
  **      (c) 2012 The Johns Hopkins University Applied Physics Laboratory
  **                         All rights reserved.
+ **
+ **     This material may only be used, modified, or reproduced by or for the
+ **       U.S. Government pursuant to the license rights granted under
+ **          FAR clause 52.227-14 or DFARS clauses 252.227-7013/7014
+ **
+ **     For any other permissions, please contact the Legal Office at JHU/APL.
  ******************************************************************************/
 
 /*****************************************************************************
@@ -18,8 +24,7 @@
  ** Modification History:
  **  MM/DD/YY  AUTHOR         DESCRIPTION
  **  --------  ------------   ---------------------------------------------
- **  01/17/13  E. Birrane     Redesign of messaging architecture. (JHU/APL)
- **  04/05/16  E. Birrane     Added support for sticky evaluation. (Secure DTN - NASA: NNX14CS58P)
+ **  01/17/13  E. Birrane     Redesign of messaging architecture.
  *****************************************************************************/
 
 #ifndef _DEF_H_
@@ -61,16 +66,17 @@ typedef struct
 
 /*
  * Associated Message Type(s): MSG_TYPE_DEF_CUST_RPT
+ *                             MSG_TYPE_DEF_COMP_DATA
  *                             MSG_TYPE_DEF_MACRO
  *
  * Purpose: Define custom item on an agent. Since many definitions in the
  *          standard have the same format, we use one data structure to
  *          represent them.
  *
- * +-------+-------+-----------+
- * |  ID   |  Type | Contents  |
- * | (MID) | [SDNV]|   (MC)    |
- * +-------+-------+-----------+
+ * +-------+------------+
+ * |  ID   |  Contents  |
+ * | (MID) |    (MC)    |
+ * +-------+------------+
  */
 typedef struct {
     mid_t *id;             /**> The identifier (name) of the report. */
@@ -92,29 +98,21 @@ typedef struct {
 
 /* Create functions. */
 def_gen_t *def_create_gen(mid_t *id,
-
-						  uint32_t type,
 					      Lyst contents);
-
-def_gen_t *def_create_from_rpt_parms(tdc_t parms);
-
-def_gen_t *def_deserialize_gen(uint8_t *cursor,
-		                       uint32_t size,
-		                       uint32_t *bytes_used);
 
 def_gen_t *def_duplicate(def_gen_t *);
 
 def_gen_t *def_find_by_id(Lyst defs, ResourceLock *mutex, mid_t *id);
 
-// \todo: Ren ame defcol like mid...
+/* Release functions.*/
+void def_release_gen(def_gen_t *def);
+
+
 void def_lyst_clear(Lyst *list, ResourceLock *mutex, int destroy);
 
 void def_print_gen(def_gen_t *def);
 
-/* Release functions.*/
-void def_release_gen(def_gen_t *def);
 
-uint8_t *def_serialize_gen(def_gen_t *def, uint32_t *len);
 
 
 #endif /* _DEF_H_ */

@@ -1,0 +1,3 @@
+nm/shared/adm/nm_mgr-adm_ion.o: nm/shared/adm/adm_ion.c config.h
+
+config.h:

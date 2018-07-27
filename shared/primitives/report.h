@@ -2,7 +2,14 @@
  **                           COPYRIGHT NOTICE
  **      (c) 2012 The Johns Hopkins University Applied Physics Laboratory
  **                         All rights reserved.
+ **
+ **     This material may only be used, modified, or reproduced by or for the
+ **       U.S. Government pursuant to the license rights granted under
+ **          FAR clause 52.227-14 or DFARS clauses 252.227-7013/7014
+ **
+ **     For any other permissions, please contact the Legal Office at JHU/APL.
  ******************************************************************************/
+
 /*****************************************************************************
  **
  ** \file report.h
@@ -20,9 +27,8 @@
  ** Modification History:
  **  MM/DD/YY  AUTHOR         DESCRIPTION
  **  --------  ------------   ---------------------------------------------
- **  01/11/13  E. Birrane     Redesign of primitives architecture. (JHU/APL)
- **  06/24/13  E. Birrane     Migrated from uint32_t to time_t. (JHU/APL)
- **  07/02/15  E. Birrane     Migrated to Typed Data Collections (TDCs) (Secure DTN - NASA: NNX14CS58P)
+ **  01/11/13  E. Birrane     Redesign of primitives architecture.
+ **  06/24/13  E. Birrane     Migrated from uint32_t to time_t.
  *****************************************************************************/
 
 
@@ -31,10 +37,14 @@
 
 #include "lyst.h"
 
-#include "../utils/nm_types.h"
+#include "shared/utils/nm_types.h"
 
-#include "../primitives/def.h"
-#include "../primitives/tdc.h"
+#include "shared/primitives/def.h"
+/*
+#include "shared/msg/pdu.h"
+#include "shared/msg/msg_def.h"
+#include "shared/msg/msg_reports.h"
+*/
 
 /*
  * +--------------------------------------------------------------------------+
@@ -59,14 +69,47 @@
 
 
 /**
+ * Associated Message Type(s): MSG_TYPE_RPT_DATA_LIST
+ *
+ * Purpose: Define a data list report.
+ *
+ * +---------------+
+ * | Configured ID |
+ * |     (MC)      |
+ * +---------------+
+ */
+typedef struct {
+    Lyst contents;        /**> The ordered MIDs comprising the data list. */
+} rpt_items_t;
+
+
+
+/**
+ * Associated Message Type(s): MSG_TYPE_RPT_DATA_DEFS
+ *
+ * Purpose: Define a data definition report.
+ *
+ * +--------+------+----------+     +------+----------+
+ * | # Defs | ID 1 |   Def 1  | ... | ID N |   Def N  |
+ * | (SDNV) |(MID) |   (MC)   |     |(MID) |    (MC)  |
+ * +--------+------+----------+     +------+----------+
+ */
+typedef struct {
+    Lyst defs;            /**> The ordered MIDs comprising the data defs. */
+} rpt_defs_t;
+
+
+
+/**
  * Entry in a data report list, comprising a single report.
  */
 typedef struct
 {
 	mid_t *id;		   /**> The report ID. */
 
-	tdc_t *contents;   /**> The typed data collection holding the report. */
-} rpt_entry_t;
+	uvast size;     /**> The number of bytes of report data. */
+	uint8_t *contents; /**> The report data. */
+} rpt_data_entry_t;
 
 
 
@@ -74,20 +117,38 @@ typedef struct
  * Associated Message Type(s): MSG_TYPE_RPT_DATA_RPT
  *
  * Purpose: A data report.
- * +------+---------+-----------+---------+   +---------+
- * | Time | RX Name | # Entries | ENTRY 1 |   | ENTRY N |
- * | [TS] |  [BLOB] |   [SDNV]  | [RPTE]  |...| [RPTE]  |
- * +------+---------+-----------+---------+   +---------+
+ * \todo Update the standard
+ * +------+------+------+-------+---------+   +------+------+---------+
+ * | Time | SIZE |ID    | Size  | Data[n] |   |  ID  | Size | Data[m] |
+ * | (TS) |(SDNV)|(SDNV)|(SDNV) | (BYTEs) |...|(SDNV)|(SDNV)| (BYTEs) |
+ * +------+------+------+-------+---------+   +------+------+---------+
  */
 typedef struct {
 
-	time_t time;        /**> Time the report entries were generated. */
-    Lyst entries;       /**> The report entries (lyst of rpt_entry_t */
+	time_t time;        /**> Time the reports were generated. */
+    Lyst reports;         /**> The reports (lyst of rpt_data_entry_t */
 
-    /* Non-serialized portions. */
+
     eid_t recipient;
-} rpt_t;
+    uint32_t size;
+} rpt_data_t;
 
+
+
+/**
+ * Associated Message Type(s): MSG_TYPE_RPT_PROD_SCHED
+ *
+ * Purpose: Define a data definition report.
+ * \todo: Support for predicate types as well?
+ *
+ * +---------+--------+     +--------+
+ * | # Rules | Rule 1 | ... | Rule N |
+ * |  (SDNV) | (VAR)  |     |  (VAR) |
+ * +---------+--------+     +--------+
+ */
+typedef struct {
+    Lyst defs;            /**> Report defs (msg_ctrl_period_prod_t). */
+} rpt_prod_t;
 
 
 
@@ -97,32 +158,22 @@ typedef struct {
  * +--------------------------------------------------------------------------+
  */
 
-int      rpt_add_entry(rpt_t *rpt, rpt_entry_t *entry);
-rpt_t*   rpt_create(time_t time, Lyst entries, eid_t recipient);
-void     rpt_clear_lyst(Lyst *list, ResourceLock *mutex, int destroy);
+void         rpt_clear_lyst(Lyst *list, ResourceLock *mutex, int destroy);
 
-rpt_t*   rpt_deserialize_data(uint8_t *cursor,
-		                      uint32_t size,
-		                      uint32_t *bytes_used);
+rpt_items_t* rpt_create_lst(Lyst contents);
+rpt_defs_t*  rpt_create_defs(Lyst defs);
+rpt_data_t*  rpt_create_data(time_t time, Lyst reports, eid_t recipient);
+rpt_prod_t*  rpt_create_prod(Lyst defs);
 
-void     rpt_release(rpt_t *msg);
+def_gen_t*   rpt_find_custom(Lyst reportLyst, ResourceLock *mutex, mid_t *mid);
 
-uint8_t* rpt_serialize(rpt_t *msg, uint32_t *len);
+void         rpt_print_data_entry(rpt_data_entry_t *entry);
 
-char*    rpt_to_str(rpt_t *rpt);
-
-
-void         rpt_entry_clear_lyst(Lyst *list, ResourceLock *mutex, int destroy);
-rpt_entry_t* rpt_entry_create();
-rpt_entry_t* rpt_entry_deserialize(uint8_t *cursor,
-		                           uint32_t size,
-		                           uint32_t *bytes_used);
-char*        rpt_entry_lst_to_str(Lyst entries);
-void         rpt_entry_release(rpt_entry_t *entry);
-uint8_t*     rpt_entry_serialize(rpt_entry_t *entry, uint32_t *len);
-uint8_t*     rpt_entry_serialize_lst(Lyst entries, uint32_t *len);
-char*        rpt_entry_to_str(rpt_entry_t *entry);
-
+void         rpt_release_lst(rpt_items_t *msg);
+void         rpt_release_defs(rpt_defs_t *msg);
+void         rpt_release_data_entry(rpt_data_entry_t *entry);
+void         rpt_release_data(rpt_data_t *msg);
+void         rpt_release_prod(rpt_prod_t *msg);
 
 
 #endif /* _REPORT_H_ */

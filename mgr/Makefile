@@ -1,57 +1,34 @@
-SOURCES = ../shared/adm/*.c ../shared/msg/*.c ../shared/utils/*.c ../shared/primitives/*.c
-SOURCES += 	mgr_db.c \
-			nm_mgr.c \
-			nm_mgr_names.c \
-			nm_mgr_print.c \
-			nm_mgr_rx.c
+SOURCES = ../shared/adm/*.c ../shared/msg/*.c ../shared/utils/*.c ../shared/primitives/*.c ./*.c 
+IONDIR = /home/jeremy/Software/ion-open-source/
+LIBPATH = /usr/local/lib
+OPTS = -Wno-write-strings -g 
 
-IONDIR = ../../
-OPTS = -Wno-write-strings -g
+Debug:all
 
-all:with-netui
+all:without-db
 
-with-netui:
-	gcc ${OPTS} \
+without-db:
+	g++ ${OPTS} \
 	-I. -I.. \
 	-I${IONDIR}/ici/include \
 	-I${IONDIR}/ltp/include \
 	-I${IONDIR}/ltp/library \
 	-I${IONDIR}/bp/include \
 	-I${IONDIR}/bp/library \
-	-I${IONDIR}/bp/library/ext/bpsec \
 	-I${IONDIR}/ici/library \
 	-I/usr/local/include \
 	-L${IONDIR}/ \
-	-L/usr/local/lib \
+	-L${LIBPATH}/ \
 	-lbp -lici -lltp \
 	-DMAXPATHLEN=2048 \
 	-DHAVE_NETUI \
-	-DAMP_DEBUGGING=1 \
-	-c ${SOURCES} nm_mgr_netui.c
+	-DDTNMP_DEBUGGING \
+	-c ${SOURCES} 
 
-	gcc -o nm_mgr *.o -lltp -lbp -lici -lpthread
-
-without-db:
-	gcc ${OPTS} \
-	-I. -I.. \
-	-I${IONDIR}/ici/include \
-	-I${IONDIR}/ltp/include \
-	-I${IONDIR}/ltp/library \
-	-I${IONDIR}/bp/include \
-	-I${IONDIR}/bp/library \
-	-I${IONDIR}/bp/library/ext/bpsec \
-	-I${IONDIR}/ici/library \
-	-I/usr/local/include \
-	-L${IONDIR}/ \
-	-L/usr/local/lib \
-	-lbp -lici -lltp \
-	-DMAXPATHLEN=2048 \
-	-c ${SOURCES} nm_mgr_ui.c ui_input.c
-
-	gcc -o nm_mgr *.o -lltp -lbp -lici -lpthread
+	g++ -L${LIBPATH}/ -o nm_mgr_netui *.o -lltp -lbp -lici -pthread
 
 with-db:
-	gcc ${OPTS} \
+	g++ ${OPTS} \
 	-I. -I.. \
 	-I${IONDIR}/ici/include \
 	-I${IONDIR}/ltp/include \
@@ -67,11 +44,9 @@ with-db:
 	-lbp -lici -lltp -lmysqlclient \
 	-DMAXPATHLEN=2048 \
 	-DHAVE_MYSQL=1 \
-	-c ${SOURCES} nm_mgr_ui.c ui_input.c nm_mgr_sql.c
+	-c ${SOURCES} 
 
-	gcc -o nm_mgr *.o -lltp -lbp -lici -lmysqlclient -lpthread
+	g++ -o nm_mgr *.o -lltp -lbp -lici -lmysqlclient
 
-clean:
-	rm -f nm_mgr nm_mgr_netui
-	rm -f *.o
+
 

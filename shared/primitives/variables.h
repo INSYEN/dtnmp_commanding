@@ -11,7 +11,7 @@ typedef enum
 	TYPE_UINT32,
 	TYPE_INT32,
 	TYPE_STRING,
-	TYPE_TDC,
+	TYPE_DATALIST,
 	TYPE_UVAST,
 	TYPE_VAST,
 } variableType;
@@ -30,8 +30,7 @@ typedef struct
 	size_t size;
 } variableQueueEntry;
 
-variableQueueEntry AddVariable(char* name, variableType type, void* value,
-    eid_t* sourceEid, size_t size, time_t timestamp);
+variableQueueEntry AddVariable(char* name,variableType type, void* value,eid_t* sourceEid = NULL,size_t size = 0, time_t timestamp = 0);
 
 
 #endif // VARIABLES_H_INCLUDED

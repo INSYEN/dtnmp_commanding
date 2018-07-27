@@ -3,7 +3,13 @@
  **      (c) 2012 The Johns Hopkins University Applied Physics Laboratory
  **                         All rights reserved.
  **
+ **     This material may only be used, modified, or reproduced by or for the
+ **       U.S. Government pursuant to the license rights granted under
+ **          FAR clause 52.227-14 or DFARS clauses 252.227-7013/7014
+ **
+ **     For any other permissions, please contact the Legal Office at JHU/APL.
  ******************************************************************************/
+
 /*****************************************************************************
  **
  ** \file msg_ctrl.c
@@ -22,58 +28,112 @@
  ** Modification History:
  **  MM/DD/YY  AUTHOR         DESCRIPTION
  **  --------  ------------   ---------------------------------------------
- **  11/04/12  E. Birrane     Redesign of messaging architecture. (JHU/APL)
- **  01/17/13  E. Birrane     Updated to use primitive types. (JHU/APL)
+ **  11/04/12  E. Birrane     Redesign of messaging architecture.
+ **  01/17/13  E. Birrane     Updated to use primitive types.
  *****************************************************************************/
 
 #include "platform.h"
 #include "ion.h"
 
-#include "../utils/utils.h"
-#include "../msg/msg_ctrl.h"
+#include "shared/utils/utils.h"
+#include "shared/msg/msg_ctrl.h"
 
 
 /* Create functions. */
 
-/*
- * Can destroy mc after.
- */
-msg_perf_ctrl_t *msg_create_perf_ctrl(time_t ts, Lyst mc)
+
+
+/* Serialize functions. */
+uint8_t *ctrl_serialize_time_prod_entry(rule_time_prod_t *msg, uint32_t *len)
 {
-	msg_perf_ctrl_t *result = NULL;
+	uint8_t *result = NULL;
+	uint8_t *cursor = NULL;
 
-	if(mc == NULL)
+	Sdnv time_sdnv;
+	Sdnv period_sdnv;
+	Sdnv count_sdnv;
+
+	uint8_t *contents = NULL;
+	uint32_t contents_len = 0;
+
+	DTNMP_DEBUG_ENTRY("ctrl_serialize_time_prod_entry","(0x%x, 0x%x)",
+			          (unsigned long)msg, (unsigned long) len);
+
+	/* Step 0: Sanity Checks. */
+	if((msg == NULL) || (len == NULL))
 	{
+		DTNMP_DEBUG_ERR("ctrl_serialize_time_prod_entry","Bad Args",NULL);
+		DTNMP_DEBUG_EXIT("ctrl_serialize_time_prod_entry","->NULL",NULL);
 		return NULL;
 	}
 
-	result = (msg_perf_ctrl_t *) STAKE(sizeof(msg_perf_ctrl_t));
-	if(result == NULL)
+	*len = 0;
+
+	/* Step 1: Serialize contents individually. */
+	encodeSdnv(&time_sdnv, msg->time);
+	encodeSdnv(&period_sdnv, msg->period);
+	encodeSdnv(&count_sdnv, msg->count);
+
+	if((contents = midcol_serialize(msg->mids, &contents_len)) == NULL)
 	{
+		DTNMP_DEBUG_ERR("ctrl_serialize_time_prod_entry","Can't serialize contents.",NULL);
+
+		DTNMP_DEBUG_EXIT("ctrl_serialize_time_prod_entry","->NULL",NULL);
 		return NULL;
 	}
 
-	result->ts = ts;
-	result->mc = midcol_copy(mc);
+	/* Step 2: Figure out the length. */
+	*len = time_sdnv.length + period_sdnv.length + count_sdnv.length + contents_len;
 
+	/* STEP 3: Allocate the serialized message. */
+	if((result = (uint8_t*)STAKE(*len)) == NULL)
+	{
+		DTNMP_DEBUG_ERR("ctrl_serialize_time_prod_entry","Can't alloc %d bytes", *len);
+		*len = 0;
+		MRELEASE(contents);
+
+		DTNMP_DEBUG_EXIT("ctrl_serialize_time_prod_entry","->NULL",NULL);
+		return NULL;
+	}
+
+	/* Step 4: Populate the serialized message. */
+	cursor = result;
+
+	memcpy(cursor,time_sdnv.text,time_sdnv.length);
+	cursor += time_sdnv.length;
+
+	memcpy(cursor,period_sdnv.text,period_sdnv.length);
+	cursor += period_sdnv.length;
+
+	memcpy(cursor,count_sdnv.text,count_sdnv.length);
+	cursor += count_sdnv.length;
+
+	memcpy(cursor, contents, contents_len);
+	cursor += contents_len;
+	MRELEASE(contents);
+
+	/* Step 5: Last sanity check. */
+	if((cursor - result) != *len)
+	{
+		DTNMP_DEBUG_ERR("ctrl_serialize_time_prod_entry","Wrote %d bytes but allcated %d",
+				(unsigned long) (cursor - result), *len);
+		*len = 0;
+		MRELEASE(result);
+
+		DTNMP_DEBUG_EXIT("ctrl_serialize_time_prod_entry","->NULL",NULL);
+		return NULL;
+	}
+
+	DTNMP_DEBUG_EXIT("ctrl_serialize_time_prod_entry","->0x%x",(unsigned long)result);
 	return result;
 }
 
-
-void msg_destroy_perf_ctrl(msg_perf_ctrl_t *ctrl)
+uint8_t *ctrl_serialize_pred_prod_entry(rule_pred_prod_t *msg, uint32_t *len)
 {
-	if(ctrl == NULL)
-	{
-		return;
-	}
-
-	midcol_destroy(&(ctrl->mc));
-	SRELEASE(ctrl);
+	return NULL;
 }
 
-
-
-uint8_t *msg_serialize_perf_ctrl(msg_perf_ctrl_t *ctrl, uint32_t *len)
+uint8_t *ctrl_serialize_exec(ctrl_exec_t *msg, uint32_t *len)
 {
 	uint8_t *result = NULL;
 	uint8_t *cursor = NULL;
@@ -83,27 +143,27 @@ uint8_t *msg_serialize_perf_ctrl(msg_perf_ctrl_t *ctrl, uint32_t *len)
 	uint8_t *contents = NULL;
 	uint32_t contents_len = 0;
 
-	AMP_DEBUG_ENTRY("msg_serialize_perf_ctrl","(0x%x, 0x%x)",
-			          (unsigned long)ctrl, (unsigned long) len);
+	DTNMP_DEBUG_ENTRY("ctrl_serialize_exec","(0x%x, 0x%x)",
+			          (unsigned long)msg, (unsigned long) len);
 
 	/* Step 0: Sanity Checks. */
-	if((ctrl == NULL) || (len == NULL))
+	if((msg == NULL) || (len == NULL))
 	{
-		AMP_DEBUG_ERR("msg_serialize_perf_ctrl","Bad Args",NULL);
-		AMP_DEBUG_EXIT("msg_serialize_perf_ctrl","->NULL",NULL);
+		DTNMP_DEBUG_ERR("ctrl_serialize_exec","Bad Args",NULL);
+		DTNMP_DEBUG_EXIT("ctrl_serialize_exec","->NULL",NULL);
 		return NULL;
 	}
 
 	*len = 0;
 
 	/* Step 1: Serialize contents individually. */
-	encodeSdnv(&time_sdnv, ctrl->ts);
+	encodeSdnv(&time_sdnv, msg->time);
 
-	if((contents = midcol_serialize(ctrl->mc, &contents_len)) == NULL)
+	if((contents = midcol_serialize(msg->contents, &contents_len)) == NULL)
 	{
-		AMP_DEBUG_ERR("msg_serialize_perf_ctrl","Can't serialize contents.",NULL);
+		DTNMP_DEBUG_ERR("ctrl_serialize_exec","Can't serialize contents.",NULL);
 
-		AMP_DEBUG_EXIT("msg_serialize_perf_ctrl","->NULL",NULL);
+		DTNMP_DEBUG_EXIT("ctrl_serialize_exec","->NULL",NULL);
 		return NULL;
 	}
 
@@ -113,11 +173,11 @@ uint8_t *msg_serialize_perf_ctrl(msg_perf_ctrl_t *ctrl, uint32_t *len)
 	/* STEP 3: Allocate the serialized message. */
 	if((result = (uint8_t*)STAKE(*len)) == NULL)
 	{
-		AMP_DEBUG_ERR("msg_serialize_perf_ctrl","Can't alloc %d bytes", *len);
+		DTNMP_DEBUG_ERR("ctrl_serialize_exec","Can't alloc %d bytes", *len);
 		*len = 0;
-		SRELEASE(contents);
+		MRELEASE(contents);
 
-		AMP_DEBUG_EXIT("msg_serialize_perf_ctrl","->NULL",NULL);
+		DTNMP_DEBUG_EXIT("ctrl_serialize_exec","->NULL",NULL);
 		return NULL;
 	}
 
@@ -129,78 +189,88 @@ uint8_t *msg_serialize_perf_ctrl(msg_perf_ctrl_t *ctrl, uint32_t *len)
 
 	memcpy(cursor, contents, contents_len);
 	cursor += contents_len;
-	SRELEASE(contents);
+	MRELEASE(contents);
 
 	/* Step 5: Last sanity check. */
 	if((cursor - result) != *len)
 	{
-		AMP_DEBUG_ERR("msg_serialize_perf_ctrl","Wrote %d bytes but allcated %d",
+		DTNMP_DEBUG_ERR("ctrl_serialize_exec","Wrote %d bytes but allcated %d",
 				(unsigned long) (cursor - result), *len);
 		*len = 0;
-		SRELEASE(result);
+		MRELEASE(result);
 
-		AMP_DEBUG_EXIT("msg_serialize_perf_ctrl","->NULL",NULL);
+		DTNMP_DEBUG_EXIT("ctrl_serialize_exec","->NULL",NULL);
 		return NULL;
 	}
 
-	AMP_DEBUG_EXIT("msg_serialize_perf_ctrl","->0x%x",(unsigned long)result);
+	DTNMP_DEBUG_EXIT("ctrl_serialize_exec","->0x%x",(unsigned long)result);
 	return result;
 }
 
 
 /* Deserialize functions. */
-
-
-msg_perf_ctrl_t *msg_deserialize_perf_ctrl(uint8_t *cursor,
-		                                   uint32_t size,
-		                                   uint32_t *bytes_used)
+rule_time_prod_t *ctrl_deserialize_time_prod_entry(uint8_t *cursor,
+		                       	   	   	   	   	   uint32_t size,
+		                       	   	   	   	   	   uint32_t *bytes_used)
 {
-	msg_perf_ctrl_t *result = NULL;
+	rule_time_prod_t *result = NULL;
 	uint32_t bytes = 0;
 
-	AMP_DEBUG_ENTRY("msg_deserialize_perf_ctrl","(0x%x, %d, 0x%x)",
+	DTNMP_DEBUG_ENTRY("ctrl_deserialize_time_prod_entry","(0x%x, %d, 0x%x)",
 			          (unsigned long)cursor,
 			           size, (unsigned long) bytes_used);
 
 	/* Step 0: Sanity Checks. */
 	if((cursor == NULL) || (bytes_used == 0))
 	{
-		AMP_DEBUG_ERR("msg_deserialize_perf_ctrl","Bad Args.",NULL);
-		AMP_DEBUG_EXIT("msg_deserialize_perf_ctrl","->NULL",NULL);
+		DTNMP_DEBUG_ERR("ctrl_deserialize_time_prod_entry","Bad Args.",NULL);
+		DTNMP_DEBUG_EXIT("ctrl_deserialize_time_prod_entry","->NULL",NULL);
 		return NULL;
 	}
 
 	/* Step 1: Allocate the new message structure. */
-	if((result = (msg_perf_ctrl_t*)STAKE(sizeof(msg_perf_ctrl_t))) == NULL)
+	if((result = (rule_time_prod_t*)STAKE(sizeof(rule_time_prod_t))) == NULL)
 	{
-		AMP_DEBUG_ERR("msg_deserialize_perf_ctrl","Can't Alloc %d Bytes.",
-				        sizeof(msg_perf_ctrl_t));
+		DTNMP_DEBUG_ERR("ctrl_deserialize_time_prod_entry","Can't Alloc %d Bytes.",
+				        sizeof(rule_time_prod_t));
 		*bytes_used = 0;
-		AMP_DEBUG_EXIT("msg_deserialize_perf_ctrl","->NULL",NULL);
+		DTNMP_DEBUG_EXIT("ctrl_deserialize_time_prod_entry","->NULL",NULL);
 		return NULL;
 	}
 	else
 	{
-		memset(result,0,sizeof(msg_perf_ctrl_t));
+		memset(result,0,sizeof(rule_time_prod_t));
 	}
 
 
 	/* Step 2: Deserialize the message. */
 	uvast val;
     bytes = decodeSdnv(&val, cursor);
-    result->ts = val;
+    result->time = val;
+    cursor += bytes;
+    size -= bytes;
+    *bytes_used += bytes;
+
+    bytes = decodeSdnv(&val,cursor);
+    result->period = val;
+    cursor += bytes;
+    size -= bytes;
+    *bytes_used += bytes;
+
+    bytes = decodeSdnv(&val,cursor);
+    result->count = val;
     cursor += bytes;
     size -= bytes;
     *bytes_used += bytes;
 
 	/* Grab the list of contents. */
-	if((result->mc = midcol_deserialize(cursor, size, &bytes)) == NULL)
+	if((result->mids = midcol_deserialize(cursor, size, &bytes)) == NULL)
 	{
-		AMP_DEBUG_ERR("msg_deserialize_perf_ctrl","Can't grab contents.",NULL);
+		DTNMP_DEBUG_ERR("ctrl_deserialize_time_prod_entry","Can't grab contents.",NULL);
 
 		*bytes_used = 0;
-		msg_destroy_perf_ctrl(result);
-		AMP_DEBUG_EXIT("msg_deserialize_perf_ctrl","->NULL",NULL);
+		rule_release_time_prod_entry(result);
+		DTNMP_DEBUG_EXIT("ctrl_deserialize_time_prod_entry","->NULL",NULL);
 		return NULL;
 	}
 	else
@@ -210,10 +280,80 @@ msg_perf_ctrl_t *msg_deserialize_perf_ctrl(uint8_t *cursor,
 		*bytes_used += bytes;
 	}
 
-	AMP_DEBUG_EXIT("msg_deserialize_perf_ctrl","->0x%x",
+	DTNMP_DEBUG_EXIT("ctrl_deserialize_time_prod_entry","->0x%x",
 			         (unsigned long)result);
 	return result;
 }
 
+rule_pred_prod_t *ctrl_deserialize_pred_prod_entry(uint8_t *cursor,
+		                       	   	   	   	       uint32_t size,
+		                       	   	   	   	       uint32_t *bytes_used)
+{
+	*bytes_used = 0;
+	return NULL;
+}
+
+ctrl_exec_t *ctrl_deserialize_exec(uint8_t *cursor,
+								   uint32_t size,
+		                       	   uint32_t *bytes_used)
+{
+	ctrl_exec_t *result = NULL;
+	uint32_t bytes = 0;
+
+	DTNMP_DEBUG_ENTRY("ctrl_deserialize_exec","(0x%x, %d, 0x%x)",
+			          (unsigned long)cursor,
+			           size, (unsigned long) bytes_used);
+
+	/* Step 0: Sanity Checks. */
+	if((cursor == NULL) || (bytes_used == 0))
+	{
+		DTNMP_DEBUG_ERR("ctrl_deserialize_exec","Bad Args.",NULL);
+		DTNMP_DEBUG_EXIT("ctrl_deserialize_exec","->NULL",NULL);
+		return NULL;
+	}
+
+	/* Step 1: Allocate the new message structure. */
+	if((result = (ctrl_exec_t*)STAKE(sizeof(ctrl_exec_t))) == NULL)
+	{
+		DTNMP_DEBUG_ERR("ctrl_deserialize_exec","Can't Alloc %d Bytes.",
+				        sizeof(ctrl_exec_t));
+		*bytes_used = 0;
+		DTNMP_DEBUG_EXIT("ctrl_deserialize_exec","->NULL",NULL);
+		return NULL;
+	}
+	else
+	{
+		memset(result,0,sizeof(ctrl_exec_t));
+	}
+
+
+	/* Step 2: Deserialize the message. */
+	uvast val;
+    bytes = decodeSdnv(&val, cursor);
+    result->time = val;
+    cursor += bytes;
+    size -= bytes;
+    *bytes_used += bytes;
+
+	/* Grab the list of contents. */
+	if((result->contents = midcol_deserialize(cursor, size, &bytes)) == NULL)
+	{
+		DTNMP_DEBUG_ERR("ctrl_deserialize_exec","Can't grab contents.",NULL);
+
+		*bytes_used = 0;
+		ctrl_release_exec(result);
+		DTNMP_DEBUG_EXIT("ctrl_deserialize_exec","->NULL",NULL);
+		return NULL;
+	}
+	else
+	{
+		cursor += bytes;
+		size -= bytes;
+		*bytes_used += bytes;
+	}
+
+	DTNMP_DEBUG_EXIT("ctrl_deserialize_exec","->0x%x",
+			         (unsigned long)result);
+	return result;}
 
 
