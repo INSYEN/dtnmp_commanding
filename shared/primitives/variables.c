@@ -14,13 +14,13 @@ variableQueueEntry AddVariable(char* name,variableType type, void* value,eid_t* 
 			size=8;
 		case TYPE_STRING:
 			size=strlen((char*)value);
-		case TYPE_DATALIST:
+		case TYPE_TDC:
 			if(size==0)
 				break;
 	}
 	if(size==0)
 	{
-		DTNMP_DEBUG_ERR("addvar","value size = 0",NULL);
+		AMP_DEBUG_ERR("addvar","value size = 0",NULL);
 		value=NULL;
 	}
 

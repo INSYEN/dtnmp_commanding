@@ -1,34 +1,56 @@
+/******************************************************************************
+ **                           COPYRIGHT NOTICE
+ **      (c) 2012 The Johns Hopkins University Applied Physics Laboratory
+ **                         All rights reserved.
+ ******************************************************************************/
+
+/*****************************************************************************
+ **
+ ** File Name: adm_ion_priv.h
+ **
+ ** Description: This file contains the definitions of the LTP
+ **              ADM.
+ **
+ ** Notes:
+ **
+ ** Assumptions:
+ ** 	1. We current use a non-official OID root tree for DTN Bundle Protocol
+ **         identifiers.
+ **
+ **
+ ** Modification History:
+ **  MM/DD/YY  AUTHOR         DESCRIPTION
+ **  --------  ------------   ---------------------------------------------
+ **  10/22/11  E. Birrane     Initial Implementation
+ *****************************************************************************/
+#ifdef _HAVE_LTP_ADM_
+
 #include "platform.h"
 #include "ion.h"
 
-#include "shared/utils/utils.h"
+#include "../utils/utils.h"
 
-#include "shared/adm/adm_ltp.h"
-
-#ifdef _HAVE_LTP_ADM_
+#include "../adm/adm_ltp.h"
 
 void adm_ltp_init()
 {
 
 	uint8_t mid_str[ADM_MID_ALLOC];
 
-//	adm_build_mid_str(0x00, ADM_LTP_NODE_NN, ADM_LTP_NODE_NN_LEN, 0, mid_str);
-//	adm_add_datadef("LTP_NODE_RESOURCES_ALL", mid_str, 0, ltp_print_node_resources_all, ltp_size_node_resources_all);
+	adm_build_mid_str(0x00, ADM_LTP_NODE_NN, ADM_LTP_NODE_NN_LEN, 0, mid_str);
+	adm_add_datadef("LTP_NODE_RESOURCES_ALL", mid_str, 0, ltp_print_node_resources_all, ltp_size_node_resources_all);
 
-//	adm_build_mid_str(0x00, ADM_LTP_NODE_NN, ADM_LTP_NODE_NN_LEN, 1, mid_str);
-//	adm_add_datadef("LTP_HEAP_BYTES_RSV",     mid_str, 0, NULL, ltp_size_heap_bytes_reserved);
+	adm_build_mid_str(0x00, ADM_LTP_NODE_NN, ADM_LTP_NODE_NN_LEN, 1, mid_str);
+	adm_add_datadef("LTP_HEAP_BYTES_RSV",     mid_str, 0, NULL, ltp_size_heap_bytes_reserved);
 
-//	adm_build_mid_str(0x00, ADM_LTP_NODE_NN, ADM_LTP_NODE_NN_LEN, 2, mid_str);
-//	adm_add_datadef("LTP_HEAD_BYTES_USED",    mid_str, 0, NULL, ltp_size_heap_bytes_used);
+	adm_build_mid_str(0x00, ADM_LTP_NODE_NN, ADM_LTP_NODE_NN_LEN, 2, mid_str);
+	adm_add_datadef("LTP_HEAD_BYTES_USED",    mid_str, 0, NULL, ltp_size_heap_bytes_used);
 
-//	adm_build_mid_str(0x00, ADM_LTP_NODE_NN, ADM_LTP_NODE_NN_LEN, 3, mid_str);
-//	adm_add_datadef("LTP_ENGINE_IDS",         mid_str, 0, adm_print_unsigned_long_list, adm_size_unsigned_long_list);
+	adm_build_mid_str(0x00, ADM_LTP_NODE_NN, ADM_LTP_NODE_NN_LEN, 3, mid_str);
+	adm_add_datadef("LTP_ENGINE_IDS",         mid_str, 0, adm_print_unsigned_long_list, adm_size_unsigned_long_list);
 
-	adm_build_mid_str(0x00,ADM_LTP_NODE_NN, ADM_LTP_NODE_NN_LEN, 4, mid_str);
-	adm_add_datadef("LTP_GET_ALL_SPANS", mid_str, 0, adm_datalists_to_queue,adm_size_datalists);
-
-//	adm_build_mid_str(0x40, ADM_LTP_ENGINE_NN, ADM_LTP_ENGINE_NN_LEN, 0, mid_str);
-//	adm_add_datadef("LTP_ENG_ALL",                mid_str, 1, adm_print_unsigned_long_list, ltp_engine_size);
+	adm_build_mid_str(0x40, ADM_LTP_ENGINE_NN, ADM_LTP_ENGINE_NN_LEN, 0, mid_str);
+	adm_add_datadef("LTP_ENG_ALL",                mid_str, 1, adm_print_unsigned_long_list, ltp_engine_size);
 
 	adm_build_mid_str(0x40, ADM_LTP_ENGINE_NN, ADM_LTP_ENGINE_NN_LEN, 1, mid_str);
 	adm_add_datadef("LTP_ENG_NUM",                mid_str, 1, NULL, NULL);
@@ -157,17 +179,8 @@ void adm_ltp_init()
 	adm_add_datadef("LTP_ENG_IN_COMPL_CNT",       mid_str, 1, NULL, NULL);
 
 
-	/** Controls **/
 	adm_build_mid_str(0x41, ADM_LTP_CTRL_NN, ADM_LTP_CTRL_NN_LEN, 0, mid_str);
 	adm_add_ctrl("LTP_ENG_RESET", mid_str, 1);
-
-	/**For commanding**/
-	adm_build_mid_str(0x41,ADM_LTP_CTRL_NN, ADM_LTP_CTRL_NN_LEN, 1, mid_str);
-	adm_add_ctrl("LTP_SPAN_ADD", mid_str, 1);
-
-	adm_build_mid_str(0x41,ADM_LTP_CTRL_NN, ADM_LTP_CTRL_NN_LEN, 2, mid_str);
-	adm_add_ctrl("LTP_SPAN_REMOVE", mid_str, 1);
-
 }
 
 
