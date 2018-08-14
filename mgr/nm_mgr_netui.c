@@ -201,6 +201,7 @@ void netui_construct_ctrl_by_idx(agent_t* agent,cmdFormat* curCmd)
 
 void netui_construct_time_rule_by_idx(agent_t* agent,cmdFormat* curCmd)
 {
+	mid_t* id = NULL;
 	time_t offset = 0;
 	uint32_t period = 0;
 	uint32_t evals = 0;
@@ -224,20 +225,30 @@ void netui_construct_time_rule_by_idx(agent_t* agent,cmdFormat* curCmd)
 	/* Step 1a: "tokenize" the string */
 
 	char** args=netui_parse_arguments(curCmd->arguments,&numArgs);
-	if(numArgs<4)
+	if(numArgs<5)
 	{
 		AMP_DEBUG_ERR("netui_construct_time_rule_by_idx","Not enough arguments %d",numArgs);
 		return;
 	}
 
-	offset=atoi(args[0]);
-	period=atoi(args[1]);
-	evals=atoi(args[2]);
+	oid_t oid_id = oid_construct(OID_TYPE_FULL, NULL, 0, args[0], strlen(args[0]));
+	printf("Parsed OID: %s\n", oid_pretty_print(oid_id));
+
+	id = mid_construct(MID_TRL, NULL, NULL, oid_id);
+
+	if (id == NULL) {
+        AMP_DEBUG_ERR("netui_construct_time_rule_by_idx","Could not create MID",NULL);
+		return;
+	}
+
+	//printf("Parsed MID: %s\n", mid_pretty_print(id));
+
+	offset=atoi(args[1]);
+	period=atoi(args[2]);
+	evals=atoi(args[3]);
 
 	/* Step 1b: Split the MID array */
-	unsigned int x = 3;
-
-	for(x=3;x<numArgs;x++)
+	for(unsigned int x = 4; x < numArgs; x++)
 	{
 		AMP_DEBUG_INFO("netui_construct_time_rule_by_idx","Found argument %s",args[x]);
 		//Fill into temp command
@@ -273,15 +284,10 @@ void netui_construct_time_rule_by_idx(agent_t* agent,cmdFormat* curCmd)
 		//Insert into lyst
 
 		netui_parse_single_mid_str(mids, mid_str,arguments,lyst_length(gAdmData)-1, MID_ATOMIC);
-
-
-		//mids = netui_parse_mid_str(curCmd,midIdxC, lyst_length(gAdmData))-1, MID_TYPE_DATA)
 	}
 
-/*	mids = netui_parse_mid_str(curCmd,midIdxC, lyst_length(gAdmData))-1, MID_TYPE_DATA);
-
 	/* Step 2: Construct the control primitive. */
-	trl_t *entry = trl_create(NULL, offset, evals, period, mids); // XXX: Place some MID ID here
+	trl_t *entry = trl_create(id, offset, evals, period, mids);
 
 	/* Step 3: Construct a PDU to hold the primitive. */
 	uint8_t *data = trl_serialize(entry, &size);
@@ -295,6 +301,7 @@ void netui_construct_time_rule_by_idx(agent_t* agent,cmdFormat* curCmd)
 	pdu_release_group(pdu_group);
 	trl_release(entry);
 	midcol_destroy(&mids);
+	mid_release(id);
 
 	SRELEASE(args);
 

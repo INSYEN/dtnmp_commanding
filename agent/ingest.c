@@ -283,6 +283,13 @@ void *rx_thread(int *running) {
                 	}
                 	break;
 
+			case MSG_TYPE_CTRL_PERIOD_PROD:
+			{
+				AMP_DEBUG_ALWAYS("NM Agent :","Received Periodic Production Ctrl Message.\n", NULL);
+				rx_handle_time_prod(&meta, cursor, size, &bytes);
+			}
+			break;
+
                 	default:
                 	{
                 		AMP_DEBUG_WARN("rx_thread","Received unknown type: %d.\n", hdr->type);
