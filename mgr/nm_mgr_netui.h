@@ -132,8 +132,8 @@ void ui_deregister_agent();
 
 void ui_event_loop(int *running);
 
-mid_t *ui_input_mid();
-int ui_input_mid_flag(uint8_t *flag);
+//mid_t *ui_input_mid();
+//int ui_input_mid_flag(uint8_t *flag);
 
 Lyst ui_parse_mid_str(char *mid_str, int max_idx, int type);
 
